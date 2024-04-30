@@ -1,0 +1,11 @@
+{
+    "database_name": "teacher_info.db",
+    "kind_list": [
+        "在编",
+        "非编"
+    ],
+    "table_name": {
+        "在编": "data_0",
+        "非编": "data_1"
+    }
+}
