@@ -17,16 +17,14 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="5eb37257-21ca-4990-9390-5af7ce82f405">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select graduate_school_id from data_0  where area == '永平'  and educational_background = '大学本科' or educational_background = '硕士研究生' or educational_background = '博士研究生']]></console>
+      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select count(*),school_name from data_0 group by school_name order by count() desc limit 10]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="5eb37257-21ca-4990-9390-5af7ce82f405" object-ref="consoles/Connection" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="5eb37257-21ca-4990-9390-5af7ce82f405" />

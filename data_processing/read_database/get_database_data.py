@@ -41,7 +41,8 @@ def info_trans(info: str):
         "教师资格": "level_of_teacher_certification",
         "片区": "area",
         "任教年级": "grade_to_teach",
-        "学段": "period"
+        "学段": "period",
+        "学校": "school_name"
     }
 
     return info_dict.get(info, "*")

@@ -179,7 +179,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/教师资格/未持教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/教师资格/未持教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['所有学段']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -198,7 +199,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/教师资格/持有教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/教师资格/持有教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['所有学段']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -222,7 +224,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/幼儿园/教师资格/未持教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/幼儿园/教师资格/未持教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['幼儿园']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -242,7 +245,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/幼儿园/教师资格/持有教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/幼儿园/教师资格/持有教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['幼儿园']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -266,7 +270,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/中小学/教师资格/未持教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/中小学/教师资格/未持教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['中小学']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -286,7 +291,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/中小学/教师资格/持有教师资格", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/中小学/教师资格/持有教师资格", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['中小学']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
         result = []
@@ -339,7 +345,8 @@ def update():
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/三名工作室/三名工作室主持人", value=result, json_data=json_data)
+        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/三名工作室/三名工作室主持人", value=result,
+                                      json_data=json_data)
         # json_data[kind]['全区']['所有学段']['三名工作室']['三名工作室主持人'] = copy.deepcopy(result)
 
         result = []
@@ -363,6 +370,35 @@ def update():
         result = []
 
         # 全区三名工作室主持人统计结束
+
+        ###
+        # 全区人数分布top10数量统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["学校"],
+                                                scope="全区", limit=10, order="desc", )
+
+        # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+        try:
+            c.execute(sql_sentence)
+            result = m.simplify_school_name(
+                dict1=dict(
+                    m.reverse_count_and_info(
+                        c.fetchall()
+                    )
+                )
+            )
+
+        except Exception as e:
+            print(f"执行mysql语句时报错：{e}")
+
+        finally:
+            conn.commit()
+
+        json_data = m.dict_assignment(route=f"{kind}/全区/所有学段/教师分布", value=result, json_data=json_data)
+
+        result = []
+
+        # 全区人数分布top10统计结束
 
     # 这里更新一下在编和非编的独特的字段
     json_data = data_00_unique(json_data=json_data, c=c, conn=conn)
@@ -532,8 +568,6 @@ def data_00_unique(json_data: dict, c, conn):
 ###
 
 def data_01_unique(json_data: dict, c, conn):
-    pass
-
     return json_data
 
 
@@ -629,6 +663,61 @@ def period_update(json_data: dict, c, conn):
         result = []
 
         # 全区分学段学历统计结束
+
+        ###
+        # 全区分学段最高职称统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["最高职称"], scope="全区", period=period)
+
+        # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+        try:
+            c.execute(sql_sentence)
+            result = m.combine_highest_title(
+                m.reverse_count_and_info(
+                    sorted(
+                        c.fetchall(), key=lambda x: m.highest_title_order[x[1]]
+                    )
+                )
+            )
+
+        except Exception as e:
+            print(f"执行mysql语句时报错：{e}")
+
+        finally:
+            conn.commit()
+
+        json_data = m.dict_assignment(route=f"在编/全区/{period}/最高职称", value=result, json_data=json_data)
+
+        result = []
+
+        # 全区分学段最高职称统计结束
+
+        ###
+        # 全区分学段在编人员院校级别统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=0, info=["院校代码"], scope="全区", period=period,
+                                                additional_requirement=["(educational_background == '大学本科' "
+                                                                        "or educational_background == '硕士研究生' "
+                                                                        "or educational_background == '博士研究生')"])
+
+        # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+        try:
+            c.execute(sql_sentence)
+            result = m.count_school_id(
+                c.fetchall()
+            )
+
+        except Exception as e:
+            print(f"执行mysql语句时报错：{e}")
+
+        finally:
+            conn.commit()
+
+        json_data = m.dict_assignment(route=f"在编/全区/{period}/院校级别", value=result, json_data=json_data)
+
+        result = []
+
+        # 全区分学段在编人员院校级别统计结束
 
     return json_data
 

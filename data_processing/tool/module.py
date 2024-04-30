@@ -85,6 +85,36 @@ def reverse_count_and_info(old_list: list):
     return new_list
 
 
+def simplify_school_name(dict1: dict):
+    temp = [item for item in dict1.items()]
+    temp_item = ""
+    output = []
+
+    for item in temp:
+        temp_item = item[0]
+
+        if len(temp_item) > 6 and temp_item[0:6] == "广州市白云区":
+            temp_item = temp_item[6:]
+
+        if len(temp_item) > 3 and temp_item[0:3] == "广州市":
+            temp_item = temp_item[3:]
+
+        if len(temp_item) > 3 and temp_item[0:3] == "广州市":
+            temp_item = temp_item[3:]
+
+        if len(temp_item) > 2 and temp_item[0:2] == "广州":
+            temp_item = temp_item[2:]
+
+        output.append([temp_item, item[1]])
+
+    output_dict = {}
+
+    for item in output:
+        output_dict[item[0]] = item[1]
+
+    return output_dict
+
+
 # 将无和其他合并到无中
 def combine_none_and_others(input_dict: dict):
     output = copy.deepcopy(input_dict)
@@ -357,4 +387,8 @@ def dict_assignment(route: str, value, json_data: dict):
 
 
 if __name__ == '__main__':
-    dict_assignment(route="one/two/three", json_data={"why": {}, "one": {}}, value=1)
+    print(simplify_school_name(dict1={'广州市培英中学': 344, '广州市第六十五中学': 319, '广州大同中学': 243,
+                                      '广州市白云区广州空港实验中学': 218, '广州市白云中学': 202,
+                                      '广东外语外贸大学实验中学': 197, '广州彭加木纪念中学': 184,
+                                      '广州市白云区广东第二师范学院实验中学': 161, '广州市白云区京溪小学': 137,
+                                      '广州市白云区民航学校': 127}))
