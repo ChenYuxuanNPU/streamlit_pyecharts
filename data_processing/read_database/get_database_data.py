@@ -88,7 +88,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
     # 采集某一字段的统计数据
     if info_num == 1:
 
-        sql_sentence = fr"select count(*),{info_trans(info[0])} from {table_name[kind]} "
+        sql_sentence = fr"select {info_trans(info[0])},count(*) from {table_name[kind]} "
 
         if kind == "在编":
             pass

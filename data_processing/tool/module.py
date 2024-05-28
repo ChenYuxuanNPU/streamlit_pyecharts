@@ -77,7 +77,14 @@ def disconnect_database(conn):
     conn.close()
 
 
-def reverse_count_and_info(old_list: list):
+# def reverse_count_and_info(old_list: list):
+#     new_list = []
+#     for sub_list in old_list:
+#         new_list.append(sub_list[::-1])
+#
+#     return new_list
+
+def reverse_label_and_value(old_list: list):
     new_list = []
     for sub_list in old_list:
         new_list.append(sub_list[::-1])
@@ -104,6 +111,12 @@ def simplify_school_name(dict1: dict):
 
         if len(temp_item) > 2 and temp_item[0:2] == "广州":
             temp_item = temp_item[2:]
+
+        if len(temp_item) > 2 and temp_item[0:2] == "学校":
+            temp_item = temp_item[2:]
+
+        if len(temp_item) > 2 and temp_item[-2:] == "学校":
+            temp_item = temp_item[:-2]
 
         output.append([temp_item, item[1]])
 

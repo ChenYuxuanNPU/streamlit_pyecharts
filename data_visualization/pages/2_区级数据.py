@@ -105,7 +105,8 @@ for monitor in get_monitors():
 
 # 读取现有json文件
 
-with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json", "r", encoding="UTF-8") as file:
+with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
+          "r", encoding="UTF-8") as file:
     json_data = json.load(file)
 
 # 标题

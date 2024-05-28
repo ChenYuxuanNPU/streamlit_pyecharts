@@ -1,5 +1,4 @@
 import json
-import copy
 
 from data_processing.read_database import get_database_data as gd
 from data_processing.tool import module as m
@@ -53,10 +52,8 @@ def update():
         try:
             c.execute(sql_sentence)
             result = dict(
-                m.reverse_count_and_info(
-                    sorted(
-                        c.fetchall(), key=lambda x: m.educational_background_order[x[1]]
-                    )
+                sorted(
+                    c.fetchall(), key=lambda x: m.educational_background_order[x[0]]
                 )
             )
 
@@ -83,9 +80,7 @@ def update():
         try:
             c.execute(sql_sentence)
             result = dict(
-                m.reverse_count_and_info(
-                    c.fetchall()
-                )
+                c.fetchall()
             )
 
         except Exception as e:
@@ -110,10 +105,8 @@ def update():
         try:
             c.execute(sql_sentence)
             result = dict(
-                m.reverse_count_and_info(
-                    sorted(
-                        c.fetchall(), key=lambda x: m.period_order[x[1]]
-                    )
+                sorted(
+                    c.fetchall(), key=lambda x: m.period_order[x[0]]
                 )
             )
 
@@ -140,10 +133,8 @@ def update():
             c.execute(sql_sentence)
             result = m.combine_none_and_others(
                 dict(
-                    m.reverse_count_and_info(
-                        sorted(
-                            c.fetchall(), key=lambda x: m.cadre_teacher_order[x[1]]
-                        )
+                    sorted(
+                        c.fetchall(), key=lambda x: m.cadre_teacher_order[x[0]]
                     )
                 )
             )
@@ -308,10 +299,8 @@ def update():
         try:
             c.execute(sql_sentence)
             result = m.combine_highest_title(
-                m.reverse_count_and_info(
-                    sorted(
-                        c.fetchall(), key=lambda x: m.highest_title_order[x[1]]
-                    )
+                sorted(
+                    c.fetchall(), key=lambda x: m.highest_title_order[x[0]]
                 )
             )
 
@@ -382,9 +371,7 @@ def update():
             c.execute(sql_sentence)
             result = m.simplify_school_name(
                 dict1=dict(
-                    m.reverse_count_and_info(
-                        c.fetchall()
-                    )
+                    c.fetchall()
                 )
             )
 
@@ -432,9 +419,7 @@ def data_00_unique(json_data: dict, c, conn):
     try:
         c.execute(sql_sentence)
         result = m.age_statistics(
-            age_count_list=m.reverse_count_and_info(
-                c.fetchall()
-            )
+            age_count_list=c.fetchall()
         )
 
     except Exception as e:
@@ -460,9 +445,7 @@ def data_00_unique(json_data: dict, c, conn):
     try:
         c.execute(sql_sentence)
         result = dict(
-            m.reverse_count_and_info(
-                c.fetchall()
-            )
+            c.fetchall()
         )
 
     except Exception as e:
@@ -513,10 +496,8 @@ def data_00_unique(json_data: dict, c, conn):
     try:
         c.execute(sql_sentence)
         result = m.combine_administrative_position(
-            m.reverse_count_and_info(
-                sorted(
-                    c.fetchall(), key=lambda x: m.current_administrative_position_order[x[1]]
-                )
+            sorted(
+                c.fetchall(), key=lambda x: m.current_administrative_position_order[x[0]]
             )
         )
 
@@ -541,10 +522,8 @@ def data_00_unique(json_data: dict, c, conn):
     try:
         c.execute(sql_sentence)
         result = dict(
-            m.reverse_count_and_info(
-                sorted(
-                    c.fetchall(), key=lambda x: m.area_of_supporting_education_order[x[1]]
-                )
+            sorted(
+                c.fetchall(), key=lambda x: m.area_of_supporting_education_order[x[0]]
             )
         )
 
@@ -590,9 +569,7 @@ def period_update(json_data: dict, c, conn):
         try:
             c.execute(sql_sentence)
             result = m.age_statistics(
-                age_count_list=m.reverse_count_and_info(
-                    c.fetchall()
-                )
+                age_count_list=c.fetchall()
             )
 
         except Exception as e:
@@ -618,9 +595,7 @@ def period_update(json_data: dict, c, conn):
         try:
             c.execute(sql_sentence)
             result = dict(
-                m.reverse_count_and_info(
-                    c.fetchall()
-                )
+                c.fetchall()
             )
 
         except Exception as e:
@@ -644,10 +619,8 @@ def period_update(json_data: dict, c, conn):
         try:
             c.execute(sql_sentence)
             result = dict(
-                m.reverse_count_and_info(
-                    sorted(
-                        c.fetchall(), key=lambda x: m.educational_background_order[x[1]]
-                    )
+                sorted(
+                    c.fetchall(), key=lambda x: m.educational_background_order[x[0]]
                 )
             )
 
@@ -673,10 +646,8 @@ def period_update(json_data: dict, c, conn):
         try:
             c.execute(sql_sentence)
             result = m.combine_highest_title(
-                m.reverse_count_and_info(
-                    sorted(
-                        c.fetchall(), key=lambda x: m.highest_title_order[x[1]]
-                    )
+                sorted(
+                    c.fetchall(), key=lambda x: m.highest_title_order[x[0]]
                 )
             )
 

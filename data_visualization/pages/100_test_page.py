@@ -13,7 +13,6 @@ with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\o
           "r", encoding="UTF-8") as file:
     json_data = json.load(file)
 
-
 # 设置全局属性
 st.set_page_config(
     page_title='我是标题',
@@ -56,23 +55,21 @@ with col0:
     )
 
     st_pyecharts(
-        chart= (
+        chart=(
             Pie()
-            .add("", [list(z) for z in zip(["q","w","e"], [10,50,70])],
+            .add("", [list(z) for z in zip(["q", "w", "e"], [10, 50, 70])],
                  center=["50%", "60%"], radius="65%")
             .set_global_opts(title_opts=opts.TitleOpts(title="在编教师"), legend_opts=opts.LegendOpts())
             .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}, {d}%"))
         )
     )
 
-
 with col1:
-
     st_pyecharts(
         chart=(
             Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
-            .add_xaxis(["a","b","c"])
-            .add_yaxis("总人数", [100,200,300])
+            .add_xaxis(["a", "b", "c"])
+            .add_yaxis("总人数", [100, 200, 300])
             .reversal_axis()
             .set_series_opts(label_opts=opts.LabelOpts(position="right"))
             .set_global_opts(title_opts=opts.TitleOpts(title="主教学科"), legend_opts=opts.LegendOpts(is_show=False))
@@ -82,8 +79,8 @@ with col1:
     st_pyecharts(
         chart=(
             Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
-            .add_xaxis(["aaaa","bbbbb","cccccccc"])
-            .add_yaxis("总人数", [100,200,300])
+            .add_xaxis(["aaaa", "bbbbb", "cccccccc"])
+            .add_yaxis("总人数", [100, 200, 300])
             .set_series_opts(label_opts=opts.LabelOpts(position="top"))
             .set_global_opts(title_opts=opts.TitleOpts(title="主教学科"), legend_opts=opts.LegendOpts(is_show=False))
         ),

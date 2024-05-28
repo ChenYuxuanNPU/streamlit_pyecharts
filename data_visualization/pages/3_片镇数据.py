@@ -151,9 +151,6 @@ with st.container(border=True):
                 draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["学段统计"], height=img_height,
                          title="学段统计")
 
-                # 非编职称统计
-                draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["最高职称"], height=img_height, title="职称")
-
                 # 非编教师资格统计
                 draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["教师资格"], height=img_height,
                          title="教师资格")
@@ -167,13 +164,8 @@ with st.container(border=True):
                 draw_pie(data=json_data["非编"]["片区"][area]["中小学"]["教师资格"], height=img_height, title="中小学")
 
             with col2:
-                # 非编骨干教师统计
-                draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["骨干教师"], height=img_height,
-                         title="骨干教师")
-
-                # 非编三名教师统计
-                draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["三名工作室"], height=img_height,
-                         title="三名统计")
+                # 非编职称统计
+                draw_pie(data=json_data["非编"]["片区"][area]["所有学段"]["最高职称"], height=img_height, title="职称")
 
                 # 非编幼儿园教师资格统计
                 draw_pie(data=json_data["非编"]["片区"][area]["幼儿园"]["教师资格"], height=img_height, title="幼儿园")

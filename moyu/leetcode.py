@@ -24,7 +24,6 @@ def isSymmetric(root: Optional[TreeNode]) -> bool:
     pass
 
 
-
 if __name__ == '__main__':
-
+    pass
 
