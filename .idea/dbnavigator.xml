@@ -17,7 +17,8 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="5eb37257-21ca-4990-9390-5af7ce82f405">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select count(*),school_name from data_0 group by school_name order by count() desc limit 10]]></console>
+      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select distinct school_name from data_1]]></console>
+      <console name="teacher_info" type="STANDARD" schema="main" session="Main"><![CDATA[select * from data_1]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -30,6 +31,7 @@
     <connection id="5eb37257-21ca-4990-9390-5af7ce82f405" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="5eb37257-21ca-4990-9390-5af7ce82f405" dataset="main.data_1" active-filter-id="" />
     <filter-actions connection-id="5eb37257-21ca-4990-9390-5af7ce82f405" dataset="main.data_0" active-filter-id="" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">

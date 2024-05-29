@@ -1,6 +1,7 @@
 import copy
 import sqlite3
 import json
+import time
 
 from data_processing.read_database import get_database_data as gd
 
@@ -77,12 +78,23 @@ def disconnect_database(conn):
     conn.close()
 
 
-# def reverse_count_and_info(old_list: list):
-#     new_list = []
-#     for sub_list in old_list:
-#         new_list.append(sub_list[::-1])
-#
-#     return new_list
+def load_json_data():
+
+    # 读取现有json文件
+    with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
+              "r", encoding="UTF-8") as file:
+        json_data = json.load(file)
+
+    return json_data
+
+
+def reverse_count_and_info(old_list: list):
+    new_list = []
+    for sub_list in old_list:
+        new_list.append(sub_list[::-1])
+
+    return new_list
+
 
 def reverse_label_and_value(old_list: list):
     new_list = []
@@ -310,12 +322,12 @@ def combine_administrative_position(ap_list: list):
 
 
 # 用来检查是否有这个学校/这个学校有没有这个学段
-def school_name_or_period_check(kind: str, school_name: str, period=None):
+def school_name_and_period_check(kind: str, school_name: str, period=None):
     if kind not in ["在编", '非编']:
-        raise MyError("kind参数错误")
+        return [False, "kind参数错误"]
 
     if period not in [None, "高中", "初中", "小学", "幼儿园", ""]:
-        raise MyError("period参数错误")
+        return [False, "period参数错误"]
 
     result = []
 
@@ -341,10 +353,10 @@ def school_name_or_period_check(kind: str, school_name: str, period=None):
         disconnect_database(conn=conn)
 
         if result != 0:
-            return True
+            return [True]
 
         if result == 0:
-            raise MyError(f"未找到{school_name}的{kind}教师信息")
+            return [False, f"未找到{school_name}的{kind}教师信息"]
 
     # 考虑学段，有学校且有对应学段才返回True
     if period is not None:
@@ -366,12 +378,12 @@ def school_name_or_period_check(kind: str, school_name: str, period=None):
         disconnect_database(conn=conn)
 
         if result != 0:
-            return True
+            return [True]
 
         if result == 0:
-            raise MyError(f"{school_name}无{period}{kind}教师")
+            return [False, f"未找到{school_name}的{period}学段{kind}教师"]
 
-    raise MyError("school_name_or_period_check函数异常")
+    return [False, "school_name_or_period_check函数异常"]
 
 
 # 这个函数用来解决字典赋值但找不到位置的问题
@@ -400,8 +412,4 @@ def dict_assignment(route: str, value, json_data: dict):
 
 
 if __name__ == '__main__':
-    print(simplify_school_name(dict1={'广州市培英中学': 344, '广州市第六十五中学': 319, '广州大同中学': 243,
-                                      '广州市白云区广州空港实验中学': 218, '广州市白云中学': 202,
-                                      '广东外语外贸大学实验中学': 197, '广州彭加木纪念中学': 184,
-                                      '广州市白云区广东第二师范学院实验中学': 161, '广州市白云区京溪小学': 137,
-                                      '广州市白云区民航学校': 127}))
+    pass

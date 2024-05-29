@@ -62,22 +62,22 @@ def string_link(str1: str, str2: str, start_sign: int):
 def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, info: list, kind: str, period=None):
     # 判断是否有选择限定类型但未填信息的情况
     if scope == "片区" and area_name == "":
-        raise MyError(value="未填写片区")
+        return [False, "未填写片区"]
 
     if scope == "学校" and school_name == "":
-        raise MyError(value="未填写学校")
+        return [False, "未填写学校"]
 
     # 检查插入的info项是否与info_num对应
     if not isinstance(info, list):
-        raise MyError("传入info不是列表")
+        return [False, "传入info不是列表"]
 
     if kind not in ["在编", '非编']:
-        raise MyError("kind参数错误")
+        return [False, "kind参数错误"]
 
     if period not in [None, "高中", "初中", "小学", "幼儿园", ""]:
-        raise MyError("period参数错误")
+        return [False, "period参数错误"]
 
-    return True
+    return [True]
 
 
 def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
@@ -109,7 +109,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
             sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
             start_sign = 1
 
-        if period is not None:
+        if period is not None and period != "":
             sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
             start_sign = 1
 
@@ -170,7 +170,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
             sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
             start_sign = 1
 
-        if period is not None:
+        if period is not None and period != "":
             sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
             start_sign = 1
 
@@ -206,7 +206,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
             sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
             start_sign = 1
 
-        if period is not None:
+        if period is not None and period != "":
             sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
             start_sign = 1
 
@@ -236,8 +236,10 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
 def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str,
                           school_name="", area_name="", period=None,
                           limit=0, order="", additional_requirement=None, ):
-    if not generate_sql_sentence_check(scope=scope, area_name=area_name, school_name=school_name, info=info,
-                                       kind=kind, period=period):
+    check_result = generate_sql_sentence_check(scope=scope, area_name=area_name, school_name=school_name, info=info,
+                                               kind=kind, period=period)
+    if not check_result[0]:
+        print(check_result[1])
         raise MyError("插入内容验证不通过")
 
     sql_sentence = fill_scope_kind_period_others(info_num=info_num, info=info, scope=scope, school_name=school_name,

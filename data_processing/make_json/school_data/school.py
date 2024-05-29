@@ -25,8 +25,11 @@ def update(kind: str, school_name: str, period=None):
         json_data = json.load(file)
 
     # 检查一下有没有这个学校和学段，没有的话就报错
-    if m.school_name_or_period_check(kind=kind, school_name=school_name, period=period):
-        pass
+    check_result = m.school_name_and_period_check(kind=kind, school_name=school_name, period=period)
+    if not check_result[0]:
+
+        print(check_result[1])
+        return -1
 
     ###
     # 统计总人数 - 分学校
