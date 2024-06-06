@@ -1,4 +1,5 @@
 import json
+import sys
 import streamlit as st
 import pyecharts.options as opts
 from screeninfo import get_monitors
@@ -8,10 +9,14 @@ from pyecharts.charts import Pie
 from pyecharts.charts import Bar
 from pyecharts.globals import ThemeType
 
+sys.path.append(
+    r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
+)
+
+from data_visualization.tool import module as m_visual
+
 # 读取现有json文件
-with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
-          "r", encoding="UTF-8") as file:
-    json_data = json.load(file)
+json_data = m_visual.load_json_data(file_name="output")
 
 # 设置全局属性
 st.set_page_config(

@@ -1,7 +1,8 @@
 import copy
 import sqlite3
 import json
-import time
+import os
+import sys
 
 from data_processing.read_database import get_database_data as gd
 
@@ -78,14 +79,24 @@ def disconnect_database(conn):
     conn.close()
 
 
-def load_json_data():
+def load_json_data(file_name: str):
 
     # 读取现有json文件
-    with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
               "r", encoding="UTF-8") as file:
         json_data = json.load(file)
 
     return json_data
+
+
+def save_json_data(json_data: dict, file_name: str):
+
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
+              "w", encoding="UTF-8") as file:
+        # 将生成的数据保存至json文件中
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+
+    return 0
 
 
 def reverse_count_and_info(old_list: list):
@@ -381,7 +392,7 @@ def school_name_and_period_check(kind: str, school_name: str, period=None):
             return [True]
 
         if result == 0:
-            return [False, f"未找到{school_name}的{period}学段{kind}教师"]
+            return [False, f"未找到{school_name}的{period}{kind}教师"]
 
     return [False, "school_name_or_period_check函数异常"]
 

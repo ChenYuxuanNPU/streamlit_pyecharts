@@ -9,11 +9,20 @@ from pyecharts.charts import Pie
 from pyecharts.charts import Bar
 
 
+kind_list = ["在编", "非编"]
+
 end_dict = {
     "高中": 70,
     "初中": 70,
     "小学": 70,
     "幼儿园": 95
+}
+
+trans_period = {
+    "所有学段": None,
+    "高中": "高中",
+    "初中": "初中",
+    "小学": "小学"
 }
 
 
@@ -23,10 +32,10 @@ def hello():
 
 
 # 设置页面全局属性
-def set_page_configuration():
+def set_page_configuration(title: str, icon: str):
     st.set_page_config(
-        page_title='区级数据',
-        page_icon=':light_rail:',
+        page_title=title,
+        page_icon=icon,
         layout='wide'
     )
 
@@ -100,13 +109,24 @@ def draw_2col_bar(data: dict, title: str, height=0, end=70):
         )
 
 
-def load_json_data():
+def load_json_data(file_name: str):
+
     # 读取现有json文件
-    with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
               "r", encoding="UTF-8") as file:
         json_data = json.load(file)
 
     return json_data
+
+
+def save_json_data(json_data: dict, file_name: str):
+
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
+              "w", encoding="UTF-8") as file:
+        # 将生成的数据保存至json文件中
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+
+    return 0
 
 
 # 这里是给片区不同学段的可视化做的
@@ -135,7 +155,44 @@ def show_period(period: str, data: dict):
 
 
 # 用来插入st.write_stream的数据
-def stream_data(sentence: str, delay=0.03):
+def stream_data(sentence: str, delay=0.015):
     for word in sentence:
         yield word
         time.sleep(delay)
+
+
+# 用来简化校名
+def simplify_school_name(dict1: dict):
+    temp = [item for item in dict1.items()]
+    temp_item = ""
+    output = []
+
+    for item in temp:
+        temp_item = item[0]
+
+        if len(temp_item) > 6 and temp_item[0:6] == "广州市白云区":
+            temp_item = temp_item[6:]
+
+        if len(temp_item) > 3 and temp_item[0:3] == "广州市":
+            temp_item = temp_item[3:]
+
+        if len(temp_item) > 3 and temp_item[0:3] == "广州市":
+            temp_item = temp_item[3:]
+
+        if len(temp_item) > 2 and temp_item[0:2] == "广州":
+            temp_item = temp_item[2:]
+
+        if len(temp_item) > 2 and temp_item[0:2] == "学校":
+            temp_item = temp_item[2:]
+
+        if len(temp_item) > 2 and temp_item[-2:] == "学校":
+            temp_item = temp_item[:-2]
+
+        output.append([temp_item, item[1]])
+
+    output_dict = {}
+
+    for item in output:
+        output_dict[item[0]] = item[1]
+
+    return output_dict

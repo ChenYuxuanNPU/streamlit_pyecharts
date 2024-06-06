@@ -1,21 +1,19 @@
 import json
 
 from data_processing.read_database import get_database_data as gd
-from data_processing.tool import module as m
+from data_processing.tool import module as m_proc
 
-kind_list = m.kind_list
-area_list = m.area_list
-period_list = m.period_list
+kind_list = m_proc.kind_list
+area_list = m_proc.area_list
+period_list = m_proc.period_list
 
 
 def update():
     result = []
 
-    c, conn = m.connect_database()
+    c, conn = m_proc.connect_database()
 
-    with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
-              "r", encoding="UTF-8") as file:
-        json_data = json.load(file)
+    json_data = m_proc.load_json_data(file_name="output")
 
     # 在字典中更新数据库查询结果
     for area in area_list:
@@ -35,7 +33,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/总人数", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/总人数", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['总人数'] = copy.deepcopy(result)
 
@@ -54,7 +52,7 @@ def update():
                 c.execute(sql_sentence)
                 result = dict(
                     sorted(
-                        c.fetchall(), key=lambda x: m.educational_background_order[x[0]]
+                        c.fetchall(), key=lambda x: m_proc.educational_background_order[x[0]]
                     )
                 )
 
@@ -64,12 +62,38 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/最高学历", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/最高学历", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['最高学历'] = copy.deepcopy(result)
             result = []
 
             # 片区最高学历统计结束
+
+            ###
+            # 在编人员性别统计 - 分片区
+            ###
+            sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["性别"], scope="片区",
+                                                    area_name=area, order="asc")
+
+            # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+            try:
+                c.execute(sql_sentence)
+                result = dict(
+                    c.fetchall()
+                )
+
+            except Exception as e:
+                print(f"执行mysql语句时报错：{e}")
+
+            finally:
+                conn.commit()
+
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/性别", value=result,
+                                          json_data=json_data)
+            # json_data[kind]['片区'][area]['所有学段']['性别'] = copy.deepcopy(result)
+            result = []
+
+            # 片区性别统计结束
 
             ###
             # 片区学段分布统计
@@ -83,7 +107,7 @@ def update():
                 c.execute(sql_sentence)
                 result = dict(
                     sorted(
-                        c.fetchall(), key=lambda x: m.period_order[x[0]]
+                        c.fetchall(), key=lambda x: m_proc.period_order[x[0]]
                     )
                 )
 
@@ -93,7 +117,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/学段统计", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/学段统计", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['学段统计'] = copy.deepcopy(result)
 
@@ -110,9 +134,9 @@ def update():
             # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
             try:
                 c.execute(sql_sentence)
-                result = m.combine_highest_title(
+                result = m_proc.combine_highest_title(
                     sorted(
-                        c.fetchall(), key=lambda x: m.highest_title_order[x[0]]
+                        c.fetchall(), key=lambda x: m_proc.highest_title_order[x[0]]
                     )
                 )
 
@@ -122,7 +146,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/最高职称", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/最高职称", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['最高职称'] = copy.deepcopy(result)
 
@@ -139,10 +163,10 @@ def update():
             # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
             try:
                 c.execute(sql_sentence)
-                result = m.combine_none_and_others(
+                result = m_proc.combine_none_and_others(
                     dict(
                         sorted(
-                            c.fetchall(), key=lambda x: m.cadre_teacher_order[x[0]]
+                            c.fetchall(), key=lambda x: m_proc.cadre_teacher_order[x[0]]
                         )
                     )
                 )
@@ -153,7 +177,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/骨干教师", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/骨干教师", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['骨干教师'] = copy.deepcopy(result)
             result = []
@@ -177,7 +201,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/教师资格/未持教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/教师资格/未持教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['教师资格']['未持教师资格'] = copy.deepcopy(result)
             result = []
@@ -196,7 +220,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/教师资格/持有教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/教师资格/持有教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['教师资格']['持有教师资格'] = copy.deepcopy(result)
             result = []
@@ -218,7 +242,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/幼儿园/教师资格/未持教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/幼儿园/教师资格/未持教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['幼儿园']['教师资格']['未持教师资格'] = copy.deepcopy(result)
             result = []
@@ -237,7 +261,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/幼儿园/教师资格/持有教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/幼儿园/教师资格/持有教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['幼儿园']['教师资格']['持有教师资格'] = copy.deepcopy(result)
             result = []
@@ -260,7 +284,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/中小学/教师资格/未持教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/中小学/教师资格/未持教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['中小学']['教师资格']['未持教师资格'] = copy.deepcopy(result)
             result = []
@@ -280,7 +304,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/中小学/教师资格/持有教师资格", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/中小学/教师资格/持有教师资格", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['中小学']['教师资格']['持有教师资格'] = copy.deepcopy(result)
             result = []
@@ -305,7 +329,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/三名工作室/三名工作室主持人",
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/三名工作室/三名工作室主持人",
                                           value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['三名工作室']['三名工作室主持人'] = copy.deepcopy(result)
@@ -326,7 +350,7 @@ def update():
             finally:
                 conn.commit()
 
-            json_data = m.dict_assignment(route=f"{kind}/片区/{area}/所有学段/三名工作室/无", value=result,
+            json_data = m_proc.dict_assignment(route=f"{kind}/片区/{area}/所有学段/三名工作室/无", value=result,
                                           json_data=json_data)
             # json_data[kind]['片区'][area]['所有学段']['三名工作室']['无'] = copy.deepcopy(result)
 
@@ -339,13 +363,9 @@ def update():
 
     json_data = data_01_unique(json_data=json_data, c=c, conn=conn)
 
-    with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\output.json",
-              "w", encoding="UTF-8") as file:
+    m_proc.save_json_data(json_data=json_data, file_name="output")
 
-        # 将生成的数据保存至output.json中
-        json.dump(json_data, file, indent=4, ensure_ascii=False)
-
-    m.disconnect_database(conn=conn)
+    m_proc.disconnect_database(conn=conn)
 
 
 # 更新一些在编特有的信息
@@ -362,7 +382,7 @@ def data_00_unique(json_data: dict, c, conn):
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = m.age_statistics(
+            result = m_proc.age_statistics(
                 age_count_list=c.fetchall()
             )
 
@@ -372,7 +392,7 @@ def data_00_unique(json_data: dict, c, conn):
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"在编/片区/{area}/所有学段/年龄", value=result, json_data=json_data)
+        json_data = m_proc.dict_assignment(route=f"在编/片区/{area}/所有学段/年龄", value=result, json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['年龄'] = copy.deepcopy(dict(result))
         result = []
 
@@ -399,7 +419,7 @@ def data_00_unique(json_data: dict, c, conn):
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"在编/片区/{area}/所有学段/主教学科", value=result, json_data=json_data)
+        json_data = m_proc.dict_assignment(route=f"在编/片区/{area}/所有学段/主教学科", value=result, json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['主教学科'] = copy.deepcopy(result)
         result = []
 
@@ -414,9 +434,9 @@ def data_00_unique(json_data: dict, c, conn):
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = m.combine_administrative_position(
+            result = m_proc.combine_administrative_position(
                 sorted(
-                    c.fetchall(), key=lambda x: m.current_administrative_position_order[x[0]]
+                    c.fetchall(), key=lambda x: m_proc.current_administrative_position_order[x[0]]
                 )
             )
 
@@ -426,7 +446,7 @@ def data_00_unique(json_data: dict, c, conn):
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"在编/片区/{area}/所有学段/行政职务", value=result, json_data=json_data)
+        json_data = m_proc.dict_assignment(route=f"在编/片区/{area}/所有学段/行政职务", value=result, json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['行政职务'] = copy.deepcopy(result)
         result = []
 
@@ -444,7 +464,7 @@ def data_00_unique(json_data: dict, c, conn):
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = m.count_school_id(
+            result = m_proc.count_school_id(
                 c.fetchall()
             )
 
@@ -454,7 +474,7 @@ def data_00_unique(json_data: dict, c, conn):
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"在编/片区/{area}/所有学段/院校级别", value=result, json_data=json_data)
+        json_data = m_proc.dict_assignment(route=f"在编/片区/{area}/所有学段/院校级别", value=result, json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['院校级别'] = copy.deepcopy(result)
         result = []
 
@@ -471,7 +491,7 @@ def data_00_unique(json_data: dict, c, conn):
             c.execute(sql_sentence)
             result = dict(
                 sorted(
-                    c.fetchall(), key=lambda x: m.area_of_supporting_education_order[x[0]]
+                    c.fetchall(), key=lambda x: m_proc.area_of_supporting_education_order[x[0]]
                 )
             )
 
@@ -481,7 +501,7 @@ def data_00_unique(json_data: dict, c, conn):
         finally:
             conn.commit()
 
-        json_data = m.dict_assignment(route=f"在编/片区/{area}/所有学段/支教地域", value=result, json_data=json_data)
+        json_data = m_proc.dict_assignment(route=f"在编/片区/{area}/所有学段/支教地域", value=result, json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['支教地域'] = copy.deepcopy(result)
         result = []
 

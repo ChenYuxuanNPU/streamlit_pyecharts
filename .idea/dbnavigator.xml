@@ -17,8 +17,16 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="5eb37257-21ca-4990-9390-5af7ce82f405">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select distinct school_name from data_1]]></console>
-      <console name="teacher_info" type="STANDARD" schema="main" session="Main"><![CDATA[select * from data_1]]></console>
+      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select gender,count(*) from data_1  where is_teacher == '是'  group by gender]]></console>
+      <console name="teacher_info" type="STANDARD" schema="main" session="Main"><![CDATA[# 这里用来按人数排列校名
+select school_name,count(school_name) from data_0 group by school_name order by count(school_name) desc
+select school_name,count(school_name) from data_1 where is_teacher == "是" group by school_name order by count(school_name) desc 
+
+select school_name,sum(c) from (select school_name,count(school_name) as c from data_0 group by school_name union all select school_name,count(school_name) as c from data_1 where is_teacher == "是" group by school_name) group by school_name order by sum(c) desc
+
+# ,coalesce(d0.c,0),  coalesce(d1.c,0),coalesce(d0.c+d1.c,0),
+
+select * from (select school_name,school_id, school_classification,area,count(school_name) count, "0" as kind from data_0 group by school_name union all select school_name,school_id, school_classification, area, count(school_name) count, "1" as kind from data_1 where is_teacher == "是" group by school_name) order by count desc]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -157,6 +165,7 @@
         <display-mode value="TABBED" />
         <navigation-history-size value="100" />
         <show-object-details value="false" />
+        <enable-sticky-paths value="true" />
       </general>
       <filters>
         <object-type-filter>
