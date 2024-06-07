@@ -22,7 +22,7 @@ kind_0_flag = False
 kind_1_flag = False
 
 # 读取基础数据
-json_data = m_visual.load_json_data(file_name="output")
+json_data = m_visual.load_json_data(file_name="teacher_info")
 
 # 标题
 st.title("学校教师数据")
@@ -134,7 +134,7 @@ with st.container(border=True):
 with st.container(border=True):
     if search_flag and kind_0_flag:
         # 更新数据
-        json_data = m_visual.load_json_data(file_name="output")
+        json_data = m_visual.load_json_data(file_name="teacher_info")
 
         st.subheader(f"{school_name}{period}在编教师统计" if period is not None else f"{school_name}在编教师统计")
 
@@ -186,7 +186,7 @@ with st.container(border=True):
 with st.container(border=True):
     if search_flag and kind_1_flag:
         # 更新数据
-        json_data = m_visual.load_json_data(file_name="output")
+        json_data = m_visual.load_json_data(file_name="teacher_info")
 
         st.subheader(f"{school_name}{period}编外教师统计" if period is not None else f"{school_name}编外教师统计")
 

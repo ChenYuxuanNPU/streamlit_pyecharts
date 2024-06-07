@@ -13,7 +13,7 @@ def update():
 
     c, conn = m_proc.connect_database()
 
-    json_data = m_proc.load_json_data(file_name="output")
+    json_data = m_proc.load_json_data(file_name="teacher_info")
 
     # 在字典中更新数据库查询结果
     for area in area_list:
@@ -363,7 +363,7 @@ def update():
 
     json_data = data_01_unique(json_data=json_data, c=c, conn=conn)
 
-    m_proc.save_json_data(json_data=json_data, file_name="output")
+    m_proc.save_json_data(json_data=json_data, file_name="teacher_info")
 
     m_proc.disconnect_database(conn=conn)
 

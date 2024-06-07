@@ -6,9 +6,6 @@ import sys
 
 from data_processing.read_database import get_database_data as gd
 
-# 常用常量
-doc_path = "C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\doc\\data.txt"
-
 # 用来设置排序
 educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '大学本科': 3, "大学专科": 4, "中专": 5, "高中": 6,
                                 "高中及以下": 7, None: 7}
@@ -51,12 +48,6 @@ code_of_211 = ("10003 10001 10614 10335 10384 10533 10558 10486 10246 10487 1028
                "11415 19635 19414").split()
 code_of_affiliate = "10027 10269 10200 10511 10718 10635".split()
 
-with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\database\database_basic_info.json", "r") as f:
-    loaded_data = json.load(f)
-
-table_name = loaded_data['table_name']  # ["data_0.db","data_1.db"]
-database_name = loaded_data['database_name']  # "teacher_info"
-
 
 class MyError(Exception):
     def __init__(self, value):
@@ -69,7 +60,7 @@ class MyError(Exception):
 # kind:"在编","非编"
 def connect_database():
     conn = sqlite3.connect(
-        "C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\teacher_info.db")
+        "C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\educational_data.db")
     c = conn.cursor()
 
     return c, conn
@@ -97,14 +88,6 @@ def save_json_data(json_data: dict, file_name: str):
         json.dump(json_data, file, indent=4, ensure_ascii=False)
 
     return 0
-
-
-def reverse_count_and_info(old_list: list):
-    new_list = []
-    for sub_list in old_list:
-        new_list.append(sub_list[::-1])
-
-    return new_list
 
 
 def reverse_label_and_value(old_list: list):

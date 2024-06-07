@@ -8,7 +8,7 @@ def update():
 
     c, conn = m_proc.connect_database()
 
-    json_data = m_proc.load_json_data(file_name="output")
+    json_data = m_proc.load_json_data(file_name="teacher_info")
 
     # 这里统计所有学校教师总数的列表
     sql_sentence = ('select * from ('
@@ -87,7 +87,7 @@ def update():
 
     # 所有学校教师总数统计结束
 
-    m_proc.save_json_data(json_data=json_data, file_name="output")
+    m_proc.save_json_data(json_data=json_data, file_name="teacher_info")
 
     m_proc.disconnect_database(conn=conn)
 

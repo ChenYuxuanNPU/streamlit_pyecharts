@@ -19,7 +19,7 @@ def update(kind: str, school_name: str, period=None):
 
     c, conn = m_proc.connect_database()
 
-    json_data = m_proc.load_json_data(file_name="output")
+    json_data = m_proc.load_json_data(file_name="teacher_info")
 
     # 检查一下有没有这个学校和学段，没有的话就报错
     check_result = m_proc.school_name_and_period_check(kind=kind, school_name=school_name, period=period)
@@ -224,7 +224,7 @@ def update(kind: str, school_name: str, period=None):
     json_data = data_00_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn) \
         if kind == "在编" else data_01_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn)
 
-    m_proc.save_json_data(json_data=json_data, file_name="output")
+    m_proc.save_json_data(json_data=json_data, file_name="teacher_info")
 
     m_proc.disconnect_database(conn=conn)
 

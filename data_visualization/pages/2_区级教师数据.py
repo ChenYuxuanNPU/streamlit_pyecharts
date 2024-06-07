@@ -12,7 +12,7 @@ from data_visualization.tool import module as m_visual
 m_visual.set_page_configuration(title="区级教师数据", icon=":classical_building:")
 
 # 读取现有json文件
-json_data = m_visual.load_json_data(file_name="output")
+json_data = m_visual.load_json_data(file_name="teacher_info")
 
 # 标题
 st.title("全区教师数据")
