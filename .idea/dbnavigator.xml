@@ -10,23 +10,23 @@
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DatabaseBrowserManager">
-    <autoscroll-to-editor value="false" />
+    <autoscroll-to-editor value="true" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="5eb37257-21ca-4990-9390-5af7ce82f405">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[select gender,count(*) from data_1  where is_teacher == '是'  group by gender]]></console>
-      <console name="teacher_info" type="STANDARD" schema="main" session="Main"><![CDATA[# 这里用来按人数排列校名
-select school_name,count(school_name) from data_0 group by school_name order by count(school_name) desc
-select school_name,count(school_name) from data_1 where is_teacher == "是" group by school_name order by count(school_name) desc 
+    <connection id="241533e1-a1fa-48fd-9609-347158fc61f3">
+      <console name="Connection" type="STANDARD" schema="educational_data" session="Main"><![CDATA[pragma table_info(school_info_sum_2023)
 
-select school_name,sum(c) from (select school_name,count(school_name) as c from data_0 group by school_name union all select school_name,count(school_name) as c from data_1 where is_teacher == "是" group by school_name) group by school_name order by sum(c) desc
+select political_status,count(*) from teacher_data_0 where current_administrative_position != '无' and current_administrative_position != '中层正职' and current_administrative_position != '中层副职' group by political_status order by count(*) desc]]></console>
+    </connection>
+    <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129">
+      <console name="vocal" type="STANDARD" schema="vocal" session="Main"><![CDATA[select count(name) from vocal.sqlite_master where name = "teacher_data_0"
 
-# ,coalesce(d0.c,0),  coalesce(d1.c,0),coalesce(d0.c+d1.c,0),
+select name from vocal.sqlite_master
 
-select * from (select school_name,school_id, school_classification,area,count(school_name) count, "0" as kind from data_0 group by school_name union all select school_name,school_id, school_classification, area, count(school_name) count, "1" as kind from data_1 where is_teacher == "是" group by school_name) order by count desc]]></console>
+drop table teacher_data_0]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -36,11 +36,12 @@ select * from (select school_name,school_id, school_classification,area,count(sc
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="5eb37257-21ca-4990-9390-5af7ce82f405" />
+    <connection id="241533e1-a1fa-48fd-9609-347158fc61f3" />
+    <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="5eb37257-21ca-4990-9390-5af7ce82f405" dataset="main.data_1" active-filter-id="" />
-    <filter-actions connection-id="5eb37257-21ca-4990-9390-5af7ce82f405" dataset="main.data_0" active-filter-id="" />
+    <filter-actions connection-id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" dataset="vocal.teacher_data_1" active-filter-id="" />
+    <filter-actions connection-id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" dataset="vocal.teacher_data_0" active-filter-id="" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
@@ -60,11 +61,14 @@ select * from (select school_name,school_id, school_classification,area,count(sc
   <component name="DBNavigator.Project.ParserDiagnosticsManager">
     <diagnostics-history />
   </component>
+  <component name="DBNavigator.Project.ScriptExecutionManager" clear-outputs="true">
+    <recently-used-interfaces />
+  </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="5eb37257-21ca-4990-9390-5af7ce82f405" active="true" signed="true">
+      <connection id="241533e1-a1fa-48fd-9609-347158fc61f3" active="true" signed="true">
         <database>
-          <name value="teacher_info" />
+          <name value="educational_data" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
@@ -79,7 +83,7 @@ select * from (select school_name,school_id, school_classification,area,count(sc
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="C:\Users\1012986131\Desktop\python\streamlit_pyecharts\database\teacher_info.db" schema="main" />
+            <file path="C:\Users\1012986131\Desktop\python\streamlit_pyecharts\database\educational_data.db" schema="educational_data" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -112,7 +116,104 @@ select * from (select school_name,school_id, school_classification,area,count(sc
           <connect-automatically value="true" />
           <restore-workspace value="true" />
           <restore-workspace-deep value="false" />
-          <environment-type value="development" />
+          <environment-type value="default" />
+          <connectivity-timeout value="30" />
+          <idle-time-to-disconnect value="30" />
+          <idle-time-to-disconnect-pool value="5" />
+          <credential-expiry-time value="10" />
+          <max-connection-pool-size value="7" />
+          <alternative-statement-delimiter value="" />
+        </details>
+        <debugger>
+          <compile-dependencies value="true" />
+          <tcp-driver-tunneling value="false" />
+          <tcp-host-address value="" />
+          <tcp-port-from value="4000" />
+          <tcp-port-to value="4999" />
+          <debugger-type value="JDBC" />
+        </debugger>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
+          <object-filters />
+          <object-type-filter use-master-settings="true">
+            <object-type name="SCHEMA" enabled="true" />
+            <object-type name="USER" enabled="true" />
+            <object-type name="ROLE" enabled="true" />
+            <object-type name="PRIVILEGE" enabled="true" />
+            <object-type name="CHARSET" enabled="true" />
+            <object-type name="TABLE" enabled="true" />
+            <object-type name="VIEW" enabled="true" />
+            <object-type name="MATERIALIZED_VIEW" enabled="true" />
+            <object-type name="NESTED_TABLE" enabled="true" />
+            <object-type name="COLUMN" enabled="true" />
+            <object-type name="INDEX" enabled="true" />
+            <object-type name="CONSTRAINT" enabled="true" />
+            <object-type name="DATASET_TRIGGER" enabled="true" />
+            <object-type name="DATABASE_TRIGGER" enabled="true" />
+            <object-type name="SYNONYM" enabled="true" />
+            <object-type name="SEQUENCE" enabled="true" />
+            <object-type name="PROCEDURE" enabled="true" />
+            <object-type name="FUNCTION" enabled="true" />
+            <object-type name="PACKAGE" enabled="true" />
+            <object-type name="TYPE" enabled="true" />
+            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
+            <object-type name="ARGUMENT" enabled="true" />
+            <object-type name="DIMENSION" enabled="true" />
+            <object-type name="CLUSTER" enabled="true" />
+            <object-type name="DBLINK" enabled="true" />
+          </object-type-filter>
+        </object-filters>
+      </connection>
+      <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" active="true" signed="true">
+        <database>
+          <name value="vocal" />
+          <description value="" />
+          <database-type value="SQLITE" />
+          <config-type value="BASIC" />
+          <database-version value="3.44" />
+          <driver-source value="BUNDLED" />
+          <driver-library value="" />
+          <driver value="" />
+          <url-type value="FILE" />
+          <host value="" />
+          <port value="" />
+          <database value="" />
+          <tns-folder value="" />
+          <tns-profile value="" />
+          <files>
+            <file path="C:\Users\1012986131\Desktop\python\streamlit_pyecharts\database\vocal.db" schema="vocal" />
+          </files>
+          <type value="NONE" />
+          <user value="" />
+          <deprecated-pwd value="" />
+        </database>
+        <properties>
+          <auto-commit value="true" />
+        </properties>
+        <ssh-settings>
+          <active value="false" />
+          <proxy-host value="" />
+          <proxy-port value="22" />
+          <proxy-user value="" />
+          <deprecated-proxy-pwd value="" />
+          <auth-type value="PASSWORD" />
+          <key-file value="" />
+          <key-passphrase value="" />
+        </ssh-settings>
+        <ssl-settings>
+          <active value="false" />
+          <certificate-authority-file value="" />
+          <client-certificate-file value="" />
+          <client-key-file value="" />
+        </ssl-settings>
+        <details>
+          <charset value="UTF-8" />
+          <session-management value="true" />
+          <ddl-file-binding value="true" />
+          <database-logging value="true" />
+          <connect-automatically value="true" />
+          <restore-workspace value="true" />
+          <restore-workspace-deep value="false" />
+          <environment-type value="default" />
           <connectivity-timeout value="30" />
           <idle-time-to-disconnect value="30" />
           <idle-time-to-disconnect-pool value="5" />

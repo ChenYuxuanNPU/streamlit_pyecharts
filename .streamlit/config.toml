@@ -1,0 +1,6 @@
+[client]
+showSidebarNavigation = true
+showErrorDetails = false
+
+[server]
+port = 8501

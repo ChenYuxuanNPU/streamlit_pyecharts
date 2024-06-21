@@ -18,7 +18,7 @@ def insert_data(database_name, table_name, kind):
 
     # 用来生成批量插入的语句
     sentence_for_executemany = ""  # 用来放很多问号
-    print(fr"import来的{kind}数据长度为：{str(len(result[0]))}（data_insert.py）")
+    print(fr"import来的{kind}数据长度为：{str(len(result[0]))} (data_insert.py)")
 
     for _ in range(0, len(result[0]) - 1):
         sentence_for_executemany = sentence_for_executemany + "? , "
@@ -32,9 +32,9 @@ def insert_data(database_name, table_name, kind):
         c.executemany(sql_sentence, result)
 
     except Exception as e:
-        print(r"执行mysql语句时报错：%s （data_insert.py）" % e)
+        print('\033[1;91m' + r"执行mysql语句时报错:%s (data_insert.py)" % e + '\033[0m')
 
     finally:
         conn.commit()
         conn.close()
-        print(fr"{kind}数据插入成功（data_insert.py）")
+        print(fr"{kind}数据插入成功 (data_insert.py)")
