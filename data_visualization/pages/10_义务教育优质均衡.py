@@ -353,21 +353,4 @@ def fuck():
     print("fuck!!!")
 
 
-st.info("测试组件")
-with st.container(border=True):
 
-    st.selectbox(
-        "选择需要查询的学段",
-        ["1", "2"],
-        index=None,
-        placeholder="单击选择学段",
-    )
-
-    st.write('Count = ', st.session_state.count)
-
-    increment = st.button('Increment')
-    if increment:
-        st.session_state.count += 1
-        st.rerun()
-
-    st.write('Count = ', st.session_state.count)

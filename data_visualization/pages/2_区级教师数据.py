@@ -8,6 +8,11 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 
+# 初始化全局变量
+visual_func.session_state_initial()
+
+# 清空其他页暂用变量
+visual_func.session_state_reset(page=2)
 
 # 设置全局属性
 visual_func.set_page_configuration(title="区级教师数据", icon=":classical_building:")

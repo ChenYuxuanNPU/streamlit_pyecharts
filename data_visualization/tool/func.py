@@ -1,13 +1,12 @@
-import time
 import json
-import streamlit as st
-import pyecharts.options as opts
+import time
 
+import pyecharts.options as opts
+import streamlit as st
+from pyecharts.charts import Bar
+from pyecharts.charts import Pie
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
-from pyecharts.charts import Pie
-from pyecharts.charts import Bar
-
 
 kind_list = ["在编", "编外"]
 
@@ -248,3 +247,75 @@ def simplify_school_name(dict1: dict):
         output_dict[item[0]] = item[1]
 
     return output_dict
+
+
+def session_state_initial():
+
+    # page1数据大屏的按钮和具体信息展示
+    if 'page1_show_detail' not in st.session_state:
+        st.session_state.page1_show_detail = 0
+
+    # page1页面最下方的收起按钮
+    if 'page1_hide_detail' not in st.session_state:
+        st.session_state.page1_hide_detail = 0
+
+    # page4中的展示判断符
+    if 'page4_search_flag' not in st.session_state:
+        st.session_state.page4_search_flag = False
+
+    # page4中的在编展示判断符
+    if 'page4_kind_0_flag' not in st.session_state:
+        st.session_state.page4_kind_0_flag = False
+
+    # page4中的编外展示判断符
+    if 'page4_kind_1_flag' not in st.session_state:
+        st.session_state.page4_kind_1_flag = False
+
+
+def reset_others(page: int):
+
+    if page != 1:
+        st.session_state.page1_show_detail = 0
+
+    if page != 2:
+        pass
+
+    if page != 3:
+        pass
+
+    if page != 4:
+        st.session_state.page4_search_flag = False
+        st.session_state.page4_kind_0_flag = False
+        st.session_state.page4_kind_1_flag = False
+
+
+def reset_self(page: int):
+
+    match page:
+
+        case 4:
+            st.session_state.page4_search_flag = False
+            st.session_state.page4_kind_0_flag = False
+            st.session_state.page4_kind_1_flag = False
+
+        case _:
+            pass
+
+
+def session_state_reset(page: int):
+
+    # 刷新其他页面
+    reset_others(page=page)
+
+    # 重置本页面信息
+    reset_self(page=page)
+
+
+def page1_show_detail_info():
+    st.session_state.page1_show_detail += 1
+
+
+def page1_hide_detail_info():
+    st.session_state.page1_show_detail = 0
+    st.rerun()
+
