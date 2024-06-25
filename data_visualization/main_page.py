@@ -18,6 +18,8 @@ st.set_page_config(
 # 初始化全局变量
 visual_func.session_state_initial()
 
+# 清空其他页暂用变量
+visual_func.session_state_reset(page=-1)
 
 st.title("欢迎使用白云区教师数据可视化系统")
 

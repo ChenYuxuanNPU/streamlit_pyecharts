@@ -40,3 +40,28 @@ st.info("测试组件")
 #         st.rerun()
 #
 #     st.write('Count = ', st.session_state.page100_count)
+
+
+import streamlit as st
+
+if 'clicked' not in st.session_state:
+    st.session_state.clicked = False
+
+
+def click_button():
+    st.session_state.clicked = True
+
+
+def reset():
+    st.session_state.clicked = False
+
+
+st.button('Click me', on_click=click_button, disabled=st.session_state.clicked)
+
+if st.session_state.clicked:
+    st.write('Button clicked!')
+
+    if st.button("点击查看111"):
+        st.write(111)
+
+    st.button("reset", on_click=reset)

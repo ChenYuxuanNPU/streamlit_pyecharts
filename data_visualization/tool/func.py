@@ -137,10 +137,10 @@ def draw_2col_bar(data: dict, title: str, height=0, end=70):
         )
 
 
-def draw_dataframe(data, hide_index=True, width=1920, height=0):
+def draw_dataframe(data, hide_index=True, width=1920, height=-1):
 
-    if height == 0:
-        height = int(get_monitors()[0].height / 1080) * 350
+    if height == -1:
+        height = int(get_monitors()[0].height / 1080) * 388  # 可以取350、380
 
     st.dataframe(
         data=data,
@@ -243,11 +243,7 @@ def session_state_initial():
 
     # page1数据大屏的按钮和具体信息展示
     if 'page1_show_detail' not in st.session_state:
-        st.session_state.page1_show_detail = 0
-
-    # page1页面最下方的收起按钮
-    if 'page1_hide_detail' not in st.session_state:
-        st.session_state.page1_hide_detail = 0
+        st.session_state.page1_show_detail = False
 
     # page4中的展示判断符
     if 'page4_search_flag' not in st.session_state:
@@ -265,7 +261,7 @@ def session_state_initial():
 def reset_others(page: int):
 
     if page != 1:
-        st.session_state.page1_show_detail = 0
+        st.session_state.page1_show_detail = False
 
     if page != 2:
         pass
@@ -302,10 +298,9 @@ def session_state_reset(page: int):
 
 
 def page1_show_detail_info():
-    st.session_state.page1_show_detail += 1
+    st.session_state.page1_show_detail = True
 
 
 def page1_hide_detail_info():
-    st.session_state.page1_show_detail = 0
-    st.rerun()
+    st.session_state.page1_show_detail = False
 

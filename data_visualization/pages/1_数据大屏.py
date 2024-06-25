@@ -25,7 +25,7 @@ _, col_mid, _ = st.columns([2, 1, 2])
 with col_mid:
     st.title("学校信息总览")
 
-# todo 横向比较
+# 横向比较
 with st.container(border=True):
     _, col_mid, _ = st.columns([5, 1, 5])
     with col_mid:
@@ -149,7 +149,7 @@ with st.container(border=True):
 
 st.divider()
 
-# todo 汇总展示
+# 汇总展示
 with st.container(border=True):
     _, col_mid, _ = st.columns([5, 1, 5])
     with col_mid:
@@ -242,10 +242,21 @@ with st.container(border=True):
             pos_left="35%"
         )
 
-# todo 某学段展示
+# 某学段展示
 st.divider()
 
-if st.session_state.page1_show_detail > 0:
+# 展示详细信息的按钮
+_, col_mid, _ = st.columns([4, 1, 4])
+
+with col_mid:
+
+    st.button(
+        "展开详细信息",
+        on_click=visual_func.page1_show_detail_info,
+        disabled=st.session_state.page1_show_detail
+    )
+
+if st.session_state.page1_show_detail:
 
     # 单一学段展示
     with (st.container(border=True)):
@@ -353,13 +364,6 @@ if st.session_state.page1_show_detail > 0:
                 elif period in ["高级中学", "完全中学", "十二年一贯制学校"]:
                     st.warning('注：高级中学、完全中学与十二年一贯制学校的学生数与班额数已汇总统计', icon="⚠️")
 
-                # todo 收起按钮
-                _, col_mid, _ = st.columns([4, 1, 4])
-                with col_mid:
-
-                    if st.button("收起"):
-                        visual_func.page1_hide_detail_info()
-
             # 纯公/民办
             elif json_data[period]["公办学校数"] > 0 or json_data[period]["民办学校数"] > 0:
 
@@ -388,12 +392,12 @@ if st.session_state.page1_show_detail > 0:
             else:
                 st.error("看代码")
 
-# 展示详细信息的按钮
-_, col_mid, _ = st.columns([4, 1, 4])
+            # 收起按钮
+            _, col_mid, _ = st.columns([8, 1, 8])
+            with col_mid:
 
-with col_mid:
-    if st.session_state.page1_show_detail == 0:
-        st.button(
-            "展开详细信息",
-            on_click=visual_func.page1_show_detail_info()
-        )
+                st.button(
+                    "收起",
+                    on_click=visual_func.page1_hide_detail_info,
+                    type="primary"
+                )
