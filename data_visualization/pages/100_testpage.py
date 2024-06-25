@@ -9,8 +9,7 @@ sys.path.append(
 from data_visualization.tool import func as visual_func
 from screeninfo import get_monitors
 
-for monitor in get_monitors():
-    height = int(monitor.height / 1080) * 350
+height = int(get_monitors()[0].height / 1080) * 350
 
 visual_func.session_state_reset(page=5)
 

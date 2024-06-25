@@ -17,8 +17,7 @@ from pyecharts.charts import Pie
 if 'count' not in st.session_state:
     st.session_state.count = 0
 
-for monitor in get_monitors():
-    height = int(monitor.height / 1080) * 350
+height = int(get_monitors()[0].height / 1080) * 350
 
 # 读取现有json文件
 json_data = visual_func.load_json_data(file_name="teacher_info")

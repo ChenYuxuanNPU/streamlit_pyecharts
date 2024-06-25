@@ -42,9 +42,7 @@ def set_page_configuration(title: str, icon: str):
 def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%'):
 
     if height == 0:
-
-        for monitor in get_monitors():
-            height = int(monitor.height / 1080) * 350
+        height = int(get_monitors()[0].height / 1080) * 350
 
     with st.container(border=True):
         st_pyecharts(
@@ -65,9 +63,7 @@ def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='2
 def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, formatter="{b}:{d}%"):
 
     if height == 0:
-
-        for monitor in get_monitors():
-            height = int(monitor.height / 1080) * 350
+        height = int(get_monitors()[0].height / 1080) * 350
 
     with st.container(border=True):
         st_pyecharts(
@@ -101,9 +97,7 @@ def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, for
 def draw_1col_bar(data: dict, title: str, height=0):
 
     if height == 0:
-
-        for monitor in get_monitors():
-            height = int(monitor.height / 1080) * 350
+        height = int(get_monitors()[0].height / 1080) * 350
 
     with st.container(border=True):
         st_pyecharts(
@@ -124,9 +118,7 @@ def draw_1col_bar(data: dict, title: str, height=0):
 def draw_2col_bar(data: dict, title: str, height=0, end=70):
 
     if height == 0:
-
-        for monitor in get_monitors():
-            height = int(monitor.height / 1080) * 350
+        height = int(get_monitors()[0].height / 1080) * 350
 
     with st.container(border=True):
         st_pyecharts(
@@ -148,9 +140,7 @@ def draw_2col_bar(data: dict, title: str, height=0, end=70):
 def draw_dataframe(data, hide_index=True, width=1920, height=0):
 
     if height == 0:
-
-        for monitor in get_monitors():
-            height = int(monitor.height / 1080) * 385
+        height = int(get_monitors()[0].height / 1080) * 350
 
     st.dataframe(
         data=data,
