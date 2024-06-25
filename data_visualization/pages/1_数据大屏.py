@@ -245,17 +245,6 @@ with st.container(border=True):
 # 某学段展示
 st.divider()
 
-# 展示详细信息的按钮
-_, col_mid, _ = st.columns([4, 1, 4])
-
-with col_mid:
-
-    st.button(
-        "展开详细信息",
-        on_click=visual_func.page1_show_detail_info,
-        disabled=st.session_state.page1_show_detail
-    )
-
 if st.session_state.page1_show_detail:
 
     # 单一学段展示
@@ -367,7 +356,8 @@ if st.session_state.page1_show_detail:
             # 纯公/民办
             elif json_data[period]["公办学校数"] > 0 or json_data[period]["民办学校数"] > 0:
 
-                st.info(f'白云区内{period}统计信息如下', icon="ℹ️")
+                st.warning(
+                    f"由于白云区内的{period}均为{'公办' if json_data[period]["公办学校数"] > 0 else '民办'}学校，数据将通过表格的形式展示", icon='⚠️')
 
                 _, col_mid, _ = st.columns([1, 1, 1])
 
@@ -401,3 +391,14 @@ if st.session_state.page1_show_detail:
                     on_click=visual_func.page1_hide_detail_info,
                     type="primary"
                 )
+
+else:
+    # 展示详细信息的按钮
+    _, col_mid, _ = st.columns([4, 1, 4])
+
+    with col_mid:
+
+        st.button(
+            "展开详细信息",
+            on_click=visual_func.page1_show_detail_info
+        )
