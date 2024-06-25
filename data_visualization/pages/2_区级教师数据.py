@@ -23,20 +23,25 @@ json_data = visual_func.load_json_data(file_name="teacher_info")
 # 标题
 _, col_mid, _ = st.columns([2, 1, 2])
 with col_mid:
-    st.title("全区教师数据")
+    st.title("区级教师数据")
 
-with st.expander("在编数据展示", expanded=True):
+st.divider()
 
-    # 根据选择的学段展示信息
-    popover1 = st.popover("学段类别")
-    all_period = popover1.checkbox("所有学段", True)
-    senior_high_school = popover1.checkbox("高中", False)
-    junior_high_school = popover1.checkbox("初中", False)
-    primary_school = popover1.checkbox("小学", False)
-    kindergarten = popover1.checkbox("幼儿园", False)
+with st.container(border=True):
 
-    if all_period:
-        st.success("全区在编所有学段信息")
+    # 小标题
+    _, col_mid, _ = st.columns([3, 1, 3])
+    with col_mid:
+        st.subheader("在编教师数据")
+
+    period_list = st.multiselect(
+        "请选择需要查询的学段",
+        ["所有学段", "高中", "初中", "小学", "幼儿园"],
+        ["所有学段", "高中"]
+    )
+
+    if "所有学段" in period_list:
+        st.success(f"在编教职工总人数：{json_data['在编']['全区']['所有学段']['总人数']}")
 
         with st.container(border=False):
             col0, col1, col2 = st.columns(spec=3)
@@ -106,65 +111,70 @@ with st.expander("在编数据展示", expanded=True):
 
             # 统计完在编教师数少的学校了
 
-    if senior_high_school:
+    if "高中" in period_list:
         visual_func.show_period(period="高中", data=json_data)
 
-    if junior_high_school:
+    if "初中" in period_list:
         visual_func.show_period(period="初中", data=json_data)
 
-    if primary_school:
+    if "小学" in period_list:
         visual_func.show_period(period="小学", data=json_data)
 
-    if kindergarten:
+    if "幼儿园" in period_list:
         visual_func.show_period(period="幼儿园", data=json_data)
 
+st.divider()
+
 # 编外数据
-with st.expander("编外数据展示", expanded=True):
+with st.container(border=True):
 
-    st.success("编外所有学段教师信息")
+    # 小标题
+    _, col_mid, _ = st.columns([3, 1, 3])
+    with col_mid:
+        st.subheader("编外教师数据")
 
-    with st.container(border=False):
+    st.info(f"编外教职工总人数：{json_data['编外']['全区']['所有学段']['总人数']}")
 
-        col0, col1, col2 = st.columns(spec=3)
+    col0, col1, col2 = st.columns(spec=3)
 
-        with col0:
+    with col0:
 
-            # 编外片区统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
+        # 编外片区统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
 
-            # 编外学段统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["学段统计"], title="学段统计")
+        # 编外学段统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["学段统计"], title="学段统计")
 
-        with col1:
-            # 编外学历统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
+    with col1:
+        # 编外学历统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
 
-            # 编外职称统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
+        # 编外职称统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
 
-        with col2:
-            # 编外骨干教师统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
+    with col2:
+        # 编外骨干教师统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
 
-            # 编外三名教师统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["三名工作室"], title="三名统计")
+        # 编外三名教师统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["三名工作室"], title="三名统计")
 
-        # 教师分布统计
-        visual_func.draw_2col_bar(data=json_data["编外"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=100)
+    # 教师分布统计
+    visual_func.draw_2col_bar(data=json_data["编外"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=100)
 
-        col0, col1, col2 = st.columns(spec=3)
+    col0, col1, col2 = st.columns(spec=3)
 
-        with col0:
+    with col0:
 
-            # 编外教师资格统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
+        # 编外教师资格统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
 
-        with col1:
+    with col1:
 
-            # 编外中小学教师资格统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
+        # 编外中小学教师资格统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
 
-        with col2:
+    with col2:
 
-            # 编外幼儿园教师资格统计
-            visual_func.draw_pie(data=json_data["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
+        # 编外幼儿园教师资格统计
+        visual_func.draw_pie(data=json_data["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")

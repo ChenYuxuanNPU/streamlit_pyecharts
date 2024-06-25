@@ -25,6 +25,8 @@ _, col_mid, _ = st.columns([2, 1, 2])
 with col_mid:
     st.title("学校信息总览")
 
+st.divider()
+
 # 横向比较
 with st.container(border=True):
     _, col_mid, _ = st.columns([5, 1, 5])
@@ -245,6 +247,7 @@ with st.container(border=True):
 # 某学段展示
 st.divider()
 
+# 展示信息时
 if st.session_state.page1_show_detail:
 
     # 单一学段展示
@@ -392,8 +395,9 @@ if st.session_state.page1_show_detail:
                     type="primary"
                 )
 
+# 不展示信息时
 else:
-    # 展示详细信息的按钮
+    # 放一个展开详细信息的按钮
     _, col_mid, _ = st.columns([4, 1, 4])
 
     with col_mid:

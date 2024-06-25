@@ -26,6 +26,8 @@ col0, col_mid, col2 = st.columns([2, 1, 2])
 with col_mid:
     st.title("片镇教师数据")
 
+st.divider()
+
 with st.container(border=True):
     page3_area = st.selectbox(
         "想查询哪一个片镇的信息？",
@@ -145,7 +147,7 @@ if page3_area is None:
     # 展示宣传数据
     with st.container(border=True):
 
-        _, col_mid, _ = st.columns([2, 3, 2])
+        _, col_mid, _ = st.columns([2.05, 3, 1])
         with col_mid:
             st.subheader("广州市白云区各教育指导中心相关信息")
 
@@ -164,4 +166,3 @@ if page3_area is None:
             ),
             height=350
         )
-        

@@ -34,6 +34,8 @@ _, col_mid, _ = st.columns([2, 1, 2])
 with col_mid:
     st.title("学校教师数据")
 
+st.divider()
+
 with st.container(border=True):
     col0, col1 = st.columns([2, 3])
 
