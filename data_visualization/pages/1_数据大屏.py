@@ -19,19 +19,22 @@ visual_func.session_state_reset(page=1)
 visual_func.set_page_configuration(title="教育数字大屏", icon=":sparkler:")
 
 # 读取现有json文件
-json_data = visual_func.load_json_data(file_name="school_info")
+json_data = visual_func.load_json_data(folder="result", file_name="school_info")
 
-_, col_mid, _ = st.columns([2, 1, 2])
-with col_mid:
-    st.title("学校信息总览")
+st.markdown(
+    "<h1 style='text-align: center;'>学校信息总览</h1>",
+    unsafe_allow_html=True
+)
 
 st.divider()
 
 # 横向比较
 with st.container(border=True):
-    _, col_mid, _ = st.columns([5, 1, 5])
-    with col_mid:
-        st.subheader("对比数据")
+
+    st.markdown(
+        "<h2 style='text-align: center;'>对比数据</h2>",
+        unsafe_allow_html=True
+    )
 
     col0, col1 = st.columns([1, 1])
 
@@ -153,9 +156,11 @@ st.divider()
 
 # 汇总展示
 with st.container(border=True):
-    _, col_mid, _ = st.columns([5, 1, 5])
-    with col_mid:
-        st.subheader("合计数据")
+
+    st.markdown(
+        "<h2 style='text-align: center;'>合计数据</h2>",
+        unsafe_allow_html=True
+    )
 
     col0, col1, col2 = st.columns(spec=3)
 
@@ -253,14 +258,15 @@ if st.session_state.page1_show_detail:
     # 单一学段展示
     with (st.container(border=True)):
 
-        _, col_mid, _ = st.columns([5, 1, 5])
-        with col_mid:
-            st.subheader("学段数据")
+        st.markdown(
+            "<h2 style='text-align: center;'>学段数据</h2>",
+            unsafe_allow_html=True
+        )
 
         period = st.selectbox(
             "选择需要查询的学段",
             json_data["学段列表"],
-            index=None,
+            index=4,
             placeholder="单击选择学段",
         )
 

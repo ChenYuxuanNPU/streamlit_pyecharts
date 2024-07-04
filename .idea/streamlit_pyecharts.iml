@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/test_code" />
       <excludeFolder url="file://$MODULE_DIR$/update_database/data_source" />
     </content>
-    <orderEntry type="jdk" jdkName="env1" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="C:\Users\1012986131\miniconda3" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

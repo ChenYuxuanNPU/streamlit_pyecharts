@@ -5,6 +5,7 @@ import pyecharts.options as opts
 import streamlit as st
 from pyecharts.charts import Bar
 from pyecharts.charts import Pie
+from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
 
@@ -39,7 +40,7 @@ def set_page_configuration(title: str, icon: str):
     )
 
 
-def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%'):
+def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%') -> None:
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
@@ -60,7 +61,7 @@ def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='2
 
 
 # 画之前先测试下有没有问题
-def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, formatter="{b}:{d}%"):
+def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, formatter="{b}:{d}%") -> None:
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
@@ -94,28 +95,7 @@ def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, for
         )
 
 
-def draw_1col_bar(data: dict, title: str, height=0):
-
-    if height == 0:
-        height = int(get_monitors()[0].height / 1080) * 350
-
-    with st.container(border=True):
-        st_pyecharts(
-            chart=(
-                Bar()
-                .add_xaxis([keys for keys in data.keys()])
-                .add_yaxis("总人数", [values for values in data.values()])
-                .set_series_opts(label_opts=opts.LabelOpts(position="top"))
-                .set_global_opts(title_opts=opts.TitleOpts(title=title),
-                                 legend_opts=opts.LegendOpts(is_show=False),
-                                 visualmap_opts=opts.VisualMapOpts(is_show=False,
-                                                                   max_=max([values for values in data.values()])))
-            ),
-            height=f"{height}px"
-        )
-
-
-def draw_2col_bar(data: dict, title: str, height=0, end=70):
+def draw_bar(data: dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
@@ -130,17 +110,61 @@ def draw_2col_bar(data: dict, title: str, height=0, end=70):
                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
                                  legend_opts=opts.LegendOpts(is_show=False),
                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
-                                 visualmap_opts=opts.VisualMapOpts(is_show=True, pos_right="1%", pos_top="30%",
+                                 visualmap_opts=opts.VisualMapOpts(is_show=is_show_visual_map, pos_right="1%", pos_top="30%",
                                                                    max_=max([values for values in data.values()])))
             ),
             height=f"{height}px"
         )
 
 
-def draw_dataframe(data, hide_index=True, width=1920, height=-1):
+# def draw_1col_bar(data: dict, title: str, height=0):
+#
+#     if height == 0:
+#         height = int(get_monitors()[0].height / 1080) * 350
+#
+#     with st.container(border=True):
+#         st_pyecharts(
+#             chart=(
+#                 Bar()
+#                 .add_xaxis([keys for keys in data.keys()])
+#                 .add_yaxis("总人数", [values for values in data.values()])
+#                 .set_series_opts(label_opts=opts.LabelOpts(position="top"))
+#                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
+#                                  legend_opts=opts.LegendOpts(is_show=False),
+#                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=100),
+#                                  visualmap_opts=opts.VisualMapOpts(is_show=False,
+#                                                                    max_=max([values for values in data.values()])))
+#             ),
+#             height=f"{height}px"
+#         )
+
+
+# def draw_2col_bar(data: dict, title: str, height=0, end=70):
+#
+#     if height == 0:
+#         height = int(get_monitors()[0].height / 1080) * 350
+#
+#     with st.container(border=True):
+#         st_pyecharts(
+#             chart=(
+#                 Bar()
+#                 .add_xaxis([keys for keys in data.keys()])
+#                 .add_yaxis("总人数", [values for values in data.values()])
+#                 .set_series_opts(label_opts=opts.LabelOpts(position="top"))
+#                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
+#                                  legend_opts=opts.LegendOpts(is_show=False),
+#                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
+#                                  visualmap_opts=opts.VisualMapOpts(is_show=True, pos_right="1%", pos_top="30%",
+#                                                                    max_=max([values for values in data.values()])))
+#             ),
+#             height=f"{height}px"
+#         )
+
+
+def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
 
     if height == -1:
-        height = int(get_monitors()[0].height / 1080) * 388  # 可以取350、380
+        height = int(get_monitors()[0].height / 1080) * 388  # 可以取350、388
 
     st.dataframe(
         data=data,
@@ -150,35 +174,51 @@ def draw_dataframe(data, hide_index=True, width=1920, height=-1):
     )
 
 
-def load_json_data(file_name: str):
+def draw_word_cloud(words: list, title: str, height=-1, height_factor=1000) -> None:
+
+    if height == -1:
+        height = int(get_monitors()[0].height / 1080) * height_factor  # 可以取350、388
+
+    st_pyecharts(
+        chart=(
+            WordCloud()
+            .add("", words, word_size_range=[18, 22], shape="diamond", width="1300px", height="1100px", pos_top="0%")
+            # .set_global_opts(title_opts=opts.TitleOpts(title=title))
+            # .set_global_opts(legend_opts=opts.LegendOpts(is_show=False))
+        ),
+        height=f"{height}px"
+    )
+
+
+def load_json_data(folder: str, file_name: str) -> dict:
 
     # 读取现有json文件
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
-              "r", encoding="UTF-8") as file:
-        json_data = json.load(file)
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
+              "r", encoding="UTF-8") as f:
+        json_data = json.load(f)
 
     return json_data
 
 
-def save_json_data(json_data: dict, file_name: str):
+def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
-              "w", encoding="UTF-8") as file:
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
+              "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
-        json.dump(json_data, file, indent=4, ensure_ascii=False)
+        json.dump(json_data, f, indent=4, ensure_ascii=False)
 
-    return 0
+    return None
 
 
 # 这里是给片区不同学段的可视化做的
-def show_period(period: str, data: dict):
+def show_period(period: str, data: dict) -> None:
     st.info(f"在编{period}信息")
 
     with st.container(border=False):
         c0, c1 = st.columns([2, 1])
 
         with c0:
-            draw_2col_bar(data=data["在编"]["全区"][period]["主教学科"], title="主教学科", end=end_dict[period])
+            draw_bar(data=data["在编"]["全区"][period]["主教学科"], title="主教学科", end=end_dict[period])
 
         with c1:
             draw_pie(data=data["在编"]["全区"][period]["年龄"], title="年龄")
@@ -189,7 +229,7 @@ def show_period(period: str, data: dict):
             draw_pie(data=data["在编"]["全区"][period]["最高学历"], title="最高学历")
 
         with c1:
-            draw_1col_bar(data=data["在编"]["全区"][period]["院校级别"], title="毕业院校")
+            draw_bar(data=data["在编"]["全区"][period]["院校级别"], title="毕业院校", is_show_visual_map=False)
 
         with c2:
             draw_pie(data=data["在编"]["全区"][period]["最高职称"], title="职称")
@@ -203,7 +243,7 @@ def stream_data(sentence: str, delay=0.015):
 
 
 # 用来简化校名
-def simplify_school_name(dict1: dict):
+def simplify_school_name(dict1: dict) -> dict:
     temp = [item for item in dict1.items()]
     temp_item = ""
     output = []
@@ -239,7 +279,7 @@ def simplify_school_name(dict1: dict):
     return output_dict
 
 
-def session_state_initial():
+def session_state_initial() -> None:
 
     # page1数据大屏的按钮和具体信息展示
     if 'page1_show_detail' not in st.session_state:
@@ -258,7 +298,7 @@ def session_state_initial():
         st.session_state.page4_kind_1_flag = False
 
 
-def reset_others(page: int):
+def reset_others(page: int) -> None:
 
     if page != 1:
         st.session_state.page1_show_detail = False
@@ -275,7 +315,7 @@ def reset_others(page: int):
         st.session_state.page4_kind_1_flag = False
 
 
-def reset_self(page: int):
+def reset_self(page: int) -> None:
 
     match page:
 
@@ -288,7 +328,7 @@ def reset_self(page: int):
             pass
 
 
-def session_state_reset(page: int):
+def session_state_reset(page: int) -> None:
 
     # 刷新其他页面
     reset_others(page=page)
@@ -297,10 +337,10 @@ def session_state_reset(page: int):
     reset_self(page=page)
 
 
-def page1_show_detail_info():
+def page1_show_detail_info() -> None:
     st.session_state.page1_show_detail = True
 
 
-def page1_hide_detail_info():
+def page1_hide_detail_info() -> None:
     st.session_state.page1_show_detail = False
 

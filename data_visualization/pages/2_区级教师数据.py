@@ -18,21 +18,23 @@ visual_func.session_state_reset(page=2)
 visual_func.set_page_configuration(title="区级教师数据", icon=":classical_building:")
 
 # 读取现有json文件
-json_data = visual_func.load_json_data(file_name="teacher_info")
+json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
 # 标题
-_, col_mid, _ = st.columns([2, 1, 2])
-with col_mid:
-    st.title("区级教师数据")
+st.markdown(
+    "<h1 style='text-align: center;'>区级教师数据</h1>",
+    unsafe_allow_html=True
+)
 
 st.divider()
 
 with st.container(border=True):
 
     # 小标题
-    _, col_mid, _ = st.columns([3, 1, 3])
-    with col_mid:
-        st.subheader("在编教师数据")
+    st.markdown(
+        "<h2 style='text-align: center;'>在编教师数据</h2>",
+        unsafe_allow_html=True
+    )
 
     period_list = st.multiselect(
         "请选择需要查询的学段",
@@ -72,11 +74,11 @@ with st.container(border=True):
 
             with col0:
                 # 在编学科统计
-                visual_func.draw_2col_bar(data=json_data["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科")
+                visual_func.draw_bar(data=json_data["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科", end=70)
 
             with col1:
                 # 在编毕业院校统计
-                visual_func.draw_1col_bar(data=json_data["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校")
+                visual_func.draw_bar(data=json_data["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校", is_show_visual_map=False)
 
             col0, col1, col2 = st.columns(spec=3)
 
@@ -93,7 +95,7 @@ with st.container(border=True):
                 visual_func.draw_pie(data=json_data["在编"]["全区"]["所有学段"]["三名工作室"], title="三名统计")
 
             # 教师分布统计
-            visual_func.draw_2col_bar(data=json_data["在编"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=50)
+            visual_func.draw_bar(data=json_data["在编"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=50)
 
             # 在编教师数少的学校统计
             temp_all = sorted(list(json_data["学校教师总数"].items()), key=lambda x: (x[1][3], x[1][5]))
@@ -107,7 +109,7 @@ with st.container(border=True):
             for i in range(0, min(15, len(temp))):
                 temp_for_bar[temp[i][0]] = temp[i][1][3]
 
-            visual_func.draw_1col_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校")
+            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校", is_show_visual_map=False)
 
             # 统计完在编教师数少的学校了
 
@@ -129,9 +131,10 @@ st.divider()
 with st.container(border=True):
 
     # 小标题
-    _, col_mid, _ = st.columns([3, 1, 3])
-    with col_mid:
-        st.subheader("编外教师数据")
+    st.markdown(
+        "<h2 style='text-align: center;'>编外教师数据</h2>",
+        unsafe_allow_html=True
+    )
 
     st.info(f"编外教职工总人数：{json_data['编外']['全区']['所有学段']['总人数']}")
 
@@ -160,7 +163,7 @@ with st.container(border=True):
         visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["三名工作室"], title="三名统计")
 
     # 教师分布统计
-    visual_func.draw_2col_bar(data=json_data["编外"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=100)
+    visual_func.draw_bar(data=json_data["编外"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=100)
 
     col0, col1, col2 = st.columns(spec=3)
 

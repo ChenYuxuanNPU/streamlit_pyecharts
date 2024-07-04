@@ -1,4 +1,4 @@
-def del_tuple_in_list(data: list):
+def del_tuple_in_list(data: list) -> list:
     output = []
 
     for single_data in data:

@@ -10,7 +10,7 @@ def update():
 
     c, conn = tch_proc_func.connect_database()
 
-    json_data = tch_proc_func.load_json_data(file_name="teacher_info")
+    json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 下面更新在编和编外都有的字段
 
@@ -415,7 +415,7 @@ def update():
     # 这里更新全区在编不同学段的统计信息
     json_data = period_update(json_data=json_data, c=c, conn=conn)
 
-    tch_proc_func.save_json_data(json_data=json_data, file_name="teacher_info")
+    tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
     tch_proc_func.disconnect_database(conn=conn)
 

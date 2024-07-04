@@ -1,6 +1,6 @@
-import sqlite3
-import json
 import copy
+import json
+import sqlite3
 
 with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\database\database_basic_info.json",
           "r", encoding='UTF-8') as file:  # ISO-8859-1
@@ -18,11 +18,11 @@ def connect_database():
     return c, conn
 
 
-def disconnect_database(conn):
+def disconnect_database(conn) -> None:
     conn.close()
 
 
-def dict_assignment(route: str, value, json_data: dict):
+def dict_assignment(route: str, value, json_data: dict) -> dict:
     route_list = route.split("/")
     temp = json_data
 
@@ -44,24 +44,24 @@ def dict_assignment(route: str, value, json_data: dict):
     return json_data
 
 
-def load_json_data(file_name: str):
+def load_json_data(folder: str, file_name: str) -> dict:
 
     # 读取现有json文件
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
               "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
     return json_data
 
 
-def save_json_data(json_data: dict, file_name: str):
+def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
-    return 0
+    return None
 
 
 if __name__ == '__main__':

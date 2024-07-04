@@ -27,12 +27,13 @@ st.session_state.page4_kind_0_flag = False
 st.session_state.page4_kind_1_flag = False
 
 # 读取现有json文件
-json_data = visual_func.load_json_data(file_name="teacher_info")
+json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
 # 标题
-_, col_mid, _ = st.columns([2, 1, 2])
-with col_mid:
-    st.title("学校教师数据")
+st.markdown(
+    "<h1 style='text-align: center;'>学校教师数据</h1>",
+    unsafe_allow_html=True
+)
 
 st.divider()
 
@@ -60,18 +61,13 @@ with st.container(border=True):
             # 对空代指的所有学段进行预处理
             period = visual_func.trans_period[raw_period]
 
-        # kind = st.selectbox(
-        #     "选择类型",
-        #     ("在编", "编外"),
-        # )
-
         col99, col88 = st.columns([2, 3])
 
         with col88:
 
             if st.button("查询"):
 
-                if page4_school_name is None or page4_school_name == "":
+                if page4_school_name is None:
                     st.session_state.page4_search_flag = False
                     st.toast("校名为空", icon="⚠️")
 
@@ -115,21 +111,21 @@ with st.container(border=True):
 
                             with st.container(border=False):
 
-                                col00, col11 = st.columns([1, 3.5])
+                                # 小标题
+                                st.markdown(
+                                    f"<h3 style='text-align: center;'>{page4_school_name} - 学校基本概况</h3>",
+                                    unsafe_allow_html=True
+                                )
 
-                                with col11:
+                                _, col0, col1 = st.columns([1, 3, 3])
 
-                                    st.subheader(f"{page4_school_name} - 学校基本概况")
-
-                                c0lm1, col01, col10 = st.columns([1, 3, 3])
-
-                                with col01:
+                                with col0:
 
                                     # 流式插入学校基础介绍
                                     for i in range(len(intro_0)):
                                         st.write_stream(visual_func.stream_data(sentence=intro_0[i]))
 
-                                with col10:
+                                with col1:
 
                                     # 流式插入学校基础介绍
                                     for i in range(len(intro_1)):
@@ -145,10 +141,13 @@ with st.container(border=True):
 with st.container(border=True):
     if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
         # 更新数据
-        json_data = visual_func.load_json_data(file_name="teacher_info")
+        json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-        st.subheader(
-            f"{page4_school_name}{period}在编教师统计" if period is not None else f"{page4_school_name}在编教师统计")
+        # 标题
+        st.markdown(
+            f"<h2 style='text-align: center;'>{page4_school_name}{period}在编教师统计</h2>" if period is not None else f"<h2 style='text-align: center;'>{page4_school_name}在编教师统计</h2>",
+            unsafe_allow_html=True
+        )
 
         st.info(f"在编总人数：{json_data["在编"]["学校"][page4_school_name][raw_period]["总人数"]}")
 
@@ -172,7 +171,7 @@ with st.container(border=True):
                                  title="职称")
 
         # 在编学科统计
-        visual_func.draw_2col_bar(data=json_data["在编"]["学校"][page4_school_name][raw_period]["主教学科"],
+        visual_func.draw_bar(data=json_data["在编"]["学校"][page4_school_name][raw_period]["主教学科"],
                                   title="主教学科",
                                   end=100)
 
@@ -189,9 +188,9 @@ with st.container(border=True):
 
         with col1:
             # 在编毕业院校统计
-            visual_func.draw_1col_bar(
+            visual_func.draw_bar(
                 data=json_data["在编"]["学校"][page4_school_name][raw_period]["院校级别"],
-                title="毕业院校")
+                title="毕业院校", is_show_visual_map=False)
 
             # 在编骨干教师统计
             visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["骨干教师"],
@@ -206,14 +205,19 @@ with st.container(border=True):
             visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["三名工作室"],
                                  title="三名统计")
 
+        st.divider()
+
 # 展示编外数据
 with st.container(border=True):
     if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
         # 更新数据
-        json_data = visual_func.load_json_data(file_name="teacher_info")
+        json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-        st.subheader(
-            f"{page4_school_name}{period}编外教师统计" if period is not None else f"{page4_school_name}编外教师统计")
+        # 标题
+        st.markdown(
+            f"<h2 style='text-align: center;'>{page4_school_name}{period}编外教师统计</h2>" if period is not None else f"<h2 style='text-align: center;'>{page4_school_name}编外教师统计</h2>",
+            unsafe_allow_html=True
+        )
 
         st.info(f"编外总人数：{json_data["编外"]["学校"][page4_school_name][raw_period]["总人数"]}")
 
@@ -238,3 +242,19 @@ with st.container(border=True):
             # 编外骨干教师统计
             visual_func.draw_pie(data=json_data["编外"]["学校"][page4_school_name][raw_period]["骨干教师"],
                                  title="骨干教师")
+
+# 展示学校云图
+if not st.session_state.page4_search_flag:
+
+    with st.container(border=True):
+
+        # 小标题
+        st.markdown(
+            "<h2 style='text-align: center;'>区内学校</h2>",
+            unsafe_allow_html=True
+        )
+
+        visual_func.draw_word_cloud(words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(json_data["学校教师总数"]).items()) if v[1] != "幼儿园"],
+                                    title="")
+
+        

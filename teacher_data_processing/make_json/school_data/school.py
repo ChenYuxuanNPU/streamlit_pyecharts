@@ -1,5 +1,3 @@
-import json
-
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
@@ -19,7 +17,7 @@ def update(kind: str, school_name: str, period=None):
 
     c, conn = tch_proc_func.connect_database()
 
-    json_data = tch_proc_func.load_json_data(file_name="teacher_info")
+    json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 检查一下有没有这个学校和学段，没有的话就报错
     check_result = tch_proc_func.school_name_and_period_check(kind=kind, school_name=school_name, period=period)
@@ -224,7 +222,7 @@ def update(kind: str, school_name: str, period=None):
     json_data = data_00_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn) \
         if kind == "在编" else data_01_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn)
 
-    tch_proc_func.save_json_data(json_data=json_data, file_name="teacher_info")
+    tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
     tch_proc_func.disconnect_database(conn=conn)
 

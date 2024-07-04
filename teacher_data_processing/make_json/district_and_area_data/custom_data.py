@@ -1,5 +1,5 @@
 import sys
-from teacher_data_processing.read_database import get_database_data as gd
+
 from teacher_data_processing.tool import func as tch_proc_func
 
 
@@ -8,7 +8,7 @@ def update():
 
     c, conn = tch_proc_func.connect_database()
 
-    json_data = tch_proc_func.load_json_data(file_name="teacher_info")
+    json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 这里统计所有学校教师总数的列表
     sql_sentence = ('select * from ('
@@ -87,7 +87,7 @@ def update():
 
     # 所有学校教师总数统计结束
 
-    tch_proc_func.save_json_data(json_data=json_data, file_name="teacher_info")
+    tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
     tch_proc_func.disconnect_database(conn=conn)
 

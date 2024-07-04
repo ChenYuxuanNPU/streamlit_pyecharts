@@ -1,6 +1,6 @@
 import copy
-import sqlite3
 import json
+import sqlite3
 
 from teacher_data_processing.read_database import get_database_data as gd
 
@@ -71,31 +71,31 @@ def connect_database():
     return c, conn
 
 
-def disconnect_database(conn):
+def disconnect_database(conn) -> None:
     conn.close()
 
 
-def load_json_data(file_name: str):
+def load_json_data(folder: str, file_name: str) -> dict:
 
     # 读取现有json文件
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
-              "r", encoding="UTF-8") as file:
-        json_data = json.load(file)
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
+              "r", encoding="UTF-8") as f:
+        json_data = json.load(f)
 
     return json_data
 
 
-def save_json_data(json_data: dict, file_name: str):
+def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
-    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\result\{file_name}.json",
+    with open(fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
-    return 0
+    return None
 
 
-def reverse_label_and_value(old_list: list):
+def reverse_label_and_value(old_list: list) -> list:
     new_list = []
     for sub_list in old_list:
         new_list.append(sub_list[::-1])
@@ -103,7 +103,7 @@ def reverse_label_and_value(old_list: list):
     return new_list
 
 
-def simplify_school_name(dict1: dict):
+def simplify_school_name(dict1: dict) -> dict:
     temp = [item for item in dict1.items()]
     temp_item = ""
     output = []
@@ -140,7 +140,7 @@ def simplify_school_name(dict1: dict):
 
 
 # 将无和其他合并到无中
-def combine_none_and_others(input_dict: dict):
+def combine_none_and_others(input_dict: dict) -> dict:
     output = copy.deepcopy(input_dict)
 
     if "无" in list(input_dict.keys()) and "其他" in list(input_dict.keys()):
@@ -151,7 +151,7 @@ def combine_none_and_others(input_dict: dict):
 
 # age_list参数代表年龄列表，如[22,23,25]
 # age_count_list参数代表求和后的年龄列表，如[(年龄,个数),(年龄,个数)]
-def age_statistics(age_list=None, age_count_list=None):
+def age_statistics(age_list=None, age_count_list=None) -> dict:
     data = [0, 0, 0, 0, 0, 0, 0, 0]
     label = ["25岁以下", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55岁及以上"]
 
@@ -222,16 +222,17 @@ def age_statistics(age_list=None, age_count_list=None):
 
     else:
         print("传入的内容不合要求")
+        return {}
 
 
-def combine_label_and_data(label: list, data: list):
+def combine_label_and_data(label: list, data: list) -> dict:
     if not len(label) == len(data):
         raise MyError("label和data长度不对")
 
     return {a: b for a, b in zip(label, data)}
 
 
-def del_tuple_in_list(data: list):
+def del_tuple_in_list(data: list) -> list:
     output = []
 
     for single_data in data:
@@ -240,7 +241,7 @@ def del_tuple_in_list(data: list):
     return output
 
 
-def distinguish_school_id(school_id: str):
+def distinguish_school_id(school_id: str) -> list:
     output = []
 
     if school_id in code_of_985:
@@ -258,7 +259,7 @@ def distinguish_school_id(school_id: str):
     return output
 
 
-def count_school_id(data: list):
+def count_school_id(data: list) -> dict:
     output = {
         '985院校': 0,
         '部属师范院校': 0,
@@ -277,7 +278,7 @@ def count_school_id(data: list):
     return output
 
 
-def combine_highest_title(title_list: list):
+def combine_highest_title(title_list: list) -> dict:
     output = {
         "未取得职称": 0,
         "三级教师": 0,
@@ -300,7 +301,7 @@ def combine_highest_title(title_list: list):
 
 
 # 这里要把党组织书记和党组织书记兼校长合并到正校级里
-def combine_administrative_position(ap_list: list):
+def combine_administrative_position(ap_list: list) -> dict:
     output = {
         "无": 0,
         "中层副职": 0,
@@ -321,7 +322,7 @@ def combine_administrative_position(ap_list: list):
 
 
 # 用来检查是否有这个学校/这个学校有没有这个学段
-def school_name_and_period_check(kind: str, school_name: str, period=None):
+def school_name_and_period_check(kind: str, school_name: str, period=None) -> list:
     if kind not in ["在编", '编外']:
         return [False, "kind参数错误"]
 
@@ -388,7 +389,7 @@ def school_name_and_period_check(kind: str, school_name: str, period=None):
 # 这个函数用来解决字典赋值但找不到位置的问题
 # route的格式：字段1/字段2/字段3
 
-def dict_assignment(route: str, value, json_data: dict):
+def dict_assignment(route: str, value, json_data: dict) -> dict:
     route_list = route.split("/")
     temp = json_data
 

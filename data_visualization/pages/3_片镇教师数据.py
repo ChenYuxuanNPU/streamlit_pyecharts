@@ -19,12 +19,13 @@ visual_func.session_state_reset(page=3)
 visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
 
 # 读取现有json文件
-json_data = visual_func.load_json_data(file_name="teacher_info")
+json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
 # 标题
-col0, col_mid, col2 = st.columns([2, 1, 2])
-with col_mid:
-    st.title("片镇教师数据")
+st.markdown(
+    "<h1 style='text-align: center;'>片镇教师数据</h1>",
+    unsafe_allow_html=True
+)
 
 st.divider()
 
@@ -58,8 +59,8 @@ with st.container(border=True):
                                      title="最高学历")
 
                 # 在编毕业院校统计
-                visual_func.draw_1col_bar(data=json_data["在编"]["片区"][page3_area]["所有学段"]["院校级别"],
-                                          title="毕业院校")
+                visual_func.draw_bar(data=json_data["在编"]["片区"][page3_area]["所有学段"]["院校级别"],
+                                     title="毕业院校", is_show_visual_map=False)
 
             with col2:
                 # 在编职称统计
@@ -71,8 +72,8 @@ with st.container(border=True):
                                      title="行政职务")
 
             # 在编学科统计
-            visual_func.draw_1col_bar(data=json_data["在编"]["片区"][page3_area]["所有学段"]["主教学科"],
-                                      title="主教学科")
+            visual_func.draw_bar(data=json_data["在编"]["片区"][page3_area]["所有学段"]["主教学科"],
+                                 title="主教学科", is_show_visual_map=False)
 
             # 在编教师数少的学校统计
             temp_all = sorted(list(json_data["学校教师总数"].items()), key=lambda x: (x[1][3], x[1][5]))
@@ -80,14 +81,13 @@ with st.container(border=True):
             temp_for_bar = {}
 
             for item in temp_all:
-                if item[1][2] == page3_area and item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][
-                        1] != "教育辅助单位":
+                if item[1][2] == page3_area and item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教育辅助单位":
                     temp.append(item)
 
             for i in range(0, min(15, len(temp))):
                 temp_for_bar[temp[i][0]] = temp[i][1][3]
 
-            visual_func.draw_1col_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校")
+            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校", is_show_visual_map=False)
 
             # 统计完在编教师数少的学校了
 
@@ -141,28 +141,30 @@ with st.container(border=True):
                                      title="幼儿园")
 
 if page3_area is None:
-
     st.divider()
 
     # 展示宣传数据
     with st.container(border=True):
-
-        _, col_mid, _ = st.columns([2.05, 3, 1])
-        with col_mid:
-            st.subheader("广州市白云区各教育指导中心相关信息")
+        st.markdown(
+            "<h3 style='text-align: center;'>广州市白云区各教育指导中心相关信息</h3>",
+            unsafe_allow_html=True
+        )
 
         visual_func.draw_dataframe(
             data=pd.DataFrame(
                 [
-                    ["永平教育指导中心", "白云大道北1689号（岭南新世界花园内）", "永平街、京溪街、同和街、嘉禾街、均禾街、鹤龙街", "62189335"],
-                    ["石井教育指导中心", "白云区石井石沙路1682号（石井中学旁）", "同德街、石井街、白云湖街、石门街、松州街、金沙街", "36533012-614"],
-                    ["新市教育指导中心", "三元里大道棠安路新市中学东侧教师楼101", "景泰街、三元里街、新市街、云城街、棠景街、黄石街", "86307817"],
+                    ["永平教育指导中心", "白云大道北1689号（岭南新世界花园内）",
+                     "永平街、京溪街、同和街、嘉禾街、均禾街、鹤龙街", "62189335"],
+                    ["石井教育指导中心", "白云区石井石沙路1682号（石井中学旁）",
+                     "同德街、石井街、白云湖街、石门街、松州街、金沙街", "36533012-614"],
+                    ["新市教育指导中心", "三元里大道棠安路新市中学东侧教师楼101",
+                     "景泰街、三元里街、新市街、云城街、棠景街、黄石街", "86307817"],
                     ["人和教育指导中心", "白云区人和镇鹤龙六路18号", "人和镇", "36042235"],
                     ["江高教育指导中心", "白云区江高镇爱国东路61号", "江高镇", "86604940/86203661"],
                     ["太和教育指导中心", "白云区太和镇政府内", "太和镇", "37312198"],
                     ["钟落潭教育指导中心", "白云区钟落潭镇福龙路88号", "钟落潭镇", "87403000"],
                 ],
-                columns=["教育指导中心", "地址", "服务范围", "咨询电话"]
+                columns=["教育指导中心", "地址", "服务范围", "联系方式"]
             ),
             height=350
         )
