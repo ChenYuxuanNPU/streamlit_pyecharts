@@ -1,9 +1,21 @@
+import os
 import sys
 
 import streamlit as st
 
+
+# 返回给定的第n层的父目录路径
+def get_nth_parent_dir(n):
+    path = os.path.abspath(__file__)
+
+    for _ in range(n):
+        path = os.path.dirname(path)
+
+    return path
+
+
 sys.path.append(
-    r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
+    get_nth_parent_dir(n=3)
 )
 
 from data_visualization.tool import func as visual_func
@@ -49,7 +61,7 @@ with col_mid:
         "输入课时量",
         value=10,
         min_value=0,
-        max_value=45
+        max_value=35
     )
 
 st.divider()

@@ -1,10 +1,22 @@
+import os
 import sys
 
 import pyecharts.options as opts
 import streamlit as st
 
+
+# 返回给定的第n层的父目录路径
+def get_nth_parent_dir(n):
+    path = os.path.abspath(__file__)
+
+    for _ in range(n):
+        path = os.path.dirname(path)
+
+    return path
+
+
 sys.path.append(
-    r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
+    get_nth_parent_dir(n=3)
 )
 
 from teacher_data_processing.tool import func as tch_proc_func

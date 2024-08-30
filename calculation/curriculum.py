@@ -102,7 +102,7 @@ def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.Data
             axis=0
         )
 
-    df = summarize_column(df=df, subject_list=subject_list, title="小学汇总")
+    df = summarize_column(df=df, subject_list=subject_list, title="小学")
 
     return df
 
@@ -139,7 +139,7 @@ def cal_junior_expected_teacher(lessons: int, subject_list: list, base: pd.DataF
             axis=0
         )
 
-    df = summarize_column(df=df, subject_list=subject_list, title="初中汇总")
+    df = summarize_column(df=df, subject_list=subject_list, title="初中")
 
     return df
 

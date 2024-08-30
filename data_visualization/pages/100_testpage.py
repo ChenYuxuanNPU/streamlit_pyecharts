@@ -1,10 +1,23 @@
+import datetime
+import os
 import sys
 
 import pyecharts.options as opts
 import streamlit as st
 
+
+# 返回给定的第n层的父目录路径
+def get_nth_parent_dir(n):
+    path = os.path.abspath(__file__)
+
+    for _ in range(n):
+        path = os.path.dirname(path)
+
+    return path
+
+
 sys.path.append(
-    r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
+    get_nth_parent_dir(n=3)
 )
 
 from data_visualization.tool import func as visual_func
@@ -172,5 +185,7 @@ with st.container(border=True):
         ),
         height=f"{height}px"
     )
+
+st.date_input("When's your birthday", datetime.date(2019, 7, 6))
 
 tch_proc_func.disconnect_database(conn=conn)
