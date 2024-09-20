@@ -19,27 +19,30 @@
     <connection id="241533e1-a1fa-48fd-9609-347158fc61f3">
       <console name="Connection" type="STANDARD" schema="educational_data" session="Main"><![CDATA[pragma table_info(school_info_sum_2023)
 
-select political_status,count(*) from teacher_data_0 where current_administrative_position != '无' and current_administrative_position != '中层正职' and current_administrative_position != '中层副职' group by political_status order by count(*) desc]]></console>
+select political_status,count(*) from teacher_data_0 where current_administrative_position != '无' and current_administrative_position != '中层正职' and current_administrative_position != '中层副职' group by political_status order by count(*) desc
+
+select distinct school_name from teacher_data_1]]></console>
+      <console name="educational_data" type="STANDARD" schema="" session="Main" />
     </connection>
     <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129">
-      <console name="vocal" type="STANDARD" schema="vocal" session="Main"><![CDATA[select count(name) from vocal.sqlite_master where name = "teacher_data_0"
-
-select name from vocal.sqlite_master
-
-drop table teacher_data_0]]></console>
+      <console name="vocal" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="241533e1-a1fa-48fd-9609-347158fc61f3" object-ref="schemas/educational_data/tables/teacher_data_1" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="241533e1-a1fa-48fd-9609-347158fc61f3" />
     <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="241533e1-a1fa-48fd-9609-347158fc61f3" dataset="educational_data.teacher_data_1" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="241533e1-a1fa-48fd-9609-347158fc61f3" dataset="educational_data.teacher_data_0" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" dataset="vocal.teacher_data_1" active-filter-id="" />
     <filter-actions connection-id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" dataset="vocal.teacher_data_0" active-filter-id="" />
   </component>
@@ -72,7 +75,7 @@ drop table teacher_data_0]]></console>
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.44" />
+          <database-version value="3.45" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
@@ -163,13 +166,13 @@ drop table teacher_data_0]]></console>
           </object-type-filter>
         </object-filters>
       </connection>
-      <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" active="true" signed="true">
+      <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129" active="false" signed="true">
         <database>
           <name value="vocal" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.44" />
+          <database-version value="3.45" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />

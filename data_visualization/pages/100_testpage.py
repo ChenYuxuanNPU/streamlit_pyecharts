@@ -90,22 +90,22 @@ if st.session_state.clicked:
 st.button("刷新！")
 
 st.markdown(
-    "<h1 style='text-align: center;'>这是一个居中的标题</h1>",
+    "<h1 style='text-align: center;'>超大杯</h1>",
     unsafe_allow_html=True
 )
 
 st.markdown(
-    "<h2 style='text-align: center;'>这是一个居中的标题</h2>",
+    "<h2 style='text-align: center;'>大杯</h2>",
     unsafe_allow_html=True
 )
 
 st.markdown(
-    "<h3 style='text-align: center;'>这是一个居中的标题</h3>",
+    "<h3 style='text-align: center;'>中杯</h3>",
     unsafe_allow_html=True
 )
 
 st.markdown(
-    "<h4 style='text-align: center;'>这是一个居中的标题</h4>",
+    "<h4 style='text-align: center;'>小杯</h4>",
     unsafe_allow_html=True
 )
 

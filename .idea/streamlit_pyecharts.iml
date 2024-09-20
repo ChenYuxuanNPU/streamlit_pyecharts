@@ -4,10 +4,6 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/update_database/module/module" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/database" />
-      <excludeFolder url="file://$MODULE_DIR$/json" />
-      <excludeFolder url="file://$MODULE_DIR$/moyu" />
-      <excludeFolder url="file://$MODULE_DIR$/test_code" />
       <excludeFolder url="file://$MODULE_DIR$/update_database/data_source" />
     </content>
     <orderEntry type="jdk" jdkName="C:\Users\1012986131\miniconda3" jdkType="Python SDK" />
