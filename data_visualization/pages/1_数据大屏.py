@@ -421,6 +421,6 @@ else:
     with col_mid:
 
         st.button(
-            "展开详细信息",
+            "学段详细信息",
             on_click=visual_func.page1_show_detail_info
         )

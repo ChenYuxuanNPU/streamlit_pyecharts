@@ -11,7 +11,7 @@ from update_database.tool import func as makedb_func
 result = [0]
 
 
-def clear_table(database_name, table_name, kind):
+def clear_table(database_name: str, table_name: str, kind: str):
     # 用来连接数据库插入数据
     global result
     conn = sqlite3.connect("C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\" + database_name)

@@ -6,7 +6,7 @@ with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\database
 
 table_name = loaded_data['table_name']
 
-# 为了简化前面所有kind参数，直接用在编非编，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
+# 为了简化前面所有kind参数，直接用在编编外，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
 trans_kind = {
     "在编": "在编教师信息",
     "编外": "编外教师信息"
