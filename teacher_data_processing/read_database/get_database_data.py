@@ -1,6 +1,6 @@
 import json
 
-with open(r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\json\database\database_basic_info.json",
+with open(r"/json_file\database\database_basic_info.json",
           "r", encoding='UTF-8') as file:  # ISO-8859-1
     loaded_data = json.load(file)
 

@@ -3,17 +3,41 @@
 # 不需要单独跑，被data_insert调用
 #
 
+import json
+import os
+
 import openpyxl
+
+
+# 返回给定的第n层的父目录路径
+def get_nth_parent_dir(n) -> str:
+    path = os.path.abspath(__file__)
+
+    for _ in range(n):
+        path = os.path.dirname(path)
+
+    return path
+
+
+def get_database_basic_info() -> dict:
+    # 读取现有json文件
+    with open(fr"{get_nth_parent_dir(n=3)}\json_file\database\database_basic_info.json", "r", encoding="UTF-8") as f:
+        json_data = json.load(f)
+
+    return json_data
 
 
 def read_input_data(kind):
     result = []
+    json_data = get_database_basic_info()
+
+    # 字典里0位是数据源文件名，1位是表名
+    wb = openpyxl.load_workbook(fr'C:\Users\1012986131\Desktop\python\streamlit_pyecharts\update_database'
+                                fr'\data_source\{json_data["xlsx_file_and_sheet_name"][kind][0]}', data_only=True)
+    sheet = wb[f"{json_data["xlsx_file_and_sheet_name"][kind][1]}"]
 
     # 确定收集的数据表
-    if kind == "在编教师信息":
-        wb = openpyxl.load_workbook('C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\update_database'
-                                    '\\data_source\\teacher_data_0.xlsx', data_only=True)
-        sheet = wb["Sheet1"]
+    if "教师信息" in kind:
 
         # 获取表格数据
         for row in sheet.iter_rows(values_only=True):
@@ -22,22 +46,7 @@ def read_input_data(kind):
                 result.append(row)
                 # print(row)
 
-    elif kind == "编外教师信息":
-        wb = openpyxl.load_workbook('C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\update_database'
-                                    '\\data_source\\teacher_data_1.xlsx', data_only=True)
-        sheet = wb["Sheet1"]
-
-        # 获取表格数据
-        for row in sheet.iter_rows(values_only=True):
-            # 不读取第一行列标
-            if not str(row[0]).isnumeric():
-                result.append(row)
-                # print(row)
-
-    elif kind == "2023年学校情况一览表":
-        wb = openpyxl.load_workbook('C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\update_database'
-                                    '\\data_source\\2023年教育事业统计报表对账表.xlsx', data_only=True)
-        sheet = wb["一览表"]
+    elif "学校情况一览表" in kind:
 
         # 取行
         for row in range(5, 15):
@@ -56,7 +65,7 @@ def read_input_data(kind):
                     result[-1] = tuple(result[-1])
 
     else:
-        print(fr"{kind}kind参数错误 (make_input_data.py)")
+        print(fr"kind参数错误:{kind} (make_input_data.py)")
         return -1
 
     # 判断一下result是否为空值
@@ -84,3 +93,4 @@ def read_input_data(kind):
 
 if __name__ == '__main__':
     print(read_input_data(kind="2023年学校情况一览表"))
+    # print(get_nth_parent_dir(n=3))
