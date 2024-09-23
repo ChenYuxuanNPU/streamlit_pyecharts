@@ -1,4 +1,5 @@
 import json
+
 from update_database.module import update_data as ud
 
 if __name__ == '__main__':
@@ -32,3 +33,5 @@ if __name__ == '__main__':
                       kind_list=kind_list,
                       table_name_list=table_name_list):
         print("所有数据更新成功 (update.py)")
+
+# 测试回滚
