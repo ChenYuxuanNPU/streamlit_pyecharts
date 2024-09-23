@@ -1,8 +1,8 @@
 *.db
 *.xlsx
-/database/
-/json/result/
-/moyu/
-/test_code/
 /update_data_source/
+/test_code/
+/moyu/
+/json/result/
+/database/
 /update_database/data_source/
