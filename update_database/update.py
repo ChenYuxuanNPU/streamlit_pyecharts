@@ -9,7 +9,7 @@ database_name = "educational_data.db"
 kind_list = ["2023年在编教师信息", "2023年编外教师信息", "2023年学校情况一览表"]
 
 # kind_list里的内容与下面字典的键要一一对应
-table_name = {
+table_name_dict = {
     "2023年在编教师信息": "teacher_data_0_2023",
     "2023年编外教师信息": "teacher_data_1_2023",
     "2023年学校情况一览表": "school_info_sum_2023",
@@ -23,8 +23,6 @@ xlsx_file_and_sheet_name = {
     "2023年学校情况一览表": ["2023年教育事业统计报表对账表.xlsx", "一览表"],
     "2024年在编教师信息": ["teacher_data_0_2024.xlsx", "Sheet1"],
 }
-
-table_name_list = list(table_name.values())
 
 words_dict = {
     "teacher_info_0_2023_word": ("校名 学校类型 统一社会信用代码 姓名 身份证号 性别 民族 "
@@ -69,7 +67,7 @@ words_dict = {
 database_basic_info = {
     "database_name": database_name,
     "kind_list": kind_list,
-    "table_name": table_name,
+    "table_name_dict": table_name_dict,
     "xlsx_file_and_sheet_name": xlsx_file_and_sheet_name,
     "words_dict": words_dict
 }
@@ -112,14 +110,14 @@ database_basic_info = {
 #                              "公办学校教职工数 民办学校教职工数 合计专任教师数 公办学校专任教师数 民办学校专任教师数 合计班额数")
 
 if __name__ == '__main__':
-
     # print(database_basic_info)
 
     with open(fr"{Path(__file__).resolve().parent.parent}\json_file\database\database_basic_info.json",
               "w", encoding="UTF-8") as file:
         json.dump(database_basic_info, file, indent=4, ensure_ascii=False)
 
-    if ud.update_data(database_name=database_name,
-                      kind_list=kind_list,
-                      table_name_list=table_name_list):
-        print("所有数据更新成功 (update.py)")
+    ud.update_data(database_name=database_name,
+                   kind_list=kind_list,
+                   table_name_dict=table_name_dict)
+    
+    print("所有数据更新成功 (update.py)")
