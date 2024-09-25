@@ -78,7 +78,7 @@ def disconnect_database(conn) -> None:
 
 def load_json_data(folder: str, file_name: str) -> dict:
     # 读取现有json文件
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json_file",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
@@ -86,7 +86,7 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json_file",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
         json.dump(json_data, f, indent=4, ensure_ascii=False)
@@ -151,34 +151,40 @@ def combine_none_and_others(input_dict: dict) -> dict:
 # age_list参数代表年龄列表，如[22,23,25]
 # age_count_list参数代表求和后的年龄列表，如[(年龄,个数),(年龄,个数)]
 def age_statistics(age_list=None, age_count_list=None) -> dict:
-    data = [0, 0, 0, 0, 0, 0, 0, 0]
-    label = ["25岁以下", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55岁及以上"]
+    data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    label = ["20岁及以下", "21-25岁", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55-60岁", "60岁以上"]
 
     if age_list is not None:
         for age in age_list:
-            if int(age) < 25:
+            if int(age) < 21:
                 data[0] = data[0] + 1
 
-            elif 25 <= int(age) < 30:
+            elif 21 <= int(age) < 25:
                 data[1] = data[1] + 1
 
-            elif 30 <= int(age) < 35:
+            elif 25 <= int(age) < 30:
                 data[2] = data[2] + 1
 
-            elif 35 <= int(age) < 40:
+            elif 30 <= int(age) < 35:
                 data[3] = data[3] + 1
 
-            elif 40 <= int(age) < 45:
+            elif 35 <= int(age) < 40:
                 data[4] = data[4] + 1
 
-            elif 45 <= int(age) < 50:
+            elif 40 <= int(age) < 45:
                 data[5] = data[5] + 1
 
-            elif 50 <= int(age) < 55:
+            elif 45 <= int(age) < 50:
                 data[6] = data[6] + 1
 
-            elif int(age) >= 55:
+            elif 50 <= int(age) < 55:
                 data[7] = data[7] + 1
+
+            elif 55 <= int(age) < 60:
+                data[8] = data[8] + 1
+
+            elif int(age) >= 60:
+                data[9] = data[9] + 1
 
             else:
                 print("有一个奇怪的年龄：")
