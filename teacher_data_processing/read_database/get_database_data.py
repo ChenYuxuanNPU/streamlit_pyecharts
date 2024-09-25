@@ -5,7 +5,7 @@ with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\
           "r", encoding='UTF-8') as file:  # ISO-8859-1
     loaded_data = json.load(file)
 
-table_name = loaded_data['table_name']
+table_name_dict = loaded_data['table_name_dict']
 
 # 为了简化前面所有kind参数，直接用在编编外，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
 trans_kind = {
@@ -58,10 +58,10 @@ def info_trans(info: str):
 
 def string_link(str1: str, str2: str, start_sign: int):
     if start_sign == 0:
-        return str1 + " where " + str2 + " "
+        return f"{str1} where {str2} "
 
     elif start_sign == 1:
-        return str1 + " and " + str2 + " "
+        return f"{str1} and {str2} "
 
     else:
         raise MyError("字符串结合不符合预期")
@@ -96,7 +96,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
     # 采集某一字段的统计数据
     if info_num == 1:
 
-        sql_sentence = fr"select {info_trans(info[0])},count(*) from {table_name[trans_kind[kind]]} "
+        sql_sentence = fr"select {info_trans(info[0])},count(*) from {table_name_dict[trans_kind[kind]]} "
 
         if kind == "在编":
             pass
@@ -157,7 +157,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
                 else:
                     sql_sentence = sql_sentence + "," + info_trans(info[i]) + " "
 
-        sql_sentence = sql_sentence + f" from {table_name[trans_kind[kind]]} "
+        sql_sentence = sql_sentence + f" from {table_name_dict[trans_kind[kind]]} "
 
         if kind == "在编":
             pass
@@ -193,7 +193,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
 
     elif info_num == -1:
 
-        sql_sentence = fr"select count(*) from {table_name[trans_kind[kind]]} "
+        sql_sentence = fr"select count(*) from {table_name_dict[trans_kind[kind]]} "
 
         if kind == "在编":
             pass
