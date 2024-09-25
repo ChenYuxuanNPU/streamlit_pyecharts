@@ -14,6 +14,7 @@ table_name = {
     "2023年编外教师信息": "teacher_data_1_2023",
     "2023年学校情况一览表": "school_info_sum_2023",
     "2024年在编教师信息": "teacher_data_0_2024",
+    "2024年编外教师信息": "teacher_data_1_2024",
 }
 
 xlsx_file_and_sheet_name = {
