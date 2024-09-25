@@ -4,13 +4,16 @@
 from update_database.module import make_database, data_insert
 
 
-def update_data(database_name: str, kind_list: list, table_name_dict:dict):
+def update_data(database_name, kind_list, table_name_list):
+    if len(kind_list) != len(table_name_list):
+        print("插入数据长度不同")
+        return False
 
     # 在新数据库中插入两张教师数据表所需的数据
     for i in range(len(kind_list)):
 
+        table_name = table_name_list[i]
         kind = kind_list[i]
-        table_name = table_name_dict[kind]
 
         # 创建新的数据表并规定字段
         if make_database.clear_table(database_name=database_name, table_name=table_name, kind=kind):
@@ -22,4 +25,5 @@ def update_data(database_name: str, kind_list: list, table_name_dict:dict):
 
         print("")
 
+    return True
 
