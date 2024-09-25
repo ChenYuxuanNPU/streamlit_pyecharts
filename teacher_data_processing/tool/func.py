@@ -195,29 +195,35 @@ def age_statistics(age_list=None, age_count_list=None) -> dict:
     if age_count_list is not None:
 
         for single_data in age_count_list:
-            if int(single_data[0]) < 25:
+            if int(single_data[0]) < 21:
                 data[0] = data[0] + int(single_data[1])
 
-            elif 25 <= int(single_data[0]) < 30:
+            elif 21 <= int(single_data[0]) < 25:
                 data[1] = data[1] + int(single_data[1])
 
-            elif 30 <= int(single_data[0]) < 35:
+            elif 25 <= int(single_data[0]) < 30:
                 data[2] = data[2] + int(single_data[1])
 
-            elif 35 <= int(single_data[0]) < 40:
+            elif 30 <= int(single_data[0]) < 35:
                 data[3] = data[3] + int(single_data[1])
 
-            elif 40 <= int(single_data[0]) < 45:
+            elif 35 <= int(single_data[0]) < 40:
                 data[4] = data[4] + int(single_data[1])
 
-            elif 45 <= int(single_data[0]) < 50:
+            elif 40 <= int(single_data[0]) < 45:
                 data[5] = data[5] + int(single_data[1])
 
-            elif 50 <= int(single_data[0]) < 55:
+            elif 45 <= int(single_data[0]) < 50:
                 data[6] = data[6] + int(single_data[1])
 
-            elif int(single_data[0]) >= 55:
+            elif 50 <= int(single_data[0]) < 55:
                 data[7] = data[7] + int(single_data[1])
+
+            elif 55 <= int(single_data[0]) < 60:
+                data[8] = data[8] + int(single_data[1])
+
+            elif int(single_data[0]) >= 60:
+                data[9] = data[9] + int(single_data[1])
 
             else:
                 print("有一个奇怪的年龄：")
