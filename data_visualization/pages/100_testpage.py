@@ -1,23 +1,15 @@
 import datetime
-import os
 import sys
+from pathlib import Path
 
 import pyecharts.options as opts
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func
@@ -35,7 +27,6 @@ json_data = visual_func.load_json_data(folder="result", file_name="teacher_info"
 
 # 设置全局属性
 visual_func.set_page_configuration(title="义务教育优质均衡", icon=":star:")
-
 
 st.divider()
 st.write(st.session_state)

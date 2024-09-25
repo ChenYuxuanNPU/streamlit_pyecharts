@@ -1,21 +1,13 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from teacher_data_processing.tool import func as tch_proc_func
@@ -184,8 +176,8 @@ with st.container(border=True):
 
         # 在编学科统计
         visual_func.draw_bar(data=json_data["在编"]["学校"][page4_school_name][raw_period]["主教学科"],
-                                  title="主教学科",
-                                  end=100)
+                             title="主教学科",
+                             end=100)
 
         col0, col1, col2 = st.columns([1, 1, 1])
 
@@ -257,16 +249,14 @@ with st.container(border=True):
 
 # 展示学校云图
 if not st.session_state.page4_search_flag:
-
     with st.container(border=True):
-
         # 小标题
         st.markdown(
             "<h2 style='text-align: center;'>区内学校</h2>",
             unsafe_allow_html=True
         )
 
-        visual_func.draw_word_cloud(words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(json_data["学校教师总数"]).items()) if v[1] != "幼儿园"],
-                                    title="")
-
-        
+        visual_func.draw_word_cloud(
+            words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(json_data["学校教师总数"]).items()) if
+                   v[1] != "幼儿园"],
+            title="")

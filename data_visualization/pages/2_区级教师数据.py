@@ -1,21 +1,13 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func
@@ -41,7 +33,6 @@ st.markdown(
 st.divider()
 
 with st.container(border=True):
-
     # 小标题
     st.markdown(
         "<h2 style='text-align: center;'>在编教师数据</h2>",
@@ -90,7 +81,8 @@ with st.container(border=True):
 
             with col1:
                 # 在编毕业院校统计
-                visual_func.draw_bar(data=json_data["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校", is_show_visual_map=False)
+                visual_func.draw_bar(data=json_data["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
+                                     is_show_visual_map=False)
 
             col0, col1, col2 = st.columns(spec=3)
 
@@ -121,7 +113,8 @@ with st.container(border=True):
             for i in range(0, min(15, len(temp))):
                 temp_for_bar[temp[i][0]] = temp[i][1][3]
 
-            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校", is_show_visual_map=False)
+            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校",
+                                 is_show_visual_map=False)
 
             # 统计完在编教师数少的学校了
 
@@ -141,7 +134,6 @@ st.divider()
 
 # 编外数据
 with st.container(border=True):
-
     # 小标题
     st.markdown(
         "<h2 style='text-align: center;'>编外教师数据</h2>",
@@ -153,7 +145,6 @@ with st.container(border=True):
     col0, col1, col2 = st.columns(spec=3)
 
     with col0:
-
         # 编外片区统计
         visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
 
@@ -180,16 +171,13 @@ with st.container(border=True):
     col0, col1, col2 = st.columns(spec=3)
 
     with col0:
-
         # 编外教师资格统计
         visual_func.draw_pie(data=json_data["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
 
     with col1:
-
         # 编外中小学教师资格统计
         visual_func.draw_pie(data=json_data["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
 
     with col2:
-
         # 编外幼儿园教师资格统计
         visual_func.draw_pie(data=json_data["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")

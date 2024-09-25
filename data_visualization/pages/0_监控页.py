@@ -1,29 +1,16 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
 from data_visualization.tool import func as visual_func
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
-
-
-# sys.path.append(
-#     r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
-# )
 
 # 清空其他页暂用变量
 visual_func.session_state_reset(page=2)

@@ -4,17 +4,19 @@
 #
 
 import sqlite3
+from pathlib import Path
 
 from update_database.module import make_sql_sentence
 from update_database.tool import func as makedb_func
 
-result = [0]
+
+# 返回给定的第n层的父目录路径
 
 
 def clear_table(database_name: str, table_name: str, kind: str):
     # 用来连接数据库插入数据
-    global result
-    conn = sqlite3.connect("C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\" + database_name)
+    result = [0]
+    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
     c = conn.cursor()
 
     try:

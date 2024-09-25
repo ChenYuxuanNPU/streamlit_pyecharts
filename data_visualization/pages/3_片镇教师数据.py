@@ -1,22 +1,14 @@
-import os
 import sys
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func
@@ -93,13 +85,15 @@ with st.container(border=True):
             temp_for_bar = {}
 
             for item in temp_all:
-                if item[1][2] == page3_area and item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教育辅助单位":
+                if item[1][2] == page3_area and item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][
+                    1] != "教育辅助单位":
                     temp.append(item)
 
             for i in range(0, min(15, len(temp))):
                 temp_for_bar[temp[i][0]] = temp[i][1][3]
 
-            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校", is_show_visual_map=False)
+            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校",
+                                 is_show_visual_map=False)
 
             # 统计完在编教师数少的学校了
 

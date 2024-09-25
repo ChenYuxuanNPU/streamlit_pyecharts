@@ -4,14 +4,14 @@
 #
 
 import sqlite3
+from pathlib import Path
 
 from update_database.module import make_input_data
 
 
 def insert_data(database_name, table_name, kind):
-
     # 用来连接数据库插入数据
-    conn = sqlite3.connect("C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\" + database_name)
+    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
     c = conn.cursor()
 
     result = make_input_data.read_input_data(kind=kind)
@@ -38,3 +38,7 @@ def insert_data(database_name, table_name, kind):
         conn.commit()
         conn.close()
         print(fr"{kind}数据插入成功 (data_insert.py)")
+
+
+if __name__ == '__main__':
+    pass

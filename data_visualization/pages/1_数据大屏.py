@@ -1,22 +1,14 @@
-import os
 import sys
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func
@@ -42,7 +34,6 @@ st.divider()
 
 # 横向比较
 with st.container(border=True):
-
     st.markdown(
         "<h2 style='text-align: center;'>对比数据</h2>",
         unsafe_allow_html=True
@@ -168,7 +159,6 @@ st.divider()
 
 # 汇总展示
 with st.container(border=True):
-
     st.markdown(
         "<h2 style='text-align: center;'>合计数据</h2>",
         unsafe_allow_html=True
@@ -288,7 +278,7 @@ if st.session_state.page1_show_detail:
 
             # 可视化只展示学校多的学段
             if int(json_data[period]["合计学校数"]) > 1 and json_data[period]["公办学校数"] > 0 and json_data[
-                    period]["民办学校数"] > 0:
+                period]["民办学校数"] > 0:
 
                 st.info(f'白云区内{period}统计信息如下', icon="ℹ️")
 
@@ -378,7 +368,8 @@ if st.session_state.page1_show_detail:
             elif json_data[period]["公办学校数"] > 0 or json_data[period]["民办学校数"] > 0:
 
                 st.warning(
-                    f"由于白云区内的{period}均为{'公办' if json_data[period]["公办学校数"] > 0 else '民办'}学校，数据将通过表格的形式展示", icon='⚠️')
+                    f"由于白云区内的{period}均为{'公办' if json_data[period]["公办学校数"] > 0 else '民办'}学校，数据将通过表格的形式展示",
+                    icon='⚠️')
 
                 _, col_mid, _ = st.columns([1, 1, 1])
 
