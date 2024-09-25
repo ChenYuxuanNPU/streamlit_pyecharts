@@ -3,26 +3,15 @@
 # 不需要单独跑，被update_database调用
 #
 
-import os
 import sqlite3
+from pathlib import Path
 
 from update_database.module import make_input_data
 
 
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n) -> str:
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
 def insert_data(database_name, table_name, kind):
-
     # 用来连接数据库插入数据
-    conn = sqlite3.connect(fr"{get_nth_parent_dir(n=3)}\database\{database_name}")
+    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
     c = conn.cursor()
 
     result = make_input_data.read_input_data(kind=kind)

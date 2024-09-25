@@ -1,9 +1,13 @@
+from pathlib import Path
+
 # 常用常量
-doc_path = "C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\doc\\data.txt"
+doc_path = fr"{Path(__file__).resolve().parent.parent.parent}\doc\data.txt"
 
 
 def write_doc(label, data, kind, content):
+
     with open(doc_path, mode="w", encoding="utf-8") as f:
+
         print("", file=f)
         print(f"{kind}{content}数据如下：", file=f)
 

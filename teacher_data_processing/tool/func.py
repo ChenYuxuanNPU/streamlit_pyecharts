@@ -1,10 +1,11 @@
 import copy
 import json
 import sqlite3
+from pathlib import Path
 
 from teacher_data_processing.read_database import get_database_data as gd
 
-with open(r"/json_file\database\database_basic_info.json",
+with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
           "r", encoding='UTF-8') as file:  # ISO-8859-1
     loaded_data = json.load(file)
 
@@ -64,7 +65,7 @@ class MyError(Exception):
 # kind:"在编","编外"
 def connect_database():
     conn = sqlite3.connect(
-        f"C:\\Users\\1012986131\\Desktop\\python\\streamlit_pyecharts\\database\\{database_name}"
+        fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}"
     )
     c = conn.cursor()
 
@@ -76,9 +77,8 @@ def disconnect_database(conn) -> None:
 
 
 def load_json_data(folder: str, file_name: str) -> dict:
-
     # 读取现有json文件
-    with open(fr"/json_file\{folder}\{file_name}.json_file",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json_file",
               "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
@@ -86,8 +86,7 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
-
-    with open(fr"/json_file\{folder}\{file_name}.json_file",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json_file",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
         json.dump(json_data, f, indent=4, ensure_ascii=False)

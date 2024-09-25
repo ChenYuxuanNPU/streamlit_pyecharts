@@ -1,9 +1,13 @@
 import sys
+from pathlib import Path
 
 import streamlit as st
 
+# 加入项目路径
 sys.path.append(
-    r'C:\Users\1012986131\Desktop\python\streamlit_pyecharts'
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from calculation import curriculum as cur

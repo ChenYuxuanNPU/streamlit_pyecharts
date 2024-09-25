@@ -1,5 +1,6 @@
 import json
 import time
+from pathlib import Path
 
 import pyecharts.options as opts
 import streamlit as st
@@ -193,7 +194,7 @@ def draw_word_cloud(words: list, title: str, height=-1, height_factor=1000) -> N
 def load_json_data(folder: str, file_name: str) -> dict:
 
     # 读取现有json文件
-    with open(fr"/json_file\{folder}\{file_name}.json",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
@@ -202,7 +203,7 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
-    with open(fr"/json_file\{folder}\{file_name}.json",
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
         json.dump(json_data, f, indent=4, ensure_ascii=False)

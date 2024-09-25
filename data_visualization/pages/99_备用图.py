@@ -1,21 +1,13 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from screeninfo import get_monitors
@@ -182,8 +174,8 @@ with st.container(border=True):
             "区内交流": 1,
             "外市支教": 1,
             "长期事假": 1,
-            "产假":1,
-            "公假":1,
-            "长期病休":1,
-            "其他":1
+            "产假": 1,
+            "公假": 1,
+            "长期病休": 1,
+            "其他": 1
         }, title="在岗情况", height=450)

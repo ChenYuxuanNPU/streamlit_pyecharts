@@ -2,26 +2,15 @@
 # 这个文件获取表格中的数据并验证长度
 # 不需要单独跑，被data_insert调用
 #
-
 import json
-import os
+from pathlib import Path
 
 import openpyxl
 
 
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n) -> str:
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
 def get_database_basic_info() -> dict:
     # 读取现有json文件
-    with open(fr"{get_nth_parent_dir(n=3)}\json_file\database\database_basic_info.json", "r", encoding="UTF-8") as f:
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
     return json_data
@@ -32,7 +21,7 @@ def read_input_data(kind):
     json_data = get_database_basic_info()
 
     # 字典里0位是数据源文件名，1位是表名
-    wb = openpyxl.load_workbook(fr'C:\Users\1012986131\Desktop\python\streamlit_pyecharts\update_database'
+    wb = openpyxl.load_workbook(fr'{Path(__file__).resolve().parent.parent.parent}\update_database'
                                 fr'\data_source\{json_data["xlsx_file_and_sheet_name"][kind][0]}', data_only=True)
     sheet = wb[f"{json_data["xlsx_file_and_sheet_name"][kind][1]}"]
 

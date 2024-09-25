@@ -1,21 +1,15 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
-
 # --server.port 8503
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
 
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=2)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func

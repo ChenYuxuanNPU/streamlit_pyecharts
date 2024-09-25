@@ -1,21 +1,13 @@
-import os
 import sys
+from pathlib import Path
 
 import streamlit as st
 
-
-# 返回给定的第n层的父目录路径
-def get_nth_parent_dir(n):
-    path = os.path.abspath(__file__)
-
-    for _ in range(n):
-        path = os.path.dirname(path)
-
-    return path
-
-
+# 加入项目路径
 sys.path.append(
-    get_nth_parent_dir(n=3)
+    str(
+        Path(__file__).resolve().parent.parent.parent
+    )
 )
 
 from data_visualization.tool import func as visual_func
@@ -78,5 +70,3 @@ r.show_result(
     grade_8=grade_8,
     grade_9=grade_9
 )
-
-

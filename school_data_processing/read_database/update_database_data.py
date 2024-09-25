@@ -1,8 +1,9 @@
 import json
+from pathlib import Path
 
 from school_data_processing.tool import func as sch_proc_func
 
-with open(r"/json_file\database\database_basic_info.json",
+with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
           "r", encoding='UTF-8') as file:  # ISO-8859-1
     loaded_data = json.load(file)
 
