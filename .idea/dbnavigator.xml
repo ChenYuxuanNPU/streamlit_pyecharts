@@ -24,7 +24,6 @@ select political_status,count(*) from teacher_data_0 where current_administrativ
 select distinct school_name from teacher_data_1
 
 select school_name, school_id, school_classification, area, count(school_name) count, "0" as kind from teacher_data_0 group by school_name]]></console>
-      <console name="educational_data" type="STANDARD" schema="" session="Main" />
     </connection>
     <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129">
       <console name="vocal" type="STANDARD" schema="" session="Main" />

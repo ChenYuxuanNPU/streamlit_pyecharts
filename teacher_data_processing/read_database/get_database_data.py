@@ -5,13 +5,13 @@ with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\
           "r", encoding='UTF-8') as file:  # ISO-8859-1
     loaded_data = json.load(file)
 
-table_name_dict = loaded_data['table_name_dict']
+teacher_table_list = loaded_data['teacher_table_list']
 
 # 为了简化前面所有kind参数，直接用在编编外，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
-trans_kind = {
-    "在编": "在编教师信息",
-    "编外": "编外教师信息"
-}
+# trans_kind = {
+#     "在编": "在编教师信息",
+#     "编外": "编外教师信息"
+# }
 
 
 class MyError(Exception):
@@ -34,34 +34,36 @@ class MyError(Exception):
 # order:限制特定搜索顺序，asc/desc(str)
 # additional_requirement:额外的查询条件(list)
 
-def info_trans(info: str):
-    info_dict = {
-        "最高学历": "educational_background_highest",
-        "最高职称": "highest_title",
-        "年龄": "current_age",
-        "主教学科": "major_discipline",
-        "院校代码": "graduate_school_id",  # 切记这里搜完数据库以后要数据统计，生成统计结果以后插院校级别的json文件里
-        "行政职务": "current_administrative_position",
-        "骨干教师": "cadre_teacher",
-        "三名工作室": "title_01",
-        "支教地域": "area_of_supporting_education",
-        "教师资格": "level_of_teacher_certification",
-        "片区": "area",
-        "任教年级": "grade_to_teach",
-        "学段": "period",
-        "学校": "school_name",
-        "性别": "gender"
-    }
 
-    return info_dict.get(info, "*")
+# 由于改成了中文字段名，不需要在这里做转换了
+# def info_trans(info: str):
+#     info_dict = {
+#         "最高学历": "educational_background_highest",
+#         "最高职称": "highest_title",
+#         "年龄": "current_age",
+#         "主教学科": "major_discipline",
+#         "院校代码": "graduate_school_id",  # 切记这里搜完数据库以后要数据统计，生成统计结果以后插院校级别的json文件里
+#         "行政职务": "current_administrative_position",
+#         "骨干教师": "cadre_teacher",
+#         "三名工作室": "title_01",
+#         "支教地域": "area_of_supporting_education",
+#         "教师资格": "level_of_teacher_certification",
+#         "片区": "area",
+#         "任教年级": "grade_to_teach",
+#         "学段": "period",
+#         "学校": "school_name",
+#         "性别": "gender"
+#     }
+#
+#     return info_dict.get(info, "*")
 
 
 def string_link(str1: str, str2: str, start_sign: int):
     if start_sign == 0:
-        return f"{str1} where {str2} "
+        return f'{str1} where {str2} '
 
     elif start_sign == 1:
-        return f"{str1} and {str2} "
+        return f'{str1} and {str2} '
 
     else:
         raise MyError("字符串结合不符合预期")
@@ -88,98 +90,100 @@ def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, in
     return [True]
 
 
-def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
+def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: str,
                                   kind: str, school_name="", area_name="", period=None,
-                                  limit=0, order="", additional_requirement=None, ):
+                                  limit=0, order="", additional_requirement=None, ) -> str:
     start_sign = 0  # 0代表初始第一个条件，1代表后续条件
 
     # 采集某一字段的统计数据
     if info_num == 1:
 
-        sql_sentence = fr"select {info_trans(info[0])},count(*) from {table_name_dict[trans_kind[kind]]} "
+        sql_sentence = fr'select "{info[0]}",count(*) from {teacher_table_list[kind][year]} '
 
-        if kind == "在编":
-            pass
-
-        elif kind == "编外":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher == '是'", start_sign=start_sign)
-            start_sign = 1
+        # 最新的版本中删掉了is_teacher字段
+        # if kind == "在编":
+        #     pass
+        #
+        # elif kind == "编外":
+        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher = '是'", start_sign=start_sign)
+        #     start_sign = 1
 
         if scope == "全区":
             pass
 
         elif scope == "学校":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"school_name == '{school_name}'",
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "校名" = "{school_name}" ',
                                        start_sign=start_sign)
             start_sign = 1
 
         elif scope == "片区":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "区域" = "{area_name}" ', start_sign=start_sign)
             start_sign = 1
 
         if period is not None and period != "":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "任教学段" = "{period}" ', start_sign=start_sign)
             start_sign = 1
 
         if additional_requirement is not None:
             for requirement in additional_requirement:
-                sql_sentence = string_link(str1=sql_sentence, str2=requirement, start_sign=start_sign)
+                sql_sentence = string_link(str1=sql_sentence, str2=f' {requirement} ', start_sign=start_sign)
                 start_sign = 1
 
         # 加入count语句的分类 group by
-        sql_sentence = sql_sentence + fr" group by {info_trans(info[0])} "
+        sql_sentence += fr' group by "{info[0]}" '
 
         # 根据情况加入order by
-        if order == "asc":
-            sql_sentence = sql_sentence + " order by count(*) asc "
+        if order == 'asc':
+            sql_sentence += " order by count(*) asc "
 
-        if order == "desc":
-            sql_sentence = sql_sentence + " order by count(*) desc "
+        if order == 'desc':
+            sql_sentence += ' order by count(*) desc '
 
         # 加入限制条数（主要针对主教学科）
         if limit > 0:
-            sql_sentence = sql_sentence + fr" limit {limit} "
+            sql_sentence += fr' limit {limit} '
 
     elif info_num > 1 or info_num == 0:
 
-        sql_sentence = fr"select "
+        sql_sentence = fr'select '
 
         # 0的时候不需要叠
         if info_num == 0:
-            sql_sentence = sql_sentence + info_trans(info[0])
+            sql_sentence += f' "{info[0]}" '
 
         else:
             for i in range(0, len(info)):
 
                 if i == 0:
-                    sql_sentence = sql_sentence + info_trans(info[i])
+                    sql_sentence += f' "{info[i]}" '
 
                 else:
-                    sql_sentence = sql_sentence + "," + info_trans(info[i]) + " "
+                    sql_sentence += f', "{info[i]}" '
 
-        sql_sentence = sql_sentence + f" from {table_name_dict[trans_kind[kind]]} "
+        sql_sentence += f' from {teacher_table_list[kind][year]} '
 
-        if kind == "在编":
-            pass
-
-        elif kind == "编外":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher == '是'", start_sign=start_sign)
-            start_sign = 1
+        # 最新的版本中删掉了is_teacher字段
+        # if kind == "在编":
+        #     pass
+        #
+        # elif kind == "编外":
+        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher = '是'", start_sign=start_sign)
+        #     start_sign = 1
 
         if scope == "全区":
             pass
 
         elif scope == "学校":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"school_name == '{school_name}'",
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "校名" = "{school_name}" ',
                                        start_sign=start_sign)
             start_sign = 1
 
         elif scope == "片区":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "区域" = "{area_name}" ', start_sign=start_sign)
             start_sign = 1
 
         if period is not None and period != "":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "任教学段" = "{period}" ', start_sign=start_sign)
             start_sign = 1
 
         if additional_requirement is not None:
@@ -189,33 +193,34 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
 
         # 加入限制条数（主要针对主教学科）
         if limit > 0:
-            sql_sentence = sql_sentence + fr" limit {limit} "
+            sql_sentence += fr' limit {limit} '
 
     elif info_num == -1:
 
-        sql_sentence = fr"select count(*) from {table_name_dict[trans_kind[kind]]} "
+        sql_sentence = fr'select count(*) from {teacher_table_list[kind][year]} '
 
-        if kind == "在编":
-            pass
-
-        elif kind == "编外":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher == '是'", start_sign=start_sign)
-            start_sign = 1
+        # 最新的版本中删掉了is_teacher字段
+        # if kind == "在编":
+        #     pass
+        #
+        # elif kind == "编外":
+        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher == '是'", start_sign=start_sign)
+        #     start_sign = 1
 
         if scope == "全区":
             pass
 
         elif scope == "学校":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"school_name == '{school_name}'",
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "校名" = "{school_name}" ',
                                        start_sign=start_sign)
             start_sign = 1
 
         elif scope == "片区":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"area == '{area_name}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "区域" = "{area_name}" ', start_sign=start_sign)
             start_sign = 1
 
         if period is not None and period != "":
-            sql_sentence = string_link(str1=sql_sentence, str2=fr"period == '{period}'", start_sign=start_sign)
+            sql_sentence = string_link(str1=sql_sentence, str2=fr' "任教学段" = "{period}" ', start_sign=start_sign)
             start_sign = 1
 
         if additional_requirement is not None:
@@ -241,7 +246,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str,
 # order:限制特定搜索顺序，asc/desc(str)
 # additional_requirement:额外的查询条件(list)
 
-def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str,
+def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str, year: str,
                           school_name="", area_name="", period=None,
                           limit=0, order="", additional_requirement=None, ):
     check_result = generate_sql_sentence_check(scope=scope, area_name=area_name, school_name=school_name, info=info,
@@ -251,7 +256,7 @@ def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str,
         raise MyError("插入内容验证不通过")
 
     sql_sentence = fill_scope_kind_period_others(info_num=info_num, info=info, scope=scope, school_name=school_name,
-                                                 area_name=area_name, kind=kind, limit=limit, order=order,
+                                                 area_name=area_name, kind=kind, limit=limit, order=order, year=year,
                                                  period=period, additional_requirement=additional_requirement)
 
     return sql_sentence

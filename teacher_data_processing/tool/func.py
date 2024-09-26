@@ -12,7 +12,7 @@ with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\
 database_name = loaded_data["database_name"]
 
 # 用来设置排序
-educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '大学本科': 3, "大学专科": 4, "中专": 5, "高中": 6,
+educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '本科': 3, "专科": 4, "中专": 5, "高中": 6,
                                 "高中及以下": 7, None: 7}
 
 highest_title_order = {'三级教师': 1, '二级教师': 2, '一级教师': 3, '高级教师': 4, '正高级教师': 5,
@@ -30,8 +30,8 @@ area_of_supporting_education_order = {'片内': 1, '区内': 2, '外市': 3, '�
 
 period_order = {'幼儿园': 1, '小学': 2, '初中': 3, '高中': 4, '中职': 5, "无": 6, None: 7}
 
-level_of_teacher_certification_order = {'幼儿园': 1, '小学': 2, '初级中学': 3, '高级中学': 4, '中职专业课': 5,
-                                        '高等学校': 6, '无': 7, None: 8}
+level_of_teacher_certification_order = {'幼儿园': 1, '小学': 2, '初级中学': 3, '高级中学': 4, '中职专业课': 5, '中职实习指导教师': 6,
+                                        '高等学校': 7, '无': 8, None: 9}
 
 area_list = ["永平", "江高", "石井", "新市", "人和", "太和", "钟落潭"]
 
@@ -152,14 +152,14 @@ def combine_none_and_others(input_dict: dict) -> dict:
 # age_count_list参数代表求和后的年龄列表，如[(年龄,个数),(年龄,个数)]
 def age_statistics(age_list=None, age_count_list=None) -> dict:
     data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    label = ["20岁及以下", "21-25岁", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55-60岁", "60岁以上"]
+    label = ["20岁及以下", "21-25岁", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55-60岁", "60岁及以上"]
 
     if age_list is not None:
         for age in age_list:
-            if int(age) < 21:
+            if int(age) <= 20:
                 data[0] = data[0] + 1
 
-            elif 21 <= int(age) < 25:
+            elif 20 < int(age) < 25:
                 data[1] = data[1] + 1
 
             elif 25 <= int(age) < 30:
@@ -195,10 +195,10 @@ def age_statistics(age_list=None, age_count_list=None) -> dict:
     if age_count_list is not None:
 
         for single_data in age_count_list:
-            if int(single_data[0]) < 21:
+            if int(single_data[0]) <= 20:
                 data[0] = data[0] + int(single_data[1])
 
-            elif 21 <= int(single_data[0]) < 25:
+            elif 20 < int(single_data[0]) < 25:
                 data[1] = data[1] + int(single_data[1])
 
             elif 25 <= int(single_data[0]) < 30:
