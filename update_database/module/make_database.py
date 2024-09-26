@@ -10,9 +10,6 @@ from update_database.module import make_sql_sentence
 from update_database.tool import func as makedb_func
 
 
-# 返回给定的第n层的父目录路径
-
-
 def clear_table(database_name: str, table_name: str, kind: str):
     # 用来连接数据库插入数据
     result = [0]
