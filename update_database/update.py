@@ -3,6 +3,8 @@ from pathlib import Path
 
 from update_database.module import update_data as ud
 
+# 下面整块都是更新数据库要用的信息
+
 database_name = "educational_data.db"
 
 # 0,1代表教师信息
@@ -64,12 +66,36 @@ words_dict = {
     "teacher_info_0_2024_word": ()
 }
 
+# 下面开始放的是其他模块找数据表名字的要用到的信息
+
+teacher_table_list = {
+    '在编': {
+        '2023': 'teacher_data_0_2023',
+        '2024': 'teacher_data_0_2024',
+    },
+    '编外': {
+        '2023': 'teacher_data_1_2023',
+        '2024': 'teacher_data_1_2024',
+    },
+}
+
+school_table_list = {
+    '2023': 'school_info_sum_2023',
+}
+
+list_for_update_teacher_info = [('在编', '2023'), ('编外', '2023'),]
+list_for_update_school_info = ['2023']
+
+# 这里是把信息写入json_file的database_basic_info中
+
 database_basic_info = {
     "database_name": database_name,
     "kind_list": kind_list,
     "table_name_dict": table_name_dict,
     "xlsx_file_and_sheet_name": xlsx_file_and_sheet_name,
-    "words_dict": words_dict
+    "words_dict": words_dict,
+    "teacher_table_list": teacher_table_list,
+    "school_table_list": school_table_list
 }
 
 # teacher_info_0_2023_word = ("school_name school_classification school_id name id gender date_of_birth ethnic "
@@ -119,5 +145,5 @@ if __name__ == '__main__':
     ud.update_data(database_name=database_name,
                    kind_list=kind_list,
                    table_name_dict=table_name_dict)
-    
+
     print("所有数据更新成功 (update.py)")
