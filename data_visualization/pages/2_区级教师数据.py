@@ -35,7 +35,7 @@ def show_period(period: str, data: dict,) -> None:
             visual_func.draw_bar(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校", is_show_visual_map=False)
 
         with c2:
-            visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["持有最高职称"], title="职称")
+            visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
 
 
 # 初始化全局变量
@@ -98,7 +98,7 @@ if year is not None:
                     visual_func.draw_pie(data=json_data[year]["在编"]["全区"]["所有学段"]["学段统计"], title="学段统计")
 
                     # 在编职称统计
-                    visual_func.draw_pie(data=json_data[year]["在编"]["全区"]["所有学段"]["持有最高职称"], title="职称")
+                    visual_func.draw_pie(data=json_data[year]["在编"]["全区"]["所有学段"]["最高职称"], title="职称")
 
                 with col2:
                     # 在编年龄统计
@@ -130,7 +130,7 @@ if year is not None:
                     visual_func.draw_pie(data=json_data[year]["在编"]["全区"]["所有学段"]["支教地域"], title="支教地域")
 
                 with col2:
-                    # 在编三名教师统计
+                    # 在编四名教师统计
                     visual_func.draw_pie(data=json_data[year]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
                 # 教师分布统计
@@ -142,7 +142,7 @@ if year is not None:
                 temp_for_bar = {}
 
                 for item in temp_all:
-                    if item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教育辅助单位":
+                    if item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教学支撑单位":
                         temp.append(item)
 
                 for i in range(0, min(15, len(temp))):
@@ -191,13 +191,13 @@ if year is not None:
             visual_func.draw_pie(data=json_data[year]["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
 
             # 编外职称统计
-            visual_func.draw_pie(data=json_data[year]["编外"]["全区"]["所有学段"]["持有最高职称"], title="职称")
+            visual_func.draw_pie(data=json_data[year]["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
 
         with col2:
             # 编外骨干教师统计
             visual_func.draw_pie(data=json_data[year]["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
 
-            # 编外三名教师统计
+            # 编外四名教师统计
             visual_func.draw_pie(data=json_data[year]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
         # 教师分布统计

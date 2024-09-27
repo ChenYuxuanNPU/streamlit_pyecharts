@@ -316,9 +316,9 @@ def update(year: str, kind: str) -> dict:
     # 全区教师资格统计结束
 
     ###
-    # 全区持有最高职称统计
+    # 全区最高职称统计
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["持有最高职称"], scope="全区", year=year)
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="全区", year=year)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
@@ -335,7 +335,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/持有最高职称", value=result,
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高职称", value=result,
                                               json_data=json_data)
     # json_data[kind]['全区']['所有学段']['最高职称'] = copy.deepcopy(result)
 
@@ -714,7 +714,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
         ###
         # 全区分学段最高职称统计
         ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["持有最高职称"], scope="全区", period=period,
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="全区", period=period,
                                                 year=year)
 
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -732,7 +732,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/持有最高职称", value=result,
+        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称", value=result,
                                                   json_data=json_data)
 
         result = []

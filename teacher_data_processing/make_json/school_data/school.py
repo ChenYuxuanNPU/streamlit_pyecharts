@@ -116,9 +116,9 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
     # 学校性别统计结束
 
     ###
-    # 持有最高职称统计 - 分学校
+    # 最高职称统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["持有最高职称"], scope="学校", year=year,
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -137,7 +137,7 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/持有最高职称",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高职称",
         value=result, json_data=json_data)
 
     result = []
