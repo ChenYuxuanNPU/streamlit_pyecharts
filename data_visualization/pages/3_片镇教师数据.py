@@ -38,8 +38,7 @@ with st.container(border=True):
     year = st.selectbox(
         "请选择需要查询的年份",
         ("2023", "2024"),
-        index=None,
-        placeholder="年份",
+        index=0,
     )
 
     page3_area = st.selectbox(

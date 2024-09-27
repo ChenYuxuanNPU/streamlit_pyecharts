@@ -415,7 +415,7 @@ def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c, c
 
 if __name__ == '__main__':
     pass
-    update(kind="在编", school_name="广州市白云中学", period="高中", year="2023")
-    update(kind="在编", school_name="广州市白云区广州空港实验中学", year="2023")
-    update(kind="编外", school_name="广州市实验外语学校", period="高中", year="2023")
-    update(kind="编外", school_name="广州市实验外语学校", year="2023")
+    # update(kind="在编", school_name="广州市白云中学", period="高中", year="2023")
+    # update(kind="在编", school_name="广州市白云区广州空港实验中学", year="2023")
+    # update(kind="编外", school_name="广州市实验外语学校", period="高中", year="2023")
+    # update(kind="在编", school_name="广州市培英中学", year="2023")

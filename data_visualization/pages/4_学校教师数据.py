@@ -41,6 +41,13 @@ st.markdown(
 
 st.divider()
 
+year = st.selectbox(
+    "请选择需要查询的年份",
+    ("2023", "2024"),
+    index=0,
+)
+
+
 with st.container(border=True):
     col0, col1 = st.columns([2, 3])
 
@@ -53,7 +60,7 @@ with st.container(border=True):
             # 校名搜索栏下拉框
             page4_school_name = st.selectbox(
                 "请输入完整校名",
-                json_data["学校教师总数"].keys(),
+                json_data[year]["学校教师总数"].keys(),
                 index=None,
                 placeholder="校名全称",
             )
@@ -78,11 +85,11 @@ with st.container(border=True):
                 else:
 
                     # 验证了输入的信息是否有误
-                    check_result_0 = tch_proc_func.school_name_and_period_check(kind="在编",
+                    check_result_0 = tch_proc_func.school_name_and_period_check(kind="在编", year=year,
                                                                                 school_name=page4_school_name,
                                                                                 period=period)
 
-                    check_result_1 = tch_proc_func.school_name_and_period_check(kind="编外",
+                    check_result_1 = tch_proc_func.school_name_and_period_check(kind="编外", year=year,
                                                                                 school_name=page4_school_name,
                                                                                 period=period)
                     st.session_state.page4_kind_0_flag = check_result_0[0]
@@ -94,21 +101,21 @@ with st.container(border=True):
                         st.toast("查询成功！", icon="✅")
 
                         if st.session_state.page4_kind_0_flag:
-                            ud.update(kind="在编", school_name=page4_school_name, period=period)
+                            ud.update(kind="在编", school_name=page4_school_name, period=period, year=year)
 
                         if st.session_state.page4_kind_1_flag:
-                            ud.update(kind="编外", school_name=page4_school_name, period=period)
+                            ud.update(kind="编外", school_name=page4_school_name, period=period, year=year)
 
                         intro_0 = [
-                            f"统一社会信用代码：{json_data["学校教师总数"][page4_school_name][0]}",
-                            f"学校性质：{json_data["学校教师总数"][page4_school_name][1]}",
-                            f"所属区域：{json_data["学校教师总数"][page4_school_name][2]}",
+                            f"统一社会信用代码：{json_data[year]["学校教师总数"][page4_school_name][0]}",
+                            f"学校性质：{json_data[year]["学校教师总数"][page4_school_name][1]}",
+                            f"所属区域：{json_data[year]["学校教师总数"][page4_school_name][2]}",
                         ]
 
                         intro_1 = [
-                            f"学校总教师数：{json_data["学校教师总数"][page4_school_name][5]}",
-                            f"学校在编教师数：{json_data["学校教师总数"][page4_school_name][3]}",
-                            f"学校编外教师数：{json_data["学校教师总数"][page4_school_name][4]}",
+                            f"学校总教师数：{json_data[year]["学校教师总数"][page4_school_name][5]}",
+                            f"学校在编教师数：{json_data[year]["学校教师总数"][page4_school_name][3]}",
+                            f"学校编外教师数：{json_data[year]["学校教师总数"][page4_school_name][4]}",
                         ]
 
                         with col1:
@@ -153,7 +160,7 @@ with st.container(border=True):
             unsafe_allow_html=True
         )
 
-        st.info(f"在编总人数：{json_data["在编"]["学校"][page4_school_name][raw_period]["总人数"]}")
+        st.info(f"在编总人数：{json_data[year]["在编"]["学校"][page4_school_name][raw_period]["总人数"]}")
 
         # st.write(json_data["在编"]["学校"][school_name][raw_period])
 
@@ -161,21 +168,21 @@ with st.container(border=True):
 
         with col0:
             # 在编年龄统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["年龄"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["年龄"],
                                  title="年龄")
 
         with col1:
             # 在编学历统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["最高学历"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["最高学历"],
                                  title="最高学历")
 
         with col2:
             # 在编职称统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["最高职称"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["最高职称"],
                                  title="职称")
 
         # 在编学科统计
-        visual_func.draw_bar(data=json_data["在编"]["学校"][page4_school_name][raw_period]["主教学科"],
+        visual_func.draw_bar(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["主教学科"],
                              title="主教学科",
                              end=100)
 
@@ -183,30 +190,30 @@ with st.container(border=True):
 
         with col0:
             # 在编教资统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["教师资格"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["教师资格"],
                                  title="教师资格")
 
             # 在编支教地域统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["支教地域"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["支教地域"],
                                  title="支教地域")
 
         with col1:
             # 在编毕业院校统计
             visual_func.draw_bar(
-                data=json_data["在编"]["学校"][page4_school_name][raw_period]["院校级别"],
+                data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["院校级别"],
                 title="毕业院校", is_show_visual_map=False)
 
             # 在编骨干教师统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["骨干教师"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["骨干教师"],
                                  title="骨干教师")
 
         with col2:
             # 在编性别统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["性别"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["性别"],
                                  title="性别")
 
             # 在编三名工作室统计
-            visual_func.draw_pie(data=json_data["在编"]["学校"][page4_school_name][raw_period]["三名工作室"],
+            visual_func.draw_pie(data=json_data[year]["在编"]["学校"][page4_school_name][raw_period]["四名工作室"],
                                  title="三名统计")
 
         st.divider()
@@ -223,28 +230,28 @@ with st.container(border=True):
             unsafe_allow_html=True
         )
 
-        st.info(f"编外总人数：{json_data["编外"]["学校"][page4_school_name][raw_period]["总人数"]}")
+        st.info(f"编外总人数：{json_data[year]["编外"]["学校"][page4_school_name][raw_period]["总人数"]}")
 
-        # st.write(json_data["编外"]["学校"][school_name][raw_period])
+        # st.write(json_data[year]["编外"]["学校"][school_name][raw_period])
 
         col0, col1 = st.columns(spec=2)
 
         with col0:
             # 编外学历统计
-            visual_func.draw_pie(data=json_data["编外"]["学校"][page4_school_name][raw_period]["最高学历"],
+            visual_func.draw_pie(data=json_data[year]["编外"]["学校"][page4_school_name][raw_period]["最高学历"],
                                  title="最高学历")
 
             # 编外教师资格统计
-            visual_func.draw_pie(data=json_data["编外"]["学校"][page4_school_name][raw_period]["教师资格"],
+            visual_func.draw_pie(data=json_data[year]["编外"]["学校"][page4_school_name][raw_period]["教师资格"],
                                  title="教师资格")
 
         with col1:
             # 编外职称统计
-            visual_func.draw_pie(data=json_data["编外"]["学校"][page4_school_name][raw_period]["最高职称"],
+            visual_func.draw_pie(data=json_data[year]["编外"]["学校"][page4_school_name][raw_period]["最高职称"],
                                  title="职称")
 
             # 编外骨干教师统计
-            visual_func.draw_pie(data=json_data["编外"]["学校"][page4_school_name][raw_period]["骨干教师"],
+            visual_func.draw_pie(data=json_data[year]["编外"]["学校"][page4_school_name][raw_period]["骨干教师"],
                                  title="骨干教师")
 
 # 展示学校云图
@@ -257,6 +264,6 @@ if not st.session_state.page4_search_flag:
         )
 
         visual_func.draw_word_cloud(
-            words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(json_data["学校教师总数"]).items()) if
+            words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(json_data[year]["学校教师总数"]).items()) if
                    v[1] != "幼儿园"],
             title="")
