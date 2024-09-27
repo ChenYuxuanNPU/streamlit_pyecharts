@@ -23,7 +23,14 @@ select political_status,count(*) from teacher_data_0 where current_administrativ
 
 select distinct school_name from teacher_data_1
 
-select school_name, school_id, school_classification, area, count(school_name) count, "0" as kind from teacher_data_0 group by school_name]]></console>
+select school_name, school_id, school_classification, area, count(school_name) count, "0" as kind from teacher_data_0 group by school_name
+
+select * from (select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as kind 
+from teacher_data_0_2023 group by "校名" 
+union all 
+select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as kind 
+from teacher_data_1_2023 group by "校名") 
+order by count desc]]></console>
     </connection>
     <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129">
       <console name="vocal" type="STANDARD" schema="" session="Main" />

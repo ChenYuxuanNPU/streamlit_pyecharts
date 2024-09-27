@@ -6,7 +6,7 @@ period_list = tch_proc_func.period_list
 
 
 # 这里根据校名、学段、是否在编进行学校信息统计
-def update(kind: str, school_name: str, period=None):
+def update(kind: str, school_name: str, year: str, period=None) -> None:
     if kind not in ["在编", '编外']:
         raise tch_proc_func.MyError("kind参数错误")
 
@@ -20,17 +20,17 @@ def update(kind: str, school_name: str, period=None):
     json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 检查一下有没有这个学校和学段，没有的话就报错
-    check_result = tch_proc_func.school_name_and_period_check(kind=kind, school_name=school_name, period=period)
+    check_result = tch_proc_func.school_name_and_period_check(kind=kind, school_name=school_name, period=period,
+                                                              year=year)
     if not check_result[0]:
-
         print(check_result[1])
-        return -1
+        return None
 
     ###
     # 统计总人数 - 分学校
     ###
 
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     try:
@@ -44,7 +44,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数",
         value=result, json_data=json_data)
 
     # print(f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数")
@@ -62,7 +62,7 @@ def update(kind: str, school_name: str, period=None):
     ###
     # 最高学历统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高学历"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高学历"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -81,7 +81,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高学历",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高学历",
         value=result, json_data=json_data)
 
     result = []
@@ -91,7 +91,7 @@ def update(kind: str, school_name: str, period=None):
     ###
     # 性别统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["性别"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["性别"], scope="学校", year=year,
                                             school_name=school_name, period=period, order="asc")
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -108,7 +108,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/性别",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/性别",
         value=result, json_data=json_data)
 
     result = []
@@ -116,9 +116,9 @@ def update(kind: str, school_name: str, period=None):
     # 学校性别统计结束
 
     ###
-    # 最高职称统计 - 分学校
+    # 持有最高职称统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["持有最高职称"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -137,7 +137,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高职称",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/持有最高职称",
         value=result, json_data=json_data)
 
     result = []
@@ -147,7 +147,7 @@ def update(kind: str, school_name: str, period=None):
     ###
     # 在编人员骨干教师统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["骨干教师"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["骨干教师"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -168,7 +168,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/骨干教师",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/骨干教师",
         value=result, json_data=json_data)
 
     result = []
@@ -177,9 +177,9 @@ def update(kind: str, school_name: str, period=None):
     # 学校教师资格统计
     ###
     # 先统计没有教资的
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格"], period=period,
-                                            scope="学校", school_name=school_name,
-                                            additional_requirement=["level_of_teacher_certification == '无'"])
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格学段"], period=period,
+                                            scope="学校", school_name=school_name, year=year,
+                                            additional_requirement=['"教师资格学段" = "无"'])
     try:
         c.execute(sql_sentence)
         result = c.fetchall()[0][0]
@@ -191,15 +191,15 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/未持教师资格",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/未持教师资格",
         value=result, json_data=json_data)
 
     result = []
 
     # 再统计有教资的
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格"], period=period,
-                                            scope="学校", school_name=school_name,
-                                            additional_requirement=["level_of_teacher_certification != '无'"])
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格学段"], period=period,
+                                            scope="学校", school_name=school_name, year=year,
+                                            additional_requirement=['"教师资格学段" != "无"'])
     try:
         c.execute(sql_sentence)
         result = c.fetchall()[0][0]
@@ -211,7 +211,7 @@ def update(kind: str, school_name: str, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/持有教师资格",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/持有教师资格",
         value=result, json_data=json_data)
 
     result = []
@@ -219,22 +219,29 @@ def update(kind: str, school_name: str, period=None):
     # 学校教师资格统计结束
 
     # 统计一下在编编外的特殊信息
-    json_data = data_00_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn) \
-        if kind == "在编" else data_01_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn)
+    if kind == "在编":
+        json_data = data_00_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn,
+                                   year=year, kind=kind)
+
+    elif kind == "编外":
+        json_data = data_01_unique(json_data=json_data, school_name=school_name, period=period, c=c, conn=conn,
+                                   year=year, kind=kind)
 
     tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
     tch_proc_func.disconnect_database(conn=conn)
 
+    return None
+
 
 # 更新一些在编特有的信息
-def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
+def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c, conn, period=None) -> dict:
     result = []
 
     ###
     # 在编人员年龄统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["年龄"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["年龄"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -251,7 +258,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/年龄",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/年龄",
         value=result, json_data=json_data)
 
     # if period is None:
@@ -267,9 +274,10 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
     ###
     # 在编人员主教学科统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["主教学科"], scope="学校", school_name=school_name,
-                                            period=period, limit=20, order="desc",
-                                            additional_requirement=["major_discipline != '无'"])
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["主教学科"], scope="学校",
+                                            school_name=school_name,
+                                            period=period, limit=20, order="desc", year=year,
+                                            additional_requirement=['"主教学科" != "无"'])
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
@@ -285,7 +293,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/主教学科",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/主教学科",
         value=result, json_data=json_data)
 
     result = []
@@ -295,11 +303,12 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
     ###
     # 在编人员院校级别统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=0, info=["院校代码"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=0, info=["参加工作前毕业院校代码"], scope="学校",
+                                            year=year,
                                             school_name=school_name, period=period,
-                                            additional_requirement=["(educational_background = '大学本科' "
-                                                                    "or educational_background = '硕士研究生' "
-                                                                    "or educational_background = '博士研究生')"])
+                                            additional_requirement=['("参加工作前学历" = "本科" '
+                                                                    'or "参加工作前学历" = "硕士研究生" '
+                                                                    'or "参加工作前学历" = "博士研究生")'])
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
@@ -315,7 +324,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/院校级别",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/院校级别",
         value=result, json_data=json_data)
 
     result = []
@@ -326,8 +335,9 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
     # 在编人员三名工作室主持人统计 - 分学校
     ###
     # 这里统计有多少是主持人
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=-1, info=["三名工作室"], school_name=school_name,
-                                            period=period, scope="学校", additional_requirement=["title_01 != '无'"])
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=-1, info=["四名工作室主持人"], school_name=school_name,
+                                            year=year,
+                                            period=period, scope="学校", additional_requirement=['"四名工作室主持人" != "无"'])
     try:
         c.execute(sql_sentence)
         result = c.fetchall()[0][0]
@@ -339,14 +349,15 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/三名工作室/三名工作室主持人",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/四名工作室/四名工作室主持人",
         value=result, json_data=json_data)
 
     result = []
 
     # 这里统计有多少不是主持人
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=-1, info=["三名工作室"],school_name=school_name,
-                                            period=period, scope="学校", additional_requirement=["title_01 == '无'"])
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=-1, info=["四名工作室主持人"], school_name=school_name,
+                                            year=year,
+                                            period=period, scope="学校", additional_requirement=['"四名工作室主持人" = "无"'])
     try:
         c.execute(sql_sentence)
         result = c.fetchall()[0][0]
@@ -358,7 +369,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/三名工作室/无",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/四名工作室/无",
         value=result, json_data=json_data)
 
     result = []
@@ -368,7 +379,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
     ###
     # 在编人员支教地域统计 - 分学校
     ###
-    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["支教地域"], scope="学校",
+    sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["支教地域"], scope="学校", year=year,
                                             school_name=school_name, period=period)
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -387,7 +398,7 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
         conn.commit()
 
     json_data = tch_proc_func.dict_assignment(
-        route=f"在编/学校/{school_name}/{period if period is not None else "所有学段"}/支教地域",
+        route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/支教地域",
         value=result, json_data=json_data)
 
     result = []
@@ -398,13 +409,13 @@ def data_00_unique(json_data: dict, school_name: str, c, conn, period=None):
 
 
 # 更新一些非在编特有的信息
-def data_01_unique(json_data: dict, school_name: str, c, conn, period=None):
+def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c, conn, period=None) -> dict:
     return json_data
 
 
 if __name__ == '__main__':
     pass
-    # update(kind="在编", school_name="广州市白云中学", period="高中")
-    # update(kind="在编", school_name="广州市白云区广州空港实验中学")
-    # update(kind="编外", school_name="广州市实验外语学校", period="高中")
-    # update(kind="编外", school_name="广州市实验外语学校")
+    update(kind="在编", school_name="广州市白云中学", period="高中", year="2023")
+    update(kind="在编", school_name="广州市白云区广州空港实验中学", year="2023")
+    update(kind="编外", school_name="广州市实验外语学校", period="高中", year="2023")
+    update(kind="编外", school_name="广州市实验外语学校", year="2023")

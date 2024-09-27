@@ -333,7 +333,7 @@ def combine_administrative_position(ap_list: list) -> dict:
 
 
 # 用来检查是否有这个学校/这个学校有没有这个学段
-def school_name_and_period_check(kind: str, school_name: str, period=None) -> list:
+def school_name_and_period_check(kind: str, school_name: str, year: str, period=None) -> list:
     if kind not in ["在编", '编外']:
         return [False, "kind参数错误"]
 
@@ -348,7 +348,7 @@ def school_name_and_period_check(kind: str, school_name: str, period=None) -> li
     if period is None:
 
         # 只统计个数时info项无效
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校",
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
                                                 school_name=school_name)
 
         try:
@@ -373,7 +373,7 @@ def school_name_and_period_check(kind: str, school_name: str, period=None) -> li
     if period is not None:
 
         # 只统计个数时info项无效
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校",
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
                                                 school_name=school_name, period=period)
 
         try:
