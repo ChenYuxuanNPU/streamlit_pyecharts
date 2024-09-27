@@ -2,8 +2,7 @@ from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
 kind_list = tch_proc_func.kind_list
-# area_list = tch_proc_func.area_list
-area_list = ["永平"]
+area_list = tch_proc_func.area_list
 period_list = tch_proc_func.period_list
 
 

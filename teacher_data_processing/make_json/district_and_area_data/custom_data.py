@@ -3,7 +3,7 @@ import sys
 from teacher_data_processing.tool import func as tch_proc_func
 
 
-def update():
+def update(year: str) -> dict:
     result = []
 
     c, conn = tch_proc_func.connect_database()
@@ -12,11 +12,11 @@ def update():
 
     # 这里统计所有学校教师总数的列表
     sql_sentence = ('select * from ('
-                    'select school_name, school_id, school_classification, area, count(school_name) count, "0" as kind '
-                    'from teacher_data_0 group by school_name '
+                    'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" '
+                    f'from teacher_data_0_{year} group by "校名" '
                     'union all '
-                    'select school_name, school_id, school_classification, area, count(school_name) count, "1" as kind '
-                    'from teacher_data_1 where is_teacher == "是" group by school_name) '
+                    'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" '
+                    f'from teacher_data_1_{year} group by "校名") '
                     'order by count desc')
 
     try:
@@ -91,7 +91,9 @@ def update():
 
     tch_proc_func.disconnect_database(conn=conn)
 
+    return json_data
+
 
 if __name__ == '__main__':
 
-    update()
+    update(year="2023")
