@@ -341,7 +341,7 @@ def update(kind: str, year: str, ) -> dict:
         # 这里统计有多少不是主持人
         sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["四名工作室主持人"], scope="片区",
                                                 area_name=area, year=year,
-                                                additional_requirement=['四名工作室主持人 == "无"'])
+                                                additional_requirement=['四名工作室主持人 = "无"'])
         try:
             c.execute(sql_sentence)
             result = c.fetchall()[0][0]
@@ -465,9 +465,9 @@ def data_00_unique(json_data: dict, kind: str, year: str, c, conn):
         ###
         sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=0, info=["参加工作前毕业院校代码"], scope="片区",
                                                 area_name=area, year=year,
-                                                additional_requirement=['("参加工作前学历" == "本科" '
-                                                                        'or "参加工作前学历" == "硕士研究生" '
-                                                                        'or "参加工作前学历" == "博士研究生")'])
+                                                additional_requirement=['("参加工作前学历" = "本科" '
+                                                                        'or "参加工作前学历" = "硕士研究生" '
+                                                                        'or "参加工作前学历" = "博士研究生")'])
 
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
