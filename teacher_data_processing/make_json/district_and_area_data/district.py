@@ -732,7 +732,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称", value=result,
+        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/持有最高职称", value=result,
                                                   json_data=json_data)
 
         result = []

@@ -211,31 +211,6 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
     return None
 
 
-# 这里是给片区不同学段的可视化做的
-def show_period(period: str, data: dict) -> None:
-    st.info(f"在编{period}信息")
-
-    with st.container(border=False):
-        c0, c1 = st.columns([2, 1])
-
-        with c0:
-            draw_bar(data=data["在编"]["全区"][period]["主教学科"], title="主教学科", end=end_dict[period])
-
-        with c1:
-            draw_pie(data=data["在编"]["全区"][period]["年龄"], title="年龄")
-
-        c0, c1, c2 = st.columns(spec=3)
-
-        with c0:
-            draw_pie(data=data["在编"]["全区"][period]["最高学历"], title="最高学历")
-
-        with c1:
-            draw_bar(data=data["在编"]["全区"][period]["院校级别"], title="毕业院校", is_show_visual_map=False)
-
-        with c2:
-            draw_pie(data=data["在编"]["全区"][period]["最高职称"], title="职称")
-
-
 # 用来插入st.write_stream的数据
 def stream_data(sentence: str, delay=0.015):
     for word in sentence:

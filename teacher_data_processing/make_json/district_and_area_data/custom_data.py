@@ -81,7 +81,7 @@ def update(year: str) -> dict:
                 case _:
                     break
 
-    json_data = tch_proc_func.dict_assignment(route=f"学校教师总数", value=school_dict, json_data=json_data)
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/学校教师总数", value=school_dict, json_data=json_data)
 
     result = []
 
