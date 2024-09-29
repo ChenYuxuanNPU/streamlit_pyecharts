@@ -6,6 +6,7 @@ from pathlib import Path
 from teacher_data_processing.read_database import get_database_data as gd
 
 # 用来设置排序
+# todo:插入新表时要检查这里新加入的下拉选项
 educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '本科': 3, "专科": 4, "高中": 5, "高中及以下": 6,
                                 "中师": 7, "中专（非师范）": 8, "中专": 9, None: 10}
 
