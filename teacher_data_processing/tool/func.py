@@ -6,15 +6,16 @@ from pathlib import Path
 from teacher_data_processing.read_database import get_database_data as gd
 
 # 用来设置排序
-educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '本科': 3, "专科": 4, "中专": 5, "高中": 6,
-                                "高中及以下": 7, None: 7}
+educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '本科': 3, "专科": 4, "高中": 5, "高中及以下": 6,
+                                "中师": 7, "中专（非师范）": 8, "中专": 9, None: 10}
 
 highest_title_order = {'三级教师': 1, '二级教师': 2, '一级教师': 3, '高级教师': 4, '正高级教师': 5,
                        '初级职称（非中小学系列）': 6,
                        '中级职称（非中小学系列）': 7, '高级职称（非中小学系列）': 8, '未取得职称': 9, None: 10}
 
-current_administrative_position_order = {'无': 1, '中层副职': 2, '中层正职': 3, '副校级': 4, '正校级': 5,
-                                         '党组织书记兼校长': 6, '党组织书记': 7, None: 8}
+current_administrative_position_order = {'党组织书记兼校长': 1, '党组织书记': 2, '正校级': 3, '副校级': 4, '中层正职': 5,
+                                         '中层副职': 6, '团委书记': 7, '团委副书记': 8, '少先队大队辅导员': 9,
+                                         '少先队副大队辅导员': 10, '工会主席': 11, '工会副主席': 12, '无': 13, None: 14}
 
 cadre_teacher_order = {'无': 1, '白云区骨干教师': 2, '广州市骨干教师': 3, '广东省骨干教师': 4, '外省市骨干教师': 5,
                        '其他': 6,
@@ -316,24 +317,24 @@ def combine_highest_title(title_list: list) -> dict:
 
 
 # 这里要把党组织书记和党组织书记兼校长合并到正校级里
-def combine_administrative_position(ap_list: list) -> dict:
-    output = {
-        "无": 0,
-        "中层副职": 0,
-        "中层正职": 0,
-        "副校级": 0,
-        "正校级": 0,
-    }
-
-    for a_p in ap_list:
-        if a_p[0] in list(output.keys()):
-            output[a_p[0]] += a_p[1]
-        elif a_p[0] in ["党组织书记兼校长", "党组织书记"]:
-            output["正校级"] += a_p[1]
-        else:
-            print(f"{a_p[0]}未插入")
-
-    return output
+# def combine_administrative_position(ap_list: list) -> dict:
+#     output = {
+#         "无": 0,
+#         "中层副职": 0,
+#         "中层正职": 0,
+#         "副校级": 0,
+#         "正校级": 0,
+#     }
+#
+#     for a_p in ap_list:
+#         if a_p[0] in list(output.keys()):
+#             output[a_p[0]] += a_p[1]
+#         elif a_p[0] in ["党组织书记兼校长", "党组织书记"]:
+#             output["正校级"] += a_p[1]
+#         else:
+#             print(f"{a_p[0]}未插入")
+#
+#     return output
 
 
 # 用来检查是否有这个学校/这个学校有没有这个学段

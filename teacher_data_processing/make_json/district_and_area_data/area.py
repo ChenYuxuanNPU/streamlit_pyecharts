@@ -440,7 +440,13 @@ def data_00_unique(json_data: dict, kind: str, year: str, c, conn):
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = tch_proc_func.combine_administrative_position(
+            # result = tch_proc_func.combine_administrative_position(
+            #     sorted(
+            #         c.fetchall(), key=lambda x: tch_proc_func.current_administrative_position_order[x[0]]
+            #     )
+            # )
+
+            result = dict(
                 sorted(
                     c.fetchall(), key=lambda x: tch_proc_func.current_administrative_position_order[x[0]]
                 )
