@@ -1,11 +1,15 @@
 import json
 from pathlib import Path
 
-with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
-          "r", encoding='UTF-8') as file:  # ISO-8859-1
-    loaded_data = json.load(file)
 
-teacher_table_list = loaded_data['teacher_table_list']
+def get_teacher_table_list() -> dict:
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
+              "r", encoding='UTF-8') as file:  # ISO-8859-1
+        loaded_data = json.load(file)
+
+    teacher_table_list = loaded_data['teacher_table_list']
+
+    return teacher_table_list
 
 # 为了简化前面所有kind参数，直接用在编编外，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
 # trans_kind = {
@@ -98,7 +102,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
     # 采集某一字段的统计数据
     if info_num == 1:
 
-        sql_sentence = fr'select "{info[0]}",count(*) from {teacher_table_list[kind][year]} '
+        sql_sentence = fr'select "{info[0]}",count(*) from {get_teacher_table_list()[kind][year]} '
 
         # 最新的版本中删掉了is_teacher字段
         # if kind == "在编":
@@ -160,7 +164,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
                 else:
                     sql_sentence += f', "{info[i]}" '
 
-        sql_sentence += f' from {teacher_table_list[kind][year]} '
+        sql_sentence += f' from {get_teacher_table_list()[kind][year]} '
 
         # 最新的版本中删掉了is_teacher字段
         # if kind == "在编":
@@ -197,7 +201,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
 
     elif info_num == -1:
 
-        sql_sentence = fr'select count(*) from {teacher_table_list[kind][year]} '
+        sql_sentence = fr'select count(*) from {get_teacher_table_list()[kind][year]} '
 
         # 最新的版本中删掉了is_teacher字段
         # if kind == "在编":

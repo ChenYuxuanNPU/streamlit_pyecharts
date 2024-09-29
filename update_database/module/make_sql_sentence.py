@@ -5,11 +5,15 @@ import json
 
 from pathlib import Path
 
-with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r",
-          encoding="UTF-8") as file:
-    json_data = json.load(file)
 
-    words_dict = json_data["words_dict"]
+def get_words_dict() -> dict:
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r",
+              encoding="UTF-8") as file:
+        json_data = json.load(file)
+
+        words_dict = json_data["words_dict"]
+
+        return words_dict
 
 
 def make_sql_sentence(kind):
@@ -19,19 +23,19 @@ def make_sql_sentence(kind):
     # 根据查询信息的类型取出年份，找到对应的word
 
     if "在编教师信息" in kind:
-        words = words_dict[f"teacher_info_0_{kind[0:4]}_word"]
+        words = get_words_dict()[f"teacher_info_0_{kind[0:4]}_word"]
 
     # if kind == "2023年在编教师信息":
     #     words = teacher_info_0_2023_word
 
     elif "编外教师信息" in kind:
-        words = words_dict[f"teacher_info_1_{kind[0:4]}_word"]
+        words = get_words_dict()[f"teacher_info_1_{kind[0:4]}_word"]
 
     # elif kind == "2023年编外教师信息":
     #     words = teacher_info_1_2023_word
 
     elif "学校情况一览表" in kind:
-        words = words_dict[f"school_info_sum_{kind[0:4]}_word"]
+        words = get_words_dict()[f"school_info_sum_{kind[0:4]}_word"]
 
     # elif kind == "2023年学校情况一览表":
     #     words = school_info_sum_2023_word

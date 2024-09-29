@@ -4,16 +4,10 @@ import sqlite3
 
 from pathlib import Path
 
-with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
-          "r", encoding='UTF-8') as file:  # ISO-8859-1
-    loaded_data = json.load(file)
-
-database_name = loaded_data["database_name"]
-
 
 def connect_database():
     conn = sqlite3.connect(
-        fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}"
+        fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}"
     )
     c = conn.cursor()
 
@@ -62,6 +56,16 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
     return None
+
+
+def get_database_name() -> str:
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
+              "r", encoding='UTF-8') as file:  # ISO-8859-1
+        loaded_data = json.load(file)
+
+    database_name = loaded_data["database_name"]
+
+    return database_name
 
 
 if __name__ == '__main__':

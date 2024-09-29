@@ -5,12 +5,6 @@ from pathlib import Path
 
 from teacher_data_processing.read_database import get_database_data as gd
 
-with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
-          "r", encoding='UTF-8') as file:  # ISO-8859-1
-    loaded_data = json.load(file)
-
-database_name = loaded_data["database_name"]
-
 # 用来设置排序
 educational_background_order = {'博士研究生': 1, '硕士研究生': 2, '本科': 3, "专科": 4, "中专": 5, "高中": 6,
                                 "高中及以下": 7, None: 7}
@@ -65,7 +59,7 @@ class MyError(Exception):
 # kind:"在编","编外"
 def connect_database():
     conn = sqlite3.connect(
-        fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}"
+        fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}"
     )
     c = conn.cursor()
 
@@ -92,6 +86,16 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
     return None
+
+
+def get_database_name() -> str:
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
+              "r", encoding='UTF-8') as file:  # ISO-8859-1
+        loaded_data = json.load(file)
+
+    database_name = loaded_data["database_name"]
+
+    return database_name
 
 
 def reverse_label_and_value(old_list: list) -> list:
@@ -157,34 +161,34 @@ def age_statistics(age_list=None, age_count_list=None) -> dict:
     if age_list is not None:
         for age in age_list:
             if int(age) <= 20:
-                data[0] = data[0] + 1
+                data[0] += 1
 
             elif 20 < int(age) < 25:
-                data[1] = data[1] + 1
+                data[1] += 1
 
             elif 25 <= int(age) < 30:
-                data[2] = data[2] + 1
+                data[2] += 1
 
             elif 30 <= int(age) < 35:
-                data[3] = data[3] + 1
+                data[3] += 1
 
             elif 35 <= int(age) < 40:
-                data[4] = data[4] + 1
+                data[4] += 1
 
             elif 40 <= int(age) < 45:
-                data[5] = data[5] + 1
+                data[5] += 1
 
             elif 45 <= int(age) < 50:
-                data[6] = data[6] + 1
+                data[6] += 1
 
             elif 50 <= int(age) < 55:
-                data[7] = data[7] + 1
+                data[7] += 1
 
             elif 55 <= int(age) < 60:
-                data[8] = data[8] + 1
+                data[8] += 1
 
             elif int(age) >= 60:
-                data[9] = data[9] + 1
+                data[9] += 1
 
             else:
                 print("有一个奇怪的年龄：")
@@ -196,34 +200,34 @@ def age_statistics(age_list=None, age_count_list=None) -> dict:
 
         for single_data in age_count_list:
             if int(single_data[0]) <= 20:
-                data[0] = data[0] + int(single_data[1])
+                data[0] += int(single_data[1])
 
             elif 20 < int(single_data[0]) < 25:
-                data[1] = data[1] + int(single_data[1])
+                data[1] += int(single_data[1])
 
             elif 25 <= int(single_data[0]) < 30:
-                data[2] = data[2] + int(single_data[1])
+                data[2] += int(single_data[1])
 
             elif 30 <= int(single_data[0]) < 35:
-                data[3] = data[3] + int(single_data[1])
+                data[3] += int(single_data[1])
 
             elif 35 <= int(single_data[0]) < 40:
-                data[4] = data[4] + int(single_data[1])
+                data[4] += int(single_data[1])
 
             elif 40 <= int(single_data[0]) < 45:
-                data[5] = data[5] + int(single_data[1])
+                data[5] += int(single_data[1])
 
             elif 45 <= int(single_data[0]) < 50:
-                data[6] = data[6] + int(single_data[1])
+                data[6] += int(single_data[1])
 
             elif 50 <= int(single_data[0]) < 55:
-                data[7] = data[7] + int(single_data[1])
+                data[7] += int(single_data[1])
 
             elif 55 <= int(single_data[0]) < 60:
-                data[8] = data[8] + int(single_data[1])
+                data[8] += int(single_data[1])
 
             elif int(single_data[0]) >= 60:
-                data[9] = data[9] + int(single_data[1])
+                data[9] += int(single_data[1])
 
             else:
                 print("有一个奇怪的年龄：")
