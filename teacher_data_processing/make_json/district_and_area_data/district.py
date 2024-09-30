@@ -197,7 +197,8 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/未持有教师资格", value=result,
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/未持有教师资格",
+                                              value=result,
                                               json_data=json_data)
     # json_data[kind]['全区']['所有学段']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
@@ -392,15 +393,13 @@ def update(year: str, kind: str) -> dict:
     # 全区人数分布top10数量统计
     ###
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year,
-                                            scope="全区", limit=10, order="desc")
+                                            scope="全区", limit=30, order="desc")
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = tch_proc_func.simplify_school_name(
-            dict1=dict(
-                c.fetchall()
-            )
+        result = dict(
+            c.fetchall()
         )
 
     except Exception as e:
@@ -409,7 +408,34 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布", value=result,
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布前三十", value=result,
+                                              json_data=json_data)
+
+    result = []
+
+    # 全区人数分布top10统计结束
+
+    ###
+    # 全区人数分布倒10数量统计
+    ###
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year,
+                                            scope="全区", limit=30, order="asc", additional_requirement=[
+            '"学校类型" != "幼儿园" and "学校类型" != "教学支撑单位"'])
+
+    # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+    try:
+        c.execute(sql_sentence)
+        result = dict(
+            c.fetchall()
+        )
+
+    except Exception as e:
+        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+
+    finally:
+        conn.commit()
+
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布后三十", value=result,
                                               json_data=json_data)
 
     result = []
@@ -503,7 +529,8 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
     ###
     # 全区在编人员院校级别统计
     ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区", year=year,
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
+                                            year=year,
                                             additional_requirement=['("参加工作前学历" = "本科" '
                                                                     'or "参加工作前学历" = "硕士研究生" '
                                                                     'or "参加工作前学历" = "博士研究生")'])
@@ -748,7 +775,8 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
         ###
         # 全区分学段在编人员院校级别统计
         ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区", period=period,
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
+                                                period=period,
                                                 year=year,
                                                 additional_requirement=['("参加工作前学历" = "本科" '
                                                                         'or "参加工作前学历" = "硕士研究生" '

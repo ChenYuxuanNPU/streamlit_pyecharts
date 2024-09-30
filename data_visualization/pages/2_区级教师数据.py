@@ -93,25 +93,11 @@ def show_all_period(data: dict):
             # 在编四名教师统计
             visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
-        # 教师分布统计
-        visual_func.draw_bar(data=data[year0]["在编"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=50)
+        # 教师分布前三十统计
+        visual_func.draw_bar(data=data[year0]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
 
-        # 在编教师数少的学校统计
-        temp_all = sorted(list(data[year0]["学校教师总数"].items()), key=lambda x: (x[1][3], x[1][5]))
-        temp = []
-        temp_for_bar = {}
-
-        for item in temp_all:
-            if item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教学支撑单位":
-                temp.append(item)
-
-        for i in range(0, min(15, len(temp))):
-            temp_for_bar[temp[i][0]] = temp[i][1][3]
-
-        visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校",
-                             is_show_visual_map=False)
-
-        # 统计完在编教师数少的学校了
+        # 在编教师数后三十的学校统计
+        visual_func.draw_bar(data=data[year0]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数", end=100)
 
 
 def show_teacher_0(data: dict,):
@@ -176,7 +162,7 @@ def show_teacher_1(data: dict):
         visual_func.draw_pie(data=data[year0]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
     # 教师分布统计
-    visual_func.draw_bar(data=data[year0]["编外"]["全区"]["所有学段"]["教师分布"], title="教师分布", end=100)
+    visual_func.draw_bar(data=data[year0]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
 
     c0, c1, c2 = st.columns(spec=3)
 
