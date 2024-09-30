@@ -41,7 +41,7 @@ def set_page_configuration(title: str, icon: str):
     )
 
 
-def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%') -> None:
+def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%', center_to_bottom='60%') -> None:
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
@@ -51,7 +51,7 @@ def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='2
             chart=(
                 Pie()
                 .add("", [(k, v) for k, v in data.items()],
-                     center=["50%", "60%"], radius="65%", percent_precision=1)
+                     center=["50%", center_to_bottom], radius="65%", percent_precision=1)
                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
                                  legend_opts=opts.LegendOpts(pos_left=pos_left))
                 .set_series_opts(label_opts=opts.LabelOpts(formatter=formatter))

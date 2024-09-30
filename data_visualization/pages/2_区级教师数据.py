@@ -24,7 +24,7 @@ def show_period(period: str, data: dict,) -> None:
             visual_func.draw_bar(data=data[year0]["在编"]["全区"][period]["主教学科"], title="主教学科", end=visual_func.end_dict[period])
 
         with c1:
-            visual_func.draw_pie(data=data[year0]["在编"]["全区"][period]["年龄"], title="年龄")
+            visual_func.draw_pie(data=data[year0]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%", center_to_bottom="64%")
 
         c0, c1, c2 = st.columns(spec=3)
 
@@ -61,7 +61,7 @@ def show_all_period(data: dict):
 
         with c2:
             # 在编年龄统计
-            visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["年龄"], title="年龄")
+            visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%", center_to_bottom="64%")
 
             # 在编行政职务统计
             visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务")
