@@ -15,7 +15,7 @@ from data_visualization.tool import func as visual_func
 
 # 这里是给片区不同学段的可视化做的
 def show_period(period: str, data: dict,) -> None:
-    st.info(f"在编{period}信息")
+    st.info(f"在编{period}信息", icon="😋")
 
     with st.container(border=False):
         c0, c1 = st.columns([2, 1])
