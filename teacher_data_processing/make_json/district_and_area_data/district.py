@@ -27,7 +27,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -56,7 +56,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -82,7 +82,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -108,7 +108,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -136,7 +136,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -166,7 +166,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -192,7 +192,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -213,7 +213,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -238,7 +238,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -259,7 +259,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -283,7 +283,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -303,7 +303,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -331,7 +331,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -356,7 +356,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -376,7 +376,7 @@ def update(year: str, kind: str) -> dict:
         result = c.fetchall()[0][0]
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -390,12 +390,12 @@ def update(year: str, kind: str) -> dict:
     # 全区三名工作室主持人统计结束
 
     ###
-    # 全区人数分布top10数量统计
+    # 全区人数分布前三十数量统计
     ###
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year,
-                                            scope="全区", limit=30, order="desc")
+                                            scope="全区", limit=30, order="desc",
+                                            additional_requirement=['"学校类型" != "幼儿园" and "学校类型" != "教学支撑单位"'])
 
-    # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
         result = dict(
@@ -403,7 +403,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -413,10 +413,10 @@ def update(year: str, kind: str) -> dict:
 
     result = []
 
-    # 全区人数分布top10统计结束
+    # 全区人数分布前三十统计结束
 
     ###
-    # 全区人数分布倒10数量统计
+    # 全区人数分布倒三十数量统计
     ###
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year,
                                             scope="全区", limit=30, order="asc", additional_requirement=[
@@ -430,7 +430,7 @@ def update(year: str, kind: str) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -440,7 +440,7 @@ def update(year: str, kind: str) -> dict:
 
     result = []
 
-    # 全区人数分布top10统计结束
+    # 全区人数分布倒三十统计结束
 
     match kind:
 
@@ -487,7 +487,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -514,7 +514,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -543,7 +543,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -576,7 +576,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -603,7 +603,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         )
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        print('\033[1;91m' + f"{e}" + '\033[0m')
 
     finally:
         conn.commit()
@@ -650,7 +650,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()
@@ -676,7 +676,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()
@@ -703,7 +703,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()
@@ -731,7 +731,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()
@@ -760,7 +760,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()
@@ -790,7 +790,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             )
 
         except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print('\033[1;91m' + f"{e}" + '\033[0m')
 
         finally:
             conn.commit()

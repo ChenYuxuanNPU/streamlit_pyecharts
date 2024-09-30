@@ -12,8 +12,6 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 
-year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
-
 
 # 这里是给片区不同学段的可视化做的
 def show_period(period: str, data: dict,) -> None:
@@ -66,7 +64,7 @@ def show_all_period(data: dict):
             visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%", center_to_bottom="64%")
 
             # 在编行政职务统计
-            visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务")
+            visual_func.draw_pie(data=data[year0]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务", center_to_bottom="68%")
 
         # 学科统计占两列
         c0, c1 = st.columns([2, 1])
@@ -192,6 +190,8 @@ visual_func.set_page_configuration(title="区级教师数据", icon=":classical_
 
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
 
 # 标题
 st.markdown(
