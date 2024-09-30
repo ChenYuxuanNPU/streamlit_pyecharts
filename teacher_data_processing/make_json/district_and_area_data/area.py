@@ -96,7 +96,8 @@ def update(kind: str, year: str, ) -> dict:
         # 片区学段分布统计
         ###
 
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["任教学段"], scope="片区", area_name=area, year=year,
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["任教学段"], scope="片区", area_name=area,
+                                                year=year,
                                                 additional_requirement=['"任教学段" != "其他"'])
 
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
@@ -273,7 +274,8 @@ def update(kind: str, year: str, ) -> dict:
         # 先统计没有教资的
         sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格"], scope="片区",
                                                 area_name=area, year=year,
-                                                additional_requirement=['"教师资格学段" = "无"', '"任教学段" != "幼儿园"'])
+                                                additional_requirement=['"教师资格学段" = "无"',
+                                                                        '"任教学段" != "幼儿园"'])
         try:
             c.execute(sql_sentence)
             result = c.fetchall()[0][0]
@@ -293,7 +295,8 @@ def update(kind: str, year: str, ) -> dict:
         # 再统计有教资的
         sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格"], scope="片区",
                                                 area_name=area, year=year,
-                                                additional_requirement=['"教师资格学段" != "无"', '"任教学段" != "幼儿园"'])
+                                                additional_requirement=['"教师资格学段" != "无"',
+                                                                        '"任教学段" != "幼儿园"'])
         try:
             c.execute(sql_sentence)
             result = c.fetchall()[0][0]
@@ -313,7 +316,7 @@ def update(kind: str, year: str, ) -> dict:
         # 片区教师资格统计结束
 
         ###
-        # 片区三名工作室主持人统计
+        # 片区四名工作室主持人统计
         ###
 
         # 这里统计有多少是主持人
@@ -358,7 +361,62 @@ def update(kind: str, year: str, ) -> dict:
 
         result = []
 
-        # 片区三名工作室主持人统计结束
+        # 片区四名工作室主持人统计结束
+
+        ###
+        # 片镇人数分布前十数量统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year, area_name=area,
+                                                scope="片区", limit=10, order="desc", additional_requirement=[
+                '"学校类型" != "幼儿园" and "学校类型" != "教学支撑单位"'])
+
+        try:
+            c.execute(sql_sentence)
+            result = dict(
+                c.fetchall()
+            )
+
+        except Exception as e:
+            print('\033[1;91m' + f"{e}" + '\033[0m')
+
+        finally:
+            conn.commit()
+
+        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师分布前十",
+                                                  value=result,
+                                                  json_data=json_data)
+
+        result = []
+
+        # 片镇人数分布前十统计结束
+
+        ###
+        # 片镇人数分布倒十数量统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["校名"], year=year, area_name=area,
+                                                scope="片区", limit=10, order="asc", additional_requirement=[
+                '"学校类型" != "幼儿园" and "学校类型" != "教学支撑单位"'])
+
+        # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+        try:
+            c.execute(sql_sentence)
+            result = dict(
+                c.fetchall()
+            )
+
+        except Exception as e:
+            print('\033[1;91m' + f"{e}" + '\033[0m')
+
+        finally:
+            conn.commit()
+
+        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师分布后十",
+                                                  value=result,
+                                                  json_data=json_data)
+
+        result = []
+
+        # 片镇人数分布倒十统计结束
 
     # 更新一下在编和编外的特殊信息
     json_data = data_00_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
@@ -381,7 +439,8 @@ def data_00_unique(json_data: dict, kind: str, year: str, c, conn):
         ###
         # 片区在编人员年龄统计
         ###
-        sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["年龄"], scope="片区", area_name=area, year=year)
+        sql_sentence = gd.generate_sql_sentence(kind="在编", info_num=1, info=["年龄"], scope="片区", area_name=area,
+                                                year=year)
 
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
