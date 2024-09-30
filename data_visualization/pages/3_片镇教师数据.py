@@ -13,146 +13,10 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 
-# 初始化全局变量
-visual_func.session_state_initial()
 
-# 清空其他页暂用变量
-visual_func.session_state_reset(page=3)
+# 用于展示指导中心信息
+def show_text_info() -> None:
 
-# 设置页面格式
-visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
-
-# 读取现有json文件
-json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-# 标题
-st.markdown(
-    "<h1 style='text-align: center;'>片镇教师数据</h1>",
-    unsafe_allow_html=True
-)
-
-st.divider()
-
-with st.container(border=True):
-
-    year = st.selectbox(
-        "请选择需要查询的年份",
-        ("2023", "2024"),
-        index=0,
-    )
-
-    page3_area = st.selectbox(
-        "想查询哪一个片镇的信息？",
-        ("永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"),
-        index=None,
-        placeholder="单击选择区域",
-    )
-
-    if page3_area is not None and year is not None:
-
-        st.success(f"{page3_area}在编所有学段信息")
-
-        with st.container(border=False):
-            col0, col1, col2 = st.columns(spec=3)
-
-            with col0:
-                # 在编年龄统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["年龄"],
-                                     title="年龄")
-
-                # 在编学段统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["学段统计"],
-                                     title="学段统计")
-
-            with col1:
-                # 在编学历统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["最高学历"],
-                                     title="最高学历")
-
-                # 在编毕业院校统计
-                visual_func.draw_bar(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["院校级别"],
-                                     title="毕业院校", is_show_visual_map=False)
-
-            with col2:
-                # 在编职称统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["最高职称"],
-                                     title="职称")
-
-                # 在编行政职务统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["行政职务"],
-                                     title="行政职务")
-
-            # 在编学科统计
-            visual_func.draw_bar(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["主教学科"],
-                                 title="主教学科", is_show_visual_map=False)
-
-            # 在编教师数少的学校统计
-            temp_all = sorted(list(json_data[year]["学校教师总数"].items()), key=lambda x: (x[1][3], x[1][5]))
-            temp = []
-            temp_for_bar = {}
-
-            for item in temp_all:
-                if item[1][2] == page3_area and item[1][3] != 0 and item[1][1] != "幼儿园" and item[1][1] != "教学支撑单位":
-                    temp.append(item)
-
-            for i in range(0, min(15, len(temp))):
-                temp_for_bar[temp[i][0]] = temp[i][1][3]
-
-            visual_func.draw_bar(data=visual_func.simplify_school_name(temp_for_bar), title="在编教师数较少的学校",
-                                 is_show_visual_map=False)
-
-            # 统计完在编教师数少的学校了
-
-            col0, col1, col2 = st.columns(spec=3)
-
-            with col0:
-                # 在编骨干教师统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["骨干教师"],
-                                     title="骨干教师")
-
-            with col1:
-                # 在编教师支教统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["支教地域"],
-                                     title="支教地域")
-
-            with col2:
-                # 在编四名教师统计
-                visual_func.draw_pie(data=json_data[year]["在编"]["片区"][page3_area]["所有学段"]["四名工作室"],
-                                     title="四名统计")
-
-        st.success("编外所有学段教师信息")
-
-        with st.container(border=False):
-            col0, col1, col2 = st.columns(spec=3)
-
-            with col0:
-                # 编外学段统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["所有学段"]["学段统计"],
-                                     title="学段统计")
-
-                # 编外教师资格统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["所有学段"]["教师资格"],
-                                     title="教师资格")
-
-            with col1:
-                # 编外学历统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["所有学段"]["最高学历"],
-                                     title="最高学历")
-
-                # 编外中小学教师资格统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["中小学"]["教师资格"],
-                                     title="中小学")
-
-            with col2:
-                # 编外职称统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["所有学段"]["最高职称"],
-                                     title="职称")
-
-                # 编外幼儿园教师资格统计
-                visual_func.draw_pie(data=json_data[year]["编外"]["片区"][page3_area]["幼儿园"]["教师资格"],
-                                     title="幼儿园")
-
-if page3_area is None or year is None:
     st.divider()
 
     # 展示宣传数据
@@ -180,3 +44,183 @@ if page3_area is None or year is None:
             ),
             height=350
         )
+
+
+def show_teacher_0(year: str, area: str, data: dict) -> None:
+
+    st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+
+    with st.container(border=False):
+        c0, c1, c2 = st.columns(spec=3)
+
+        with c0:
+            # 在编年龄统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["年龄"],
+                                 title="年龄", pos_left="15%", center_to_bottom="64%")
+
+            # 在编学段统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["学段统计"],
+                                 title="学段统计")
+
+        with c1:
+            # 在编学历统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["最高学历"],
+                                 title="最高学历")
+
+            # 在编毕业院校统计
+            visual_func.draw_bar(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
+                                 title="毕业院校", is_show_visual_map=False)
+
+        with c2:
+            # 在编职称统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["最高职称"],
+                                 title="职称")
+
+            # 在编行政职务统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["行政职务"],
+                                 title="行政职务")
+
+        # 在编学科统计
+        visual_func.draw_bar(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
+                             title="主教学科", is_show_visual_map=False)
+
+        c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
+
+        with c0:
+            # 在编骨干教师统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["骨干教师"],
+                                 title="骨干教师")
+
+        with c1:
+            # 在编教师支教统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["支教地域"],
+                                 title="支教地域")
+
+        with c2:
+            # 在编四名教师统计
+            visual_func.draw_pie(data=data[year]["在编"]["片区"][area]["所有学段"]["四名工作室"],
+                                 title="四名统计")
+
+
+def show_teacher_1(year: str, area: str, data: dict) -> None:
+
+    st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+
+    with st.container(border=False):
+        c0, c1, c2 = st.columns(spec=3)
+
+        with c0:
+            # 编外学段统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["所有学段"]["学段统计"],
+                                 title="学段统计")
+
+            # 编外教师资格统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["所有学段"]["教师资格"],
+                                 title="教师资格")
+
+        with c1:
+            # 编外学历统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["所有学段"]["最高学历"],
+                                 title="最高学历")
+
+            # 编外中小学教师资格统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["中小学"]["教师资格"],
+                                 title="中小学")
+
+        with c2:
+            # 编外职称统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["所有学段"]["最高职称"],
+                                 title="职称")
+
+            # 编外幼儿园教师资格统计
+            visual_func.draw_pie(data=data[year]["编外"]["片区"][area]["幼儿园"]["教师资格"],
+                                 title="幼儿园")
+
+
+# 初始化全局变量
+visual_func.session_state_initial()
+
+# 清空其他页暂用变量
+visual_func.session_state_reset(page=3)
+
+# 设置页面格式
+visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
+
+# 读取现有json文件
+json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
+
+# 标题
+st.markdown(
+    "<h1 style='text-align: center;'>片镇教师数据</h1>",
+    unsafe_allow_html=True
+)
+
+st.divider()
+
+with st.container(border=True):
+
+    col0, col1 = st.columns(spec=2)
+
+    with col0:
+        year0 = st.selectbox(
+            "请选择需要查询的年份",
+            year_list,
+            index=0,
+        )
+
+        area0 = st.selectbox(
+            "想查询哪一个片镇的信息？",
+            ("永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"),
+            index=None,
+            placeholder=""
+        )
+
+        st.button("点我")
+
+    with col1:
+        year1 = st.selectbox(
+            "请选择需要对比的年份",
+            [year for year in year_list if year != year0],
+            index=None,
+            placeholder=""
+        )
+
+        area1 = st.selectbox(
+            "想对比哪一个片镇的信息？",
+            [area for area in ["永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"] if area != area0],
+            index=None,
+            placeholder=""
+        )
+
+        st.button("点我1")
+
+    if area0 is not None and year0 is not None:
+
+        try:
+            show_teacher_0(year=year0, area=area0, data=json_data)
+
+        except KeyError as e:
+
+            if e.args[0] == year0:
+                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+
+            elif e.args[0] == "在编":
+                st.error(f"json文件缺少{year0}年的在编数据", icon="😆")
+
+        try:
+            show_teacher_1(year=year0, area=area0, data=json_data)
+
+        except KeyError as e:
+
+            if e.args[0] == year0:
+                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+
+            elif e.args[0] == "编外":
+                st.error(f"json文件缺少{year0}年的编外数据", icon="😆")
+
+
+if area0 is None or year0 is None:
+
+    show_text_info()
