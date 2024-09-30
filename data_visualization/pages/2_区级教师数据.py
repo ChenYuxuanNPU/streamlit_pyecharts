@@ -12,6 +12,8 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 
+year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
+
 
 # 这里是给片区不同学段的可视化做的
 def show_period(period: str, data: dict,) -> None:
@@ -203,15 +205,15 @@ col0, col1 = st.columns(spec=2)
 with col0:
     year0 = st.selectbox(
         "请选择需要查询的年份",
-        ("2023", "2024"),
+        (year for year in year_list),
         index=0,
     )
 
 with col1:
     year1 = st.selectbox(
         "请选择需要比较的年份",
-        (None, "2023", "2024"),
-        index=None,
+        ([None] + list(year_list)),
+        index=0,
         placeholder="仅展示查询年份数据"
     )
 
