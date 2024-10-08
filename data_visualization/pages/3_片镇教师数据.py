@@ -174,29 +174,26 @@ with st.container(border=True):
             "想查询哪一个片镇的信息？",
             ("永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"),
             index=None,
-            placeholder=""
+            placeholder="必选项"
         )
-
-        st.button("点我")
 
     with col1:
         year1 = st.selectbox(
             "请选择需要对比的年份",
             [year for year in year_list if year != year0],
             index=None,
-            placeholder=""
+            placeholder="可选项"
         )
 
         area1 = st.selectbox(
             "想对比哪一个片镇的信息？",
             [area for area in ["永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"] if area != area0],
             index=None,
-            placeholder=""
+            placeholder="可选项"
         )
 
-        st.button("点我1")
-
-    if area0 is not None and year0 is not None:
+    # 查询某一年某片镇的教师信息
+    if year0 is not None and year1 is None and area0 is not None and area1 is None:
 
         try:
             show_teacher_0(year=year0, area=area0, data=json_data)
@@ -204,10 +201,10 @@ with st.container(border=True):
         except KeyError as e:
 
             if e.args[0] == year0:
-                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+                st.error(f"缺少{year0}年的数据", icon="🤣")
 
             elif e.args[0] == "在编":
-                st.error(f"json文件缺少{year0}年的在编数据", icon="😆")
+                st.error(f"缺少{year0}年的在编数据", icon="😆")
 
         try:
             show_teacher_1(year=year0, area=area0, data=json_data)
@@ -215,12 +212,29 @@ with st.container(border=True):
         except KeyError as e:
 
             if e.args[0] == year0:
-                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+                st.error(f"缺少{year0}年的数据", icon="🤣")
 
             elif e.args[0] == "编外":
-                st.error(f"json文件缺少{year0}年的编外数据", icon="😆")
+                st.error(f"缺少{year0}年的编外数据", icon="😆")
+
+    # 对比某一片镇不同年份的教师信息
+    elif year0 is not None and year1 is not None and area0 is not None and area1 is None:
+        st.info("对比某一片镇不同年份的教师信息")
+
+    # 对比同一年份不同片镇的教师信息
+    elif year0 is not None and year1 is None and area0 is not None and area1 is not None:
+        st.info("对比同一年份不同片镇的教师信息")
+
+    # 对比不同年份不同片镇的教师信息
+    elif year0 is not None and year1 is not None and area0 is not None and area1 is not None:
+        st.info("对比不同年份不同片镇的教师信息")
+
+    else:
+        st.error("?")
 
 
-if area0 is None or year0 is None:
+if (visual_func.count_empty_values(lst=[year0, year1, area0, area1]) >= 2 and not (year0 is not None and area0 is not None)
+        or visual_func.count_empty_values(lst=[year0, year1, area0, area1]) == 1 and not (year1 is None or area1 is None)):
 
     show_text_info()
+

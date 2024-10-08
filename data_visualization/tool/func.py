@@ -255,6 +255,20 @@ def simplify_school_name(dict1: dict) -> dict:
     return output_dict
 
 
+def count_empty_values(lst: list) -> int:
+
+    count = 0
+
+    for item in lst:
+        if item is None or item == '' or item == [] or item == {} or item == ():
+            count += 1
+            # 如果需要处理其他类型的空值，可以在这里添加条件
+            # 例如：elif isinstance(item, list) and not item:
+            #          count += 1
+
+    return count
+
+
 def session_state_initial() -> None:
 
     # page1数据大屏的按钮和具体信息展示

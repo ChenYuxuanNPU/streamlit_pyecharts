@@ -214,7 +214,7 @@ with col1:
         "请选择需要比较的年份",
         [year for year in year_list if year != year0],
         index=None,
-        placeholder=""
+        placeholder="可选项"
     )
 
 # 只是展示某一年的数据
@@ -228,13 +228,13 @@ if year0 is not None and year1 is None:
         except KeyError as e:
 
             if e.args[0] == year0:
-                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+                st.error(f"缺少{year0}年的数据", icon="🤣")
 
             elif e.args[0] == "在编":
-                st.error(f"json文件缺少{year0}年的在编数据", icon="😆")
+                st.error(f"缺少{year0}年的在编数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
-                st.error("json文件缺少在编或编外信息", icon="😆")
+                st.error("缺少在编或编外信息", icon="😆")
 
     st.divider()
 
@@ -247,10 +247,10 @@ if year0 is not None and year1 is None:
         except KeyError as e:
 
             if e.args[0] == year0:
-                st.error(f"json文件缺少{year0}年的数据", icon="🤣")
+                st.error(f"缺少{year0}年的数据", icon="🤣")
 
             elif e.args[0] == "编外":
-                st.error(f"json文件缺少{year0}年的编外数据", icon="😆")
+                st.error(f"缺少{year0}年的编外数据", icon="😆")
 
 # 展示对比数据
 elif year0 is not None and year1 is not None:
