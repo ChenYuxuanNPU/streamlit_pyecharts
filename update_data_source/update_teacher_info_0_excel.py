@@ -383,8 +383,8 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
             # 初始化计数器，用于列名的生成
             column_letter = 'A'
 
-            # 循环遍历从A到BS的所有列
-            for i in range(1, 24):  # BS是Excel中的第702列
+            # 这里的四个范围，0，2代表A-Z，取值应该是(1,27)；1，3代表AA-A?，取值根据实际修改
+            for i in range(1, 27):  # BS是Excel中的第702列
                 # 生成列名（A-Z）
                 column_name = chr(ord(column_letter) + i - 1)
                 # 拼接COUNTA函数，注意添加范围（例如A1:A500）
@@ -393,7 +393,7 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
                 else:
                     formula += f",COUNTA({column_name}:{column_name})"
 
-            for i in range(1, 24):  # BS是Excel中的第702列
+            for i in range(1, 27):  # BS是Excel中的第702列
                 # 生成列名（AA-AZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
