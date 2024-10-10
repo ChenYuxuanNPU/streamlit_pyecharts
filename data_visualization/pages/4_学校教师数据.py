@@ -167,12 +167,50 @@ st.markdown(
 
 st.divider()
 
-year0 = st.selectbox(
-    "请选择需要查询的年份",
-    year_list,
-    index=1,
-)
+col0, col1 = st.columns(spec=2)
 
+with col0:
+
+    year0 = st.selectbox(
+        "请选择需要查询的年份",
+        year_list,
+        index=1,
+    )
+
+    school_name_0 = st.selectbox(
+        "请输入需要查询的学校",
+        json_data[year0]["学校教师总数"].keys(),
+        index=None,
+        placeholder="必选项",
+    )
+
+    raw_period_0 = st.selectbox(
+        "选择查询学段1",
+        ("所有学段", "高中", "初中", "小学"),
+    )
+
+with col1:
+
+    year1 = st.selectbox(
+        "请选择需要对比的年份",
+        [year for year in year_list if year != year0],
+        index=None,
+        placeholder="可选项"
+    )
+
+    school_name_1 = st.selectbox(
+        "请输入需要对比的学校",
+        json_data[year0]["学校教师总数"].keys(),
+        index=None,
+        placeholder="可选项",
+    )
+
+    raw_period_1 = st.selectbox(
+        "选择对比学段",
+        ("所有学段", "高中", "初中", "小学"),
+        index=None,
+        placeholder="可选项",
+    )
 
 with st.container(border=True):
     col0, col1 = st.columns([2, 3])
