@@ -369,7 +369,7 @@ def school_name_and_period_check(kind: str, school_name: str, year: str, period=
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
 
             if "no such table" in str(e):
-                return [False]
+                return [False, f"未找到{school_name}的{period}{kind}教师"]
 
         finally:
             conn.commit()
@@ -397,7 +397,7 @@ def school_name_and_period_check(kind: str, school_name: str, year: str, period=
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
 
             if "no such table" in str(e):
-                return [False]
+                return [False, f"未找到{school_name}的{period}{kind}教师"]
 
         finally:
             conn.commit()

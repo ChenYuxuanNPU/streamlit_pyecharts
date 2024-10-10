@@ -19,16 +19,16 @@ from teacher_data_processing.make_json.school_data import update_data as ud
 def show_word_cloud(year: str, data: dict) -> None:
 
     with st.container(border=True):
-        # 小标题
-        st.markdown(
-            "<h2 style='text-align: center;'>区内学校</h2>",
-            unsafe_allow_html=True
-        )
+        # # 小标题
+        # st.markdown(
+        #     "<h2 style='text-align: center;'>区内学校</h2>",
+        #     unsafe_allow_html=True
+        # )
 
         visual_func.draw_word_cloud(
             words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(data[year]["学校教师总数"]).items()) if
-                   v[1] != "幼儿园"],
-            title="")
+                   v[1] != "幼儿园"][:180],
+            title="区内学校")
 
 
 # 展示编内教师数据
@@ -167,12 +167,50 @@ st.markdown(
 
 st.divider()
 
-year0 = st.selectbox(
-    "请选择需要查询的年份",
-    year_list,
-    index=1,
-)
+col0, col1 = st.columns(spec=2)
 
+with col0:
+
+    year0 = st.selectbox(
+        "请选择需要查询的年份",
+        year_list,
+        index=1,
+    )
+
+    school_name_0 = st.selectbox(
+        "请输入需要查询的学校",
+        json_data[year0]["学校教师总数"].keys(),
+        index=None,
+        placeholder="必选项",
+    )
+
+    raw_period_0 = st.selectbox(
+        "选择查询学段1",
+        ("所有学段", "高中", "初中", "小学"),
+    )
+
+with col1:
+
+    year1 = st.selectbox(
+        "请选择需要对比的年份",
+        [year for year in year_list if year != year0],
+        index=None,
+        placeholder="可选项"
+    )
+
+    school_name_1 = st.selectbox(
+        "请输入需要对比的学校",
+        json_data[year0]["学校教师总数"].keys(),
+        index=None,
+        placeholder="可选项",
+    )
+
+    raw_period_1 = st.selectbox(
+        "选择对比学段",
+        ("所有学段", "高中", "初中", "小学"),
+        index=None,
+        placeholder="可选项",
+    )
 
 with st.container(border=True):
     col0, col1 = st.columns([2, 3])
@@ -206,7 +244,7 @@ with st.container(border=True):
 
                 if page4_school_name is None:
                     st.session_state.page4_search_flag = False
-                    st.toast("校名为空", icon="⚠️")
+                    st.toast("未填写校名", icon="⚠️")
 
                 else:
 
