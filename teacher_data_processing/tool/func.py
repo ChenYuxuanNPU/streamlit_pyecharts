@@ -58,6 +58,10 @@ class MyError(Exception):
         return repr(self.value)
 
 
+def print_color_text(text: str, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+    print(color_code + text + reset_code)
+
+
 # kind:"在编","编外"
 def connect_database():
     conn = sqlite3.connect(
