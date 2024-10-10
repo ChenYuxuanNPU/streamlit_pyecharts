@@ -602,7 +602,9 @@ if __name__ == '__main__':
 
     finally:
         conn.commit()
+
     print(f"编外数据共包含{len(del_tuple_in_list(result_check))}所学校")
+    school_count = len(del_tuple_in_list(result_check))
 
     conn.close()
 
@@ -626,12 +628,16 @@ if __name__ == '__main__':
 
     ensure_folders_exist_or_clear(kind="编外")
 
+    count = 1
+
     for school in result1_all:
         excel_name = school[0][0]
         area_name = school[0][-4]
 
         output_excel_1(title=title_1, data=school, file_name=excel_name, area_name=area_name)
 
+        print("")
         print(excel_name)
-
+        print(f"{count}/{school_count}")
+        count += 1
 
