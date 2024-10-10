@@ -1,6 +1,25 @@
+import sqlite3
 import sys
 
 from teacher_data_processing.tool import func as tch_proc_func
+
+
+# 当缺少编外数据表时收集在编数据
+def update_teacher_0_only(year: str, c: sqlite3.Cursor) -> list:
+
+    c.execute(
+        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" from teacher_data_0_{year} group by "校名" order by count desc')
+
+    return c.fetchall()
+
+
+# 当缺少编内数据表时收集编外数据
+def update_teacher_1_only(year: str, c: sqlite3.Cursor) -> list:
+
+    c.execute(
+        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" from teacher_data_1_{year} group by "校名" order by count desc')
+
+    return c.fetchall()
 
 
 def update(year: str) -> dict:
@@ -24,7 +43,20 @@ def update(year: str) -> dict:
         result = c.fetchall()
 
     except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+        tch_proc_func.print_color_text(text=str(e))
+
+        if str(e) == f"no such table: teacher_data_0_{year}":
+
+            print(f"custom_data.py:缺少{year}年的在编教师数据,将只更新编外教师数据")
+            result = update_teacher_1_only(year=year, c=c)
+
+        elif str(e) == f"no such table: teacher_data_1_{year}":
+
+            print(f"custom_data.py:缺少{year}年的编外教师数据,将只更新在编教师数据")
+            result = update_teacher_0_only(year=year, c=c)
+
+        else:
+            return {}
 
     finally:
         conn.commit()
@@ -58,7 +90,7 @@ def update(year: str) -> dict:
                               f"custom_data.py update() line {sys._getframe().f_lineno}:")
                         print(f"{item[0]}有多条在编信息")
                         print("")
-                        break
+                        return {}
 
                     school_dict[item[0]][3] = int(item[4])
 
@@ -72,7 +104,7 @@ def update(year: str) -> dict:
                               f"custom_data.py update() line {sys._getframe().f_lineno}:")
                         print(f"{item[0]}有多条编外信息")
                         print("")
-                        break
+                        return {}
 
                     school_dict[item[0]][4] = int(item[4])
 
@@ -96,4 +128,4 @@ def update(year: str) -> dict:
 
 if __name__ == '__main__':
 
-    update(year="2023")
+    update(year="2024")
