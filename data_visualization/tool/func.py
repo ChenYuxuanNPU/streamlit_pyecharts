@@ -175,7 +175,7 @@ def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
     )
 
 
-def draw_word_cloud(words: list, title: str, height=-1, height_factor=1000) -> None:
+def draw_word_cloud(words: list, title: str, height=-1, height_factor=1300, shape="circle") -> None:
 
     if height == -1:
         height = int(get_monitors()[0].height / 1080) * height_factor  # 可以取350、388
@@ -183,8 +183,13 @@ def draw_word_cloud(words: list, title: str, height=-1, height_factor=1000) -> N
     st_pyecharts(
         chart=(
             WordCloud()
-            .add("", words, word_size_range=[18, 22], shape="diamond", width="1300px", height="1100px", pos_top="0%")
+            .add(series_name=title, data_pair=words, word_size_range=[25, 40], shape=shape, width="1400px", height=f"{height_factor+50}px", pos_top="2%")
             # .set_global_opts(title_opts=opts.TitleOpts(title=title))
+            .set_global_opts(
+                title_opts=opts.TitleOpts(
+                    title=title, title_textstyle_opts=opts.TextStyleOpts(font_size=40), pos_left="center", pos_top="2%"
+                ),
+            )
             # .set_global_opts(legend_opts=opts.LegendOpts(is_show=False))
         ),
         height=f"{height}px"
