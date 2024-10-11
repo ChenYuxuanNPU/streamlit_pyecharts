@@ -43,7 +43,7 @@ def update(year: str) -> dict:
         result = c.fetchall()
 
     except Exception as e:
-        tch_proc_func.print_color_text(text=str(e))
+        print(str(e))
 
         if str(e) == f"no such table: teacher_data_0_{year}":
 
