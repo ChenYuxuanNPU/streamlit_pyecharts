@@ -206,6 +206,13 @@ with st.container(border=True):
             elif e.args[0] == "在编":
                 st.error(f"缺少{year0}年的在编数据", icon="😆")
 
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
+
         try:
             show_teacher_1(year=year0, area=area0, data=json_data)
 
@@ -216,6 +223,13 @@ with st.container(border=True):
 
             elif e.args[0] == "编外":
                 st.error(f"缺少{year0}年的编外数据", icon="😆")
+
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
 
     # 对比某一片镇不同年份的教师信息
     elif year0 is not None and year1 is not None and area0 is not None and area1 is None:

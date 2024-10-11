@@ -13,18 +13,20 @@ sys.path.append(
 from data_visualization.tool import func as visual_func
 
 
-# 这里是给片区不同学段的可视化做的
-def show_period(year: str, period: str, data: dict,) -> None:
+# 这里是给片区不同学段的可视化做的，在编信息
+def show_period(year: str, period: str, data: dict, ) -> None:
     st.info(f"在编{period}信息", icon="😋")
 
     with st.container(border=False):
         c0, c1 = st.columns([2, 1])
 
         with c0:
-            visual_func.draw_bar(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科", end=visual_func.end_dict[period])
+            visual_func.draw_bar(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
+                                 end=visual_func.end_dict[period])
 
         with c1:
-            visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%", center_to_bottom="64%")
+            visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
+                                 center_to_bottom="64%")
 
         c0, c1, c2 = st.columns(spec=3)
 
@@ -32,13 +34,14 @@ def show_period(year: str, period: str, data: dict,) -> None:
             visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["最高学历"], title="最高学历")
 
         with c1:
-            visual_func.draw_bar(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校", is_show_visual_map=False)
+            visual_func.draw_bar(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校",
+                                 is_show_visual_map=False)
 
         with c2:
             visual_func.draw_pie(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
 
 
-# 展示某一学年所有学段数据
+# 展示某一学年所有学段在编教师数据
 def show_all_period(year: str, data: dict):
     st.success(f"在编教职工总人数：{data[year]['在编']['全区']['所有学段']['总人数']}")
 
@@ -61,10 +64,12 @@ def show_all_period(year: str, data: dict):
 
         with c2:
             # 在编年龄统计
-            visual_func.draw_pie(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%", center_to_bottom="64%")
+            visual_func.draw_pie(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%",
+                                 center_to_bottom="64%")
 
             # 在编行政职务统计
-            visual_func.draw_pie(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务", center_to_bottom="68%")
+            visual_func.draw_pie(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务",
+                                 center_to_bottom="68%")
 
         # 学科统计占两列
         c0, c1 = st.columns([2, 1])
@@ -100,7 +105,7 @@ def show_all_period(year: str, data: dict):
         visual_func.draw_bar(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数", end=100)
 
 
-def show_teacher_0(year: str, data: dict,):
+def show_teacher_0(year: str, data: dict, ):
     # 小标题
     st.markdown(
         "<h2 style='text-align: center;'>在编教师数据</h2>",
@@ -191,7 +196,8 @@ visual_func.set_page_configuration(title="区级教师数据", icon=":classical_
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
+year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+    "list_for_update_teacher_info"]])
 
 # 标题
 st.markdown(
@@ -236,6 +242,10 @@ if year0 is not None and year1 is None:
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
 
+            else:
+                print(e)
+                st.toast(str(e))
+
     st.divider()
 
     # 编外数据
@@ -251,6 +261,13 @@ if year0 is not None and year1 is None:
 
             elif e.args[0] == "编外":
                 st.error(f"缺少{year0}年的编外数据", icon="😆")
+
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
 
 # 展示对比数据
 elif year0 is not None and year1 is not None:
