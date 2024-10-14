@@ -13,10 +13,18 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 
+# 初始化全局变量
+# visual_func.session_state_initial()
+
+# 清空其他页暂用变量
+visual_func.session_state_reset(page=3)
+
+# 设置页面格式
+visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
+
 
 # 用于展示指导中心信息
 def show_text_info() -> None:
-
     st.divider()
 
     # 展示宣传数据
@@ -47,7 +55,6 @@ def show_text_info() -> None:
 
 
 def show_teacher_0(year: str, area: str, data: dict) -> None:
-
     st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
 
     with st.container(border=False):
@@ -103,7 +110,6 @@ def show_teacher_0(year: str, area: str, data: dict) -> None:
 
 
 def show_teacher_1(year: str, area: str, data: dict) -> None:
-
     st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
 
     with st.container(border=False):
@@ -137,19 +143,15 @@ def show_teacher_1(year: str, area: str, data: dict) -> None:
                                  title="幼儿园")
 
 
-# 初始化全局变量
-visual_func.session_state_initial()
-
-# 清空其他页暂用变量
-visual_func.session_state_reset(page=3)
-
-# 设置页面格式
-visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
+'''
+这里开始是页面代码
+'''
 
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]])
+year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+    "list_for_update_teacher_info"]])
 
 # 标题
 st.markdown(
@@ -160,7 +162,6 @@ st.markdown(
 st.divider()
 
 with st.container(border=True):
-
     col0, col1 = st.columns(spec=2)
 
     with col0:
@@ -246,9 +247,8 @@ with st.container(border=True):
     else:
         st.error("?")
 
-
-if (visual_func.count_empty_values(lst=[year0, year1, area0, area1]) >= 2 and not (year0 is not None and area0 is not None)
-        or visual_func.count_empty_values(lst=[year0, year1, area0, area1]) == 1 and not (year1 is None or area1 is None)):
-
+if (visual_func.count_empty_values(lst=[year0, year1, area0, area1]) >= 2 and not (
+        year0 is not None and area0 is not None)
+        or visual_func.count_empty_values(lst=[year0, year1, area0, area1]) == 1 and not (
+                year1 is None or area1 is None)):
     show_text_info()
-

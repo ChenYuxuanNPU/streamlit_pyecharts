@@ -10,9 +10,26 @@ sys.path.append(
     )
 )
 
-from teacher_data_processing.tool import func as tch_proc_func
 from data_visualization.tool import func as visual_func
+from teacher_data_processing.tool import func as tch_proc_func
 from teacher_data_processing.make_json.school_data import update_data as ud
+
+# 初始化全局变量
+# visual_func.session_state_initial()
+
+# 清空其他页暂用变量
+visual_func.session_state_reset(page=4)
+
+# 设置全局属性
+visual_func.set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
+
+# # 这堆代码不是上面执行过了吗 不太懂 先注释了
+# # 判断是否查询成功
+# st.session_state.page4_search_flag = False
+#
+# # 判断kind_list的元素个数
+# st.session_state.page4_kind_0_flag = False
+# st.session_state.page4_kind_1_flag = False
 
 
 def confirm_input(param_list: list):
@@ -223,22 +240,9 @@ def update_and_show_school_stream(school_name: str, year: str, period: str) -> N
                                                             school_name=school_name_0, period=period_0)[1], icon="⚠️")
 
 
-# 初始化全局变量
-visual_func.session_state_initial()
-
-# 清空其他页暂用变量
-visual_func.session_state_reset(page=4)
-
-# 设置全局属性
-visual_func.set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
-
-# # 这堆代码不是上面执行过了吗 不太懂 先注释了
-# # 判断是否查询成功
-# st.session_state.page4_search_flag = False
-#
-# # 判断kind_list的元素个数
-# st.session_state.page4_kind_0_flag = False
-# st.session_state.page4_kind_1_flag = False
+'''
+这里开始是页面代码
+'''
 
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
@@ -266,7 +270,7 @@ with left:
         "请选择需要查询的年份",
         year_list,
         index=1,
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
@@ -275,14 +279,14 @@ with left:
         json_data[year_0]["学校教师总数"].keys(),
         index=None,
         placeholder="必选项",
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
     period_0 = st.selectbox(
         "选择查询学段1",
         ("所有学段", "高中", "初中", "小学"),
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
@@ -295,7 +299,7 @@ with right:
         [year for year in year_list if year != year_0],
         index=None,
         placeholder="可选项",
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
@@ -304,7 +308,7 @@ with right:
         json_data[year_0]["学校教师总数"].keys(),
         index=None,
         placeholder="可选项",
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
@@ -313,7 +317,7 @@ with right:
         ("所有学段", "高中", "初中", "小学"),
         index=None,
         placeholder="可选项",
-        on_change=visual_func.reset_self,
+        on_change=visual_func.on_change_components,
         args=[4]
     )
 
