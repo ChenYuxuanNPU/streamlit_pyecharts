@@ -209,35 +209,35 @@ st.divider()
 
 col0, col1 = st.columns(spec=2)
 with col0:
-    year0 = st.selectbox(
+    year_0 = st.selectbox(
         "请选择需要查询的年份",
         year_list,
         index=0,
     )
 
 with col1:
-    year1 = st.selectbox(
+    year_1 = st.selectbox(
         "请选择需要比较的年份",
-        [year for year in year_list if year != year0],
+        [year for year in year_list if year != year_0],
         index=None,
         placeholder="可选项"
     )
 
 # 只是展示某一年的数据
-if year0 is not None and year1 is None:
+if year_0 is not None and year_1 is None:
 
     with st.container(border=True):
 
         try:
-            show_teacher_0(year=year0, data=json_data)
+            show_teacher_0(year=year_0, data=json_data)
 
         except KeyError as e:
 
-            if e.args[0] == year0:
-                st.error(f"缺少{year0}年的数据", icon="🤣")
+            if e.args[0] == year_0:
+                st.error(f"缺少{year_0}年的数据", icon="🤣")
 
             elif e.args[0] == "在编":
-                st.error(f"缺少{year0}年的在编数据", icon="😆")
+                st.error(f"缺少{year_0}年的在编数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -252,15 +252,15 @@ if year0 is not None and year1 is None:
     with st.container(border=True):
 
         try:
-            show_teacher_1(year=year0, data=json_data)
+            show_teacher_1(year=year_0, data=json_data)
 
         except KeyError as e:
 
-            if e.args[0] == year0:
-                st.error(f"缺少{year0}年的数据", icon="🤣")
+            if e.args[0] == year_0:
+                st.error(f"缺少{year_0}年的数据", icon="🤣")
 
             elif e.args[0] == "编外":
-                st.error(f"缺少{year0}年的编外数据", icon="😆")
+                st.error(f"缺少{year_0}年的编外数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -270,7 +270,7 @@ if year0 is not None and year1 is None:
                 st.error(str(e), icon="😭")
 
 # 展示对比数据
-elif year0 is not None and year1 is not None:
+elif year_0 is not None and year_1 is not None:
     pass
 
 else:
