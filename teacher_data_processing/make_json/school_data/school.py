@@ -10,8 +10,11 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
     if kind not in ["在编", '编外']:
         raise tch_proc_func.MyError("kind参数错误")
 
-    if period not in [None, "高中", "初中", "小学", "幼儿园", ""]:
+    if period not in [None, "所有学段", "高中", "初中", "小学", "幼儿园", ""]:
         raise tch_proc_func.MyError("period参数错误")
+
+    else:
+        period = period if period not in ["所有学段", ""] else None
 
     result = []
 
