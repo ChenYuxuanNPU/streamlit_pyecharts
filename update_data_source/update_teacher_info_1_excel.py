@@ -639,5 +639,6 @@ if __name__ == '__main__':
         print("")
         print(excel_name)
         print(f"{count}/{school_count}")
+
         count += 1
 

@@ -23,7 +23,8 @@ trans_period = {
     "所有学段": None,
     "高中": "高中",
     "初中": "初中",
-    "小学": "小学"
+    "小学": "小学",
+    None: None
 }
 
 
@@ -42,7 +43,6 @@ def set_page_configuration(title: str, icon: str):
 
 
 def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%', center_to_bottom='60%') -> None:
-
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -63,7 +63,6 @@ def draw_pie(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='2
 
 # 画之前先测试下有没有问题
 def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, formatter="{b}:{d}%") -> None:
-
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -97,7 +96,6 @@ def draw_multi_pie(inner_data: dict, outer_data: dict, title: str, height=0, for
 
 
 def draw_bar(data: dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
-
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -111,7 +109,8 @@ def draw_bar(data: dict, title: str, height=0, end=100, is_show_visual_map=True)
                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
                                  legend_opts=opts.LegendOpts(is_show=False),
                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
-                                 visualmap_opts=opts.VisualMapOpts(is_show=is_show_visual_map, pos_right="1%", pos_top="30%",
+                                 visualmap_opts=opts.VisualMapOpts(is_show=is_show_visual_map, pos_right="1%",
+                                                                   pos_top="30%",
                                                                    max_=max([values for values in data.values()])))
             ),
             height=f"{height}px"
@@ -163,7 +162,6 @@ def draw_bar(data: dict, title: str, height=0, end=100, is_show_visual_map=True)
 
 
 def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
-
     if height == -1:
         height = int(get_monitors()[0].height / 1080) * 388  # 可以取350、388
 
@@ -176,14 +174,14 @@ def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
 
 
 def draw_word_cloud(words: list, title: str, height=-1, height_factor=1300, shape="circle") -> None:
-
     if height == -1:
         height = int(get_monitors()[0].height / 1080) * height_factor  # 可以取350、388
 
     st_pyecharts(
         chart=(
             WordCloud()
-            .add(series_name=title, data_pair=words, word_size_range=[25, 40], shape=shape, width="1400px", height=f"{height_factor+50}px", pos_top="2%")
+            .add(series_name=title, data_pair=words, word_size_range=[25, 40], shape=shape, width="1400px",
+                 height=f"{height_factor + 50}px", pos_top="2%")
             # .set_global_opts(title_opts=opts.TitleOpts(title=title))
             .set_global_opts(
                 title_opts=opts.TitleOpts(
@@ -197,7 +195,6 @@ def draw_word_cloud(words: list, title: str, height=-1, height_factor=1300, shap
 
 
 def load_json_data(folder: str, file_name: str) -> dict:
-
     # 读取现有json文件
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "r", encoding="UTF-8") as f:
@@ -207,7 +204,6 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
-
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
@@ -261,7 +257,6 @@ def simplify_school_name(dict1: dict) -> dict:
 
 
 def count_empty_values(lst: list) -> int:
-
     count = 0
 
     for item in lst:
@@ -274,8 +269,8 @@ def count_empty_values(lst: list) -> int:
     return count
 
 
+# 初始化软件所有session_state变量，仅在主页使用
 def session_state_initial() -> None:
-
     # page1数据大屏的按钮和具体信息展示
     if 'page1_show_detail' not in st.session_state:
         st.session_state.page1_show_detail = False
@@ -294,7 +289,6 @@ def session_state_initial() -> None:
 
 
 def reset_others(page: int) -> None:
-
     if page != 1:
         st.session_state.page1_show_detail = False
 
@@ -311,7 +305,7 @@ def reset_others(page: int) -> None:
 
 
 def reset_self(page: int) -> None:
-
+    # 重置所有页面变量
     match page:
 
         case 4:
@@ -324,12 +318,11 @@ def reset_self(page: int) -> None:
 
 
 def session_state_reset(page: int) -> None:
-
     # 刷新其他页面
     reset_others(page=page)
 
     # 重置本页面信息
-    reset_self(page=page)
+    # reset_self(page=page)
 
 
 def page1_show_detail_info() -> None:
@@ -338,4 +331,3 @@ def page1_show_detail_info() -> None:
 
 def page1_hide_detail_info() -> None:
     st.session_state.page1_show_detail = False
-
