@@ -23,6 +23,7 @@ visual_func.session_state_reset(page=4)
 # 设置全局属性
 visual_func.set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
 
+
 # # 这堆代码不是上面执行过了吗 不太懂 先注释了
 # # 判断是否查询成功
 # st.session_state.page4_search_flag = False
@@ -32,13 +33,13 @@ visual_func.set_page_configuration(title="学校教师数据", icon=":house_with
 # st.session_state.page4_kind_1_flag = False
 
 
+# 这里要加一个返回值，判断查询的信息属于什么类型
 def confirm_input(param_list: list):
     # [year_0, year_1, school_name_0, school_name_1, period_0, period_1]
-    st.write(param_list)
-    print(222)
+    print(f"4_学校教师数据--页面控件参数列表： {param_list}")
 
     # 这里要判断是否只查询某一所学校
-    update_and_show_school_stream(school_name=param_list[2], year=param_list[0], period=param_list[4])
+    set_flags_and_update_school_data(school_name=param_list[2], year=param_list[0], period=param_list[4])
 
 
 # 用于展示学校词云图
@@ -191,7 +192,7 @@ def show_school_stream(school_name: str, year: str, period: str) -> None:
             unsafe_allow_html=True
         )
 
-        top_left, top_right = st.columns([1, 1])
+        _, top_left, top_right = st.columns([1.7, 3.5, 3])
 
         with top_left:
 
@@ -206,7 +207,7 @@ def show_school_stream(school_name: str, year: str, period: str) -> None:
                 st.write_stream(visual_func.stream_data(sentence=intro_1[i]))
 
 
-def update_and_show_school_stream(school_name: str, year: str, period: str) -> None:
+def set_flags_and_update_school_data(school_name: str, year: str, period: str) -> None:
     if school_name is None:
         st.session_state.page4_search_flag = False
         st.toast("未填写校名", icon="⚠️")
@@ -240,10 +241,6 @@ def update_and_show_school_stream(school_name: str, year: str, period: str) -> N
                                                             school_name=school_name_0, period=period_0)[1], icon="⚠️")
 
 
-'''
-这里开始是页面代码
-'''
-
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
@@ -259,10 +256,6 @@ st.markdown(
 
 st.divider()
 
-st.write(f"st.session_state.page4_search_flag：{st.session_state.page4_search_flag}")
-st.write(f"st.session_state.page4_kind_0_flag：{st.session_state.page4_kind_0_flag}")
-st.write(f"st.session_state.page4_kind_1_flag：{st.session_state.page4_kind_1_flag}")
-
 left, right = st.columns(spec=2)
 
 with left:
@@ -270,7 +263,7 @@ with left:
         "请选择需要查询的年份",
         year_list,
         index=1,
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
 
@@ -279,19 +272,16 @@ with left:
         json_data[year_0]["学校教师总数"].keys(),
         index=None,
         placeholder="必选项",
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
 
     period_0 = st.selectbox(
         "选择查询学段1",
         ("所有学段", "高中", "初中", "小学"),
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
-
-    # # raw_period用于查json文件，period用于查数据库
-    # period_0 = visual_func.trans_period[raw_period_0]
 
 with right:
     year_1 = st.selectbox(
@@ -299,7 +289,7 @@ with right:
         [year for year in year_list if year != year_0],
         index=None,
         placeholder="可选项",
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
 
@@ -308,7 +298,7 @@ with right:
         json_data[year_0]["学校教师总数"].keys(),
         index=None,
         placeholder="可选项",
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
 
@@ -317,12 +307,9 @@ with right:
         ("所有学段", "高中", "初中", "小学"),
         index=None,
         placeholder="可选项",
-        on_change=visual_func.on_change_components,
+        on_change=visual_func.reset_self,
         args=[4]
     )
-
-    # # raw_period用于查json文件，period用于查数据库
-    # period_1 = visual_func.trans_period[raw_period_1]
 
 left, middle, right = st.columns([4, 1, 4])
 
@@ -330,13 +317,13 @@ with middle:
     st.button("查询学校信息", args=[[year_0, year_1, school_name_0, school_name_1, period_0, period_1]],
               on_click=confirm_input)
 
-st.divider()
+# st.divider()
 
-with st.container(border=True):
-    col0, col1 = st.columns([2, 3])
-
-    with col0:
-        pass
+# with st.container(border=True):
+#     col0, col1 = st.columns([2, 3])
+#
+#     with col0:
+#         pass
 
         # col01, col10, col11 = st.columns([1, 4, 1])
         #
@@ -433,22 +420,26 @@ with st.container(border=True):
         #                 st.toast(check_result_0[1], icon="⚠️")
         #                 st.toast(check_result_1[1], icon="⚠️")
 
+# 不查询的时候展示学校云图
+if not st.session_state.page4_search_flag:
+    show_word_cloud(year=year_0, data=json_data)
+
 if st.session_state.page4_search_flag:
-    show_school_stream(school_name=school_name_0, year=year_0, period=period_0, )
+
+    with st.container(border=True):
+        show_school_stream(school_name=school_name_0, year=year_0, period=period_0, )
 
 # 展示某一年在编数据
-with st.container(border=True):
-    if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
+if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
+    with st.container(border=True):
         show_teacher_0(year=year_0, school_name=school_name_0, period=period_0)
 
 if st.session_state.page4_kind_0_flag and st.session_state.page4_kind_1_flag:
     st.divider()
 
 # 展示某一年编外数据
-with st.container(border=True):
-    if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
+if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
+    with st.container(border=True):
         show_teacher_1(year=year_0, school_name=school_name_0, period=period_0)
 
-# 不查询的时候展示学校云图
-if not st.session_state.page4_search_flag:
-    show_word_cloud(year=year_0, data=json_data)
+

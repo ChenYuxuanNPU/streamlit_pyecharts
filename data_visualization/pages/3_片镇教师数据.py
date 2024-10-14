@@ -143,10 +143,6 @@ def show_teacher_1(year: str, area: str, data: dict) -> None:
                                  title="幼儿园")
 
 
-'''
-这里开始是页面代码
-'''
-
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
