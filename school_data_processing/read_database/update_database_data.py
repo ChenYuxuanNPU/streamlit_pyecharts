@@ -1,9 +1,9 @@
 from school_data_processing.tool import func as sch_proc_func
 
 
-def get_school_data_sum(json_data: dict):
+def get_school_data_sum(json_data: dict, year: str, ):
 
-    table_name = sch_proc_func.load_json_data(folder="database", file_name="database_basic_info")["table_name"]["2023年学校情况一览表"]
+    table_name = sch_proc_func.load_json_data(folder="database", file_name="database_basic_info")["table_name_dict"][f"{year}年学校情况一览表"]
 
     temp = []
     result = []
@@ -39,13 +39,13 @@ def get_school_data_sum(json_data: dict):
     for item in result:
 
         for i in range(1, len(temp)):
-            json_data = sch_proc_func.dict_assignment(route=f"{item[0]}/{temp[i]}", value=int(item[i]), json_data=json_data)
+            json_data = sch_proc_func.dict_assignment(route=f"{year}/{item[0]}/{temp[i]}", value=int(item[i]), json_data=json_data)
 
         if item[0] != "合计":
             period_list.append(item[0])
 
     # 生成学段列表
-    json_data = sch_proc_func.dict_assignment(route="学段列表", value=period_list, json_data=json_data)
+    json_data = sch_proc_func.dict_assignment(route=f"学段列表", value=period_list, json_data=json_data)
 
     sch_proc_func.disconnect_database(conn=conn)
 
