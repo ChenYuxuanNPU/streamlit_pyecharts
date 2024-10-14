@@ -347,8 +347,11 @@ def school_name_and_period_check(kind: str, school_name: str, year: str, period=
     if kind not in ["在编", '编外']:
         return [False, "kind参数错误"]
 
-    if period not in [None, "高中", "初中", "小学", "幼儿园", ""]:
+    if period not in [None, "所有学段", "高中", "初中", "小学", "幼儿园", ""]:
         return [False, "period参数错误"]
+
+    else:
+        period = period if period not in ["所有学段", ""] else None
 
     result = []
 
