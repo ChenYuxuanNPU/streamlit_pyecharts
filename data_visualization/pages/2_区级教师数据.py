@@ -193,10 +193,6 @@ def show_teacher_1(year: str, data: dict):
         visual_func.draw_pie(data=data[year]["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
 
 
-'''
-这里开始是页面代码
-'''
-
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
