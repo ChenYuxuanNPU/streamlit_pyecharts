@@ -104,11 +104,14 @@ def update(year: str, kind: str) -> dict:
     try:
         c.execute(sql_sentence)
         result = dict(
-            c.fetchall()
+            sorted(
+                c.fetchall(), key=lambda x: tch_proc_func.area_order[x[0]]
+            )
         )
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print("111")
 
     finally:
         conn.commit()
