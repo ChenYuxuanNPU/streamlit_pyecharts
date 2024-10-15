@@ -1,5 +1,4 @@
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 import pandas as pd
@@ -25,7 +24,7 @@ def show_pie_chart_info(year: str) -> None:
     # 横向比较
     with st.container(border=True):
         st.markdown(
-            "<h2 style='text-align: center;'>对比数据</h2>",
+            body="<h2 style='text-align: center;'>对比数据</h2>",
             unsafe_allow_html=True
         )
 
@@ -44,8 +43,8 @@ def show_pie_chart_info(year: str) -> None:
 
             # 公民办学校数对比
             school_kind = st.selectbox(
-                " ",
-                ["公办学校数", "民办学校数"],
+                label=" ",
+                options=["公办学校数", "民办学校数"],
                 label_visibility="collapsed"
             )
 
@@ -72,8 +71,8 @@ def show_pie_chart_info(year: str) -> None:
 
             # 公民办教职工数对比
             school_kind = st.selectbox(
-                " ",
-                ["公办学校教职工数", "民办学校教职工数"],
+                label=" ",
+                options=["公办学校教职工数", "民办学校教职工数"],
                 label_visibility="collapsed"
             )
 
@@ -88,7 +87,8 @@ def show_pie_chart_info(year: str) -> None:
 
         with col1:
             # 合计学生数对比
-            st.info(f"合计学生数：{json_data[year]["合计"]["合计学生数"]} / 合计班额数：{json_data[year]["合计"]["合计班额数"]}")
+            st.info(
+                f"合计学生数：{json_data[year]["合计"]["合计学生数"]} / 合计班额数：{json_data[year]["合计"]["合计班额数"]}")
             visual_func.draw_pie(
                 data=dict([
                     [period, json_data[year][period]["合计学生数"]] for period in json_data["学段列表"]
@@ -99,12 +99,12 @@ def show_pie_chart_info(year: str) -> None:
 
             # 公民办学生数对比
             school_kind = st.selectbox(
-                " ",
-                ["合计班额数", "公办学校学生数", "民办学校学生数",
-                 "公办学校白云区户籍学生数", "公办学校非白云区户籍学生数",
-                 "公办学校广州市户籍学生数", "公办学校非广州市户籍学生数",
-                 "民办学校白云区户籍学生数", "民办学校非白云区户籍学生数",
-                 "民办学校广州市户籍学生数", "民办学校非广州市户籍学生数"],
+                label=" ",
+                options=["合计班额数", "公办学校学生数", "民办学校学生数",
+                         "公办学校白云区户籍学生数", "公办学校非白云区户籍学生数",
+                         "公办学校广州市户籍学生数", "公办学校非广州市户籍学生数",
+                         "民办学校白云区户籍学生数", "民办学校非白云区户籍学生数",
+                         "民办学校广州市户籍学生数", "民办学校非广州市户籍学生数"],
                 label_visibility="collapsed"
             )
 
@@ -131,8 +131,8 @@ def show_pie_chart_info(year: str) -> None:
 
             # 公民办专任教师数对比
             school_kind = st.selectbox(
-                " ",
-                ["公办学校专任教师数", "民办学校专任教师数"],
+                label=" ",
+                options=["公办学校专任教师数", "民办学校专任教师数"],
                 label_visibility="collapsed"
             )
 
@@ -148,11 +148,11 @@ def show_pie_chart_info(year: str) -> None:
     st.divider()
 
 
-def show_summarized_info(year: str,) -> None:
+def show_summarized_info(year: str, ) -> None:
     # 汇总展示
     with st.container(border=True):
         st.markdown(
-            "<h2 style='text-align: center;'>合计数据</h2>",
+            body="<h2 style='text-align: center;'>合计数据</h2>",
             unsafe_allow_html=True
         )
 
@@ -172,7 +172,8 @@ def show_summarized_info(year: str,) -> None:
                 data=dict([
                     ["白云区", json_data[year]["合计"]["公办学校白云区户籍学生数"]],
                     ["市内外区",
-                     json_data[year]["合计"]["公办学校广州市户籍学生数"] - json_data[year]["合计"]["公办学校白云区户籍学生数"]],
+                     json_data[year]["合计"]["公办学校广州市户籍学生数"] - json_data[year]["合计"][
+                         "公办学校白云区户籍学生数"]],
                     ["广州市外", json_data[year]["合计"]["公办学校非广州市户籍学生数"]]
                 ]),
                 title="公办学校户籍分布",
@@ -235,7 +236,8 @@ def show_summarized_info(year: str,) -> None:
                 data=dict([
                     ["白云区", json_data[year]["合计"]["民办学校白云区户籍学生数"]],
                     ["市内外区",
-                     json_data[year]["合计"]["民办学校广州市户籍学生数"] - json_data[year]["合计"]["民办学校白云区户籍学生数"]],
+                     json_data[year]["合计"]["民办学校广州市户籍学生数"] - json_data[year]["合计"][
+                         "民办学校白云区户籍学生数"]],
                     ["广州市外", json_data[year]["合计"]["民办学校非广州市户籍学生数"]]
                 ]),
                 title="民办学校户籍分布",
@@ -251,13 +253,13 @@ def show_period_detail_info(year: str) -> None:
     with (st.container(border=True)):
 
         st.markdown(
-            "<h2 style='text-align: center;'>学段数据</h2>",
+            body="<h2 style='text-align: center;'>学段数据</h2>",
             unsafe_allow_html=True
         )
 
         period = st.selectbox(
-            "选择需要查询的学段",
-            json_data["学段列表"],
+            label="选择需要查询的学段",
+            options=json_data["学段列表"],
             index=4,
             placeholder="单击选择学段",
         )
@@ -267,8 +269,8 @@ def show_period_detail_info(year: str) -> None:
             # st.write(json_data[period])
 
             # 可视化只展示学校多的学段
-            if int(json_data[year][period]["合计学校数"]) > 1 and json_data[year][period]["公办学校数"] > 0 and json_data[year][
-                period]["民办学校数"] > 0:
+            if int(json_data[year][period]["合计学校数"]) > 1 and json_data[year][period]["公办学校数"] > 0 and \
+                    json_data[year][period]["民办学校数"] > 0:
 
                 st.info(f'白云区内{period}统计信息如下', icon="ℹ️")
 
@@ -389,23 +391,21 @@ def show_period_detail_info(year: str) -> None:
 
 
 def show_detail_button() -> None:
-
     # 放一个展开详细信息的按钮
     _, col_mid, _ = st.columns([4, 1, 4])
 
     with col_mid:
         st.button(
-            "学段详细信息",
+            label="学段详细信息",
             on_click=visual_func.page1_show_detail_info
         )
 
 
 def hide_detail_button() -> None:
-
     _, col_mid, _ = st.columns([8, 1, 8])
     with col_mid:
         st.button(
-            "收起",
+            label="收起",
             on_click=visual_func.page1_hide_detail_info,
             type="primary"
         )
@@ -414,10 +414,11 @@ def hide_detail_button() -> None:
 # 读取现有json文件
 json_data = visual_func.load_json_data(folder="result", file_name="school_info")
 
-year_list = visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"]
+year_list = visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+    "list_for_update_school_info"]
 
 st.markdown(
-    "<h1 style='text-align: center;'>学校信息总览</h1>",
+    body="<h1 style='text-align: center;'>学校信息总览</h1>",
     unsafe_allow_html=True
 )
 
@@ -427,15 +428,15 @@ left, right = st.columns(spec=2)
 
 with left:
     year_0 = st.selectbox(
-        "请选择需要查询的年份",
-        year_list,
+        label="请选择需要查询的年份",
+        options=year_list,
         index=0,
     )
 
 with right:
     year_1 = st.selectbox(
-        "请选择需要比较的年份",
-        [year for year in year_list if year != year_0],
+        label="请选择需要比较的年份",
+        options=[year for year in year_list if year != year_0],
         index=None,
         placeholder="可选项"
     )
