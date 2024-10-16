@@ -51,7 +51,7 @@ def show_word_cloud(year: str, data: dict) -> None:
         #     unsafe_allow_html=True
         # )
 
-        visual_func.draw_word_cloud(
+        visual_func.draw_word_cloud_chart(
             words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(data[year]["学校教师总数"]).items()) if
                    v[1] != "幼儿园"][:180],
             title="区内学校")
@@ -76,53 +76,53 @@ def show_teacher_0(year: str, school_name: str, period: str) -> None:
 
     with col0:
         # 在编年龄统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["年龄"],
-                             title="年龄", pos_left="15%", center_to_bottom="64%")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["年龄"],
+                                   title="年龄", pos_left="15%", center_to_bottom="64%")
 
     with col1:
         # 在编学历统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["最高学历"],
-                             title="最高学历")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["最高学历"],
+                                   title="最高学历")
 
     with col2:
         # 在编职称统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["最高职称"],
-                             title="职称")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["最高职称"],
+                                   title="职称")
 
     # 在编学科统计
-    visual_func.draw_bar(data=data[year]["在编"]["学校"][school_name][period]["主教学科"],
-                         title="主教学科",
-                         end=100)
+    visual_func.draw_bar_chart(data=data[year]["在编"]["学校"][school_name][period]["主教学科"],
+                               title="主教学科",
+                               end=100)
 
     col0, col1, col2 = st.columns([1, 1, 1])
 
     with col0:
         # 在编教资统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["教师资格"],
-                             title="教师资格")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["教师资格"],
+                                   title="教师资格")
 
         # 在编支教地域统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["支教地域"],
-                             title="支教地域")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["支教地域"],
+                                   title="支教地域")
 
     with col1:
         # 在编毕业院校统计
-        visual_func.draw_bar(
+        visual_func.draw_bar_chart(
             data=data[year]["在编"]["学校"][school_name][period]["院校级别"],
             title="毕业院校", is_show_visual_map=False)
 
         # 在编骨干教师统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["骨干教师"],
-                             title="骨干教师")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["骨干教师"],
+                                   title="骨干教师")
 
     with col2:
         # 在编性别统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["性别"],
-                             title="性别")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["性别"],
+                                   title="性别")
 
         # 在编三名工作室统计
-        visual_func.draw_pie(data=data[year]["在编"]["学校"][school_name][period]["四名工作室"],
-                             title="三名统计")
+        visual_func.draw_pie_chart(data=data[year]["在编"]["学校"][school_name][period]["四名工作室"],
+                                   title="三名统计")
 
 
 # 展示编外教师数据
@@ -144,21 +144,21 @@ def show_teacher_1(year: str, school_name: str, period: str) -> None:
 
     with col0:
         # 编外学历统计
-        visual_func.draw_pie(data=data[year]["编外"]["学校"][school_name][period]["最高学历"],
-                             title="最高学历")
+        visual_func.draw_pie_chart(data=data[year]["编外"]["学校"][school_name][period]["最高学历"],
+                                   title="最高学历")
 
         # 编外教师资格统计
-        visual_func.draw_pie(data=data[year]["编外"]["学校"][school_name][period]["教师资格"],
-                             title="教师资格")
+        visual_func.draw_pie_chart(data=data[year]["编外"]["学校"][school_name][period]["教师资格"],
+                                   title="教师资格")
 
     with col1:
         # 编外职称统计
-        visual_func.draw_pie(data=data[year]["编外"]["学校"][school_name][period]["最高职称"],
-                             title="职称")
+        visual_func.draw_pie_chart(data=data[year]["编外"]["学校"][school_name][period]["最高职称"],
+                                   title="职称")
 
         # 编外骨干教师统计
-        visual_func.draw_pie(data=data[year]["编外"]["学校"][school_name][period]["骨干教师"],
-                             title="骨干教师")
+        visual_func.draw_pie_chart(data=data[year]["编外"]["学校"][school_name][period]["骨干教师"],
+                                   title="骨干教师")
 
 
 def update_specific_school(school_name: str, year: str, period: str, kind_0_flag=False, kind_1_flag=False) -> None:

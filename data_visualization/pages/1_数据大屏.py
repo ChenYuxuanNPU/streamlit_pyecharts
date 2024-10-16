@@ -33,7 +33,7 @@ def show_pie_chart_info(year: str) -> None:
         with col0:
             # 合计学校数对比
             st.info(f"合计学校数：{json_data[year]["合计"]["合计学校数"]}")
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period]["合计学校数"]] for period in json_data["学段列表"]
                 ]),
@@ -48,7 +48,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period][school_kind]] for period in json_data["学段列表"]
                 ]),
@@ -61,7 +61,7 @@ def show_pie_chart_info(year: str) -> None:
 
             # 合计教职工数对比
             st.info(f"合计教职工数：{json_data[year]["合计"]["合计教职工数"]}")
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period]["合计教职工数"]] for period in json_data["学段列表"]
                 ]),
@@ -76,7 +76,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period][school_kind]] for period in json_data["学段列表"]
                 ]),
@@ -89,7 +89,7 @@ def show_pie_chart_info(year: str) -> None:
             # 合计学生数对比
             st.info(
                 f"合计学生数：{json_data[year]["合计"]["合计学生数"]} / 合计班额数：{json_data[year]["合计"]["合计班额数"]}")
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period]["合计学生数"]] for period in json_data["学段列表"]
                 ]),
@@ -108,7 +108,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period][school_kind]] for period in json_data["学段列表"]
                 ]),
@@ -121,7 +121,7 @@ def show_pie_chart_info(year: str) -> None:
 
             # 合计专任教师数对比
             st.info(f"合计专任教师数：{json_data[year]["合计"]["合计专任教师数"]}")
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period]["合计专任教师数"]] for period in json_data["学段列表"]
                 ]),
@@ -136,7 +136,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     [period, json_data[year][period][school_kind]] for period in json_data["学段列表"]
                 ]),
@@ -159,7 +159,7 @@ def show_summarized_info(year: str, ) -> None:
         col0, col1, col2 = st.columns(spec=3)
 
         with col0:
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     ["公办学校数", json_data[year]["合计"]["公办学校数"]],
                     ["民办学校数", json_data[year]["合计"]["民办学校数"]]
@@ -168,7 +168,7 @@ def show_summarized_info(year: str, ) -> None:
                 formatter="{c}--占比{d}%"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     ["白云区", json_data[year]["合计"]["公办学校白云区户籍学生数"]],
                     ["市内外区",
@@ -182,7 +182,7 @@ def show_summarized_info(year: str, ) -> None:
             )
 
         with col1:
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     ["公办学校教职工数", json_data[year]["合计"]["公办学校教职工数"]],
                     ["民办学校教职工数", json_data[year]["合计"]["民办学校教职工数"]]
@@ -223,7 +223,7 @@ def show_summarized_info(year: str, ) -> None:
             )
 
         with col2:
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     ["公办学校专任教师数", json_data[year]["合计"]["公办学校专任教师数"]],
                     ["民办学校专任教师数", json_data[year]["合计"]["民办学校专任教师数"]]
@@ -232,7 +232,7 @@ def show_summarized_info(year: str, ) -> None:
                 formatter="{c}--占比{d}%"
             )
 
-            visual_func.draw_pie(
+            visual_func.draw_pie_chart(
                 data=dict([
                     ["白云区", json_data[year]["合计"]["民办学校白云区户籍学生数"]],
                     ["市内外区",
@@ -277,7 +277,7 @@ def show_period_detail_info(year: str) -> None:
                 col0, col1, col2 = st.columns(spec=3)
 
                 with col0:
-                    visual_func.draw_pie(
+                    visual_func.draw_pie_chart(
                         data=dict([
                             ["公办学校数", json_data[year][period]["公办学校数"]],
                             ["民办学校数", json_data[year][period]["民办学校数"]]
@@ -286,7 +286,7 @@ def show_period_detail_info(year: str) -> None:
                         formatter="{c}--占比{d}%"
                     )
 
-                    visual_func.draw_pie(
+                    visual_func.draw_pie_chart(
                         data=dict([
                             ["白云区", json_data[year][period]["公办学校白云区户籍学生数"]],
                             ["市内外区",
@@ -300,7 +300,7 @@ def show_period_detail_info(year: str) -> None:
                     )
 
                 with col1:
-                    visual_func.draw_pie(
+                    visual_func.draw_pie_chart(
                         data=dict([
                             ["公办学校教职工数", json_data[year][period]["公办学校教职工数"]],
                             ["民办学校教职工数", json_data[year][period]["民办学校教职工数"]]
@@ -327,7 +327,7 @@ def show_period_detail_info(year: str) -> None:
                     )
 
                 with col2:
-                    visual_func.draw_pie(
+                    visual_func.draw_pie_chart(
                         data=dict([
                             ["公办学校专任教师数", json_data[year][period]["公办学校专任教师数"]],
                             ["民办学校专任教师数", json_data[year][period]["民办学校专任教师数"]]
@@ -336,7 +336,7 @@ def show_period_detail_info(year: str) -> None:
                         formatter="{c}--占比{d}%"
                     )
 
-                    visual_func.draw_pie(
+                    visual_func.draw_pie_chart(
                         data=dict([
                             ["白云区", json_data[year][period]["民办学校白云区户籍学生数"]],
                             ["市内外区",
