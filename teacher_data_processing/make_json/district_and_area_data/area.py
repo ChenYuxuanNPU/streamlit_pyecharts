@@ -419,9 +419,14 @@ def update(kind: str, year: str, ) -> dict:
         # 片镇人数分布倒十统计结束
 
     # 更新一下在编和编外的特殊信息
-    json_data = data_00_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
+    if kind == "在编":
+        json_data = data_00_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
 
-    json_data = data_01_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
+    elif kind == "编外":
+        json_data = data_01_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
+
+    else:
+        print("你填的啥")
 
     tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
@@ -489,6 +494,31 @@ def data_00_unique(json_data: dict, kind: str, year: str, c, conn):
         result = []
 
         # 片区在编人员主教学科统计结束
+
+        ###
+        # 全区在编人员专业技术岗位统计
+        ###
+        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["专业技术岗位"], scope="片区", area_name=area,
+                                                year=year, )
+
+        # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+        try:
+            c.execute(sql_sentence)
+            result = dict(
+                c.fetchall()
+            )
+
+        except Exception as e:
+            print('\033[1;91m' + f"{e}" + '\033[0m')
+
+        finally:
+            conn.commit()
+
+        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/专业技术岗位", value=result,
+                                                  json_data=json_data)
+        result = []
+
+        # 全区在编人员专业技术岗位统计结束
 
         ###
         # 片区在编人员行政职务统计

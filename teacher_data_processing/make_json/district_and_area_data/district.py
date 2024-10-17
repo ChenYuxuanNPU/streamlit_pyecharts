@@ -530,6 +530,31 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
     # 全区在编人员主教学科统计结束
 
     ###
+    # 全区在编人员专业技术岗位统计
+    ###
+    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["专业技术岗位"], scope="全区",
+                                            year=year,)
+
+    # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
+    try:
+        c.execute(sql_sentence)
+        result = dict(
+            c.fetchall()
+        )
+
+    except Exception as e:
+        print('\033[1;91m' + f"{e}" + '\033[0m')
+
+    finally:
+        conn.commit()
+
+    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/专业技术岗位", value=result,
+                                              json_data=json_data)
+    result = []
+
+    # 全区在编人员专业技术岗位统计结束
+
+    ###
     # 全区在编人员院校级别统计
     ###
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
