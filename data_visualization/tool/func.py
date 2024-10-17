@@ -148,7 +148,7 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
     return None
 
 
-def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0, ) -> None:
+def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0, is_symbol_show=True) -> None:
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -164,7 +164,7 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_l
     chart.add_xaxis(x_axis)
 
     for label in label_list:
-        chart.add_yaxis(label, [item[1] for item in data[label]], is_connect_nones=True, is_symbol_show=False)
+        chart.add_yaxis(label, [item[1] for item in data[label]], is_connect_nones=True, is_symbol_show=is_symbol_show)
 
     chart.set_global_opts(title_opts=opts.TitleOpts(title=title))
 
