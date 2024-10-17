@@ -1,15 +1,16 @@
 import json
 import time
+from inspect import stack
 from pathlib import Path
 
+import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
 from pyecharts.charts import Bar
-from pyecharts.charts import Pie
 from pyecharts.charts import Line
+from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
-from streamlit import line_chart
 from streamlit_echarts import st_pyecharts
 
 kind_list = ["在编", "编外"]
@@ -46,17 +47,27 @@ def set_page_configuration(title: str, icon: str) -> None:
     return None
 
 
-def draw_pie_chart(data: dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%',
+# 记得画图的代码顺序是先插入数据再set样式！
+def draw_pie_chart(data: pd.DataFrame | dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%',
                    center_to_bottom='60%') -> None:
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
-    chart = Pie()
-    chart.set_global_opts(title_opts=opts.TitleOpts(title=title), legend_opts=opts.LegendOpts(pos_left=pos_left))
-    chart.set_series_opts(label_opts=opts.LabelOpts(formatter=formatter))
+    if isinstance(data, dict):
+        chart_data = [(k, v) for k, v in data.items()]
+    elif isinstance(data, pd.DataFrame):
+        return None
+    else:
+        return None
 
-    chart.add("", [(k, v) for k, v in data.items()], center=["50%", center_to_bottom], radius="65%",
+    chart = Pie()
+
+    chart.add("", chart_data, center=["50%", center_to_bottom], radius="65%",
               percent_precision=1)
+
+    chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
+                          legend_opts=opts.LegendOpts(pos_left=pos_left))
+    chart.set_series_opts(label_opts=opts.LabelOpts(formatter=formatter))
 
     with st.container(border=True):
         st_pyecharts(
@@ -73,12 +84,6 @@ def draw_multi_pie_chart(inner_data: dict, outer_data: dict, title: str, height=
         height = int(get_monitors()[0].height / 1080) * 350
 
     chart = Pie()
-    chart.set_global_opts(tooltip_opts=opts.TooltipOpts(is_show=False))
-    chart.set_series_opts(
-        tooltip_opts=opts.TooltipOpts(
-            trigger="item", formatter="{a} <br/>{b}: {c} ({d}%)"
-        )
-    )
 
     chart.add(
         series_name="1",
@@ -96,6 +101,12 @@ def draw_multi_pie_chart(inner_data: dict, outer_data: dict, title: str, height=
         )
     )
 
+    chart.set_global_opts(tooltip_opts=opts.TooltipOpts(is_show=False)).set_series_opts(
+        tooltip_opts=opts.TooltipOpts(
+            trigger="item", formatter="{a} <br/>{b}: {c} ({d}%)"
+        )
+    )
+
     with st.container(border=True):
         st_pyecharts(
             chart=chart,
@@ -105,11 +116,21 @@ def draw_multi_pie_chart(inner_data: dict, outer_data: dict, title: str, height=
     return None
 
 
-def draw_bar_chart(data: dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
+def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
+    if isinstance(data, dict):
+        chart_data = [values for values in data.values()]
+    elif isinstance(data, pd.DataFrame):
+        return None
+    else:
+        return None
+
     chart = Bar()
+    chart.add_xaxis([keys for keys in data.keys()])
+    chart.add_yaxis("总人数", chart_data)
+
     chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
                           legend_opts=opts.LegendOpts(is_show=False),
                           datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
@@ -118,10 +139,7 @@ def draw_bar_chart(data: dict, title: str, height=0, end=100, is_show_visual_map
                                                             max_=max([values for values in data.values()])))
     chart.set_series_opts(label_opts=opts.LabelOpts(position="top"))
 
-    chart.add_xaxis([keys for keys in data.keys()])
-    chart.add_yaxis("总人数", [values for values in data.values()])
-
-    with st.container(border=True):
+    with (st.container(border=True)):
         st_pyecharts(
             chart=chart,
             height=f"{height}px"
@@ -130,24 +148,41 @@ def draw_bar_chart(data: dict, title: str, height=0, end=100, is_show_visual_map
     return None
 
 
-def draw_line_chart(data: dict, title: str, x_axis: list, label_list: list, height=0, ) -> None:
+def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0, ) -> None:
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
+    if isinstance(data, dict):
+        chart_data = data
+    elif isinstance(data, pd.DataFrame):
+        return None
+    else:
+        return None
+
     chart = Line()
-    chart.set_global_opts(title_opts=opts.TitleOpts(title=title))
+
     chart.add_xaxis(x_axis)
 
     for label in label_list:
         chart.add_yaxis(label, [item[1] for item in data[label]], is_connect_nones=True, is_symbol_show=False)
 
-    with st.container(border=True):
-        st_pyecharts(
-            chart=chart,
-            height=f"{height}px"
-        )
+    chart.set_global_opts(title_opts=opts.TitleOpts(title=title))
+
+    st_pyecharts(
+        chart=chart,
+        height=f"{height}px"
+    )
 
     return None
+
+
+def draw_horizontal_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
+
+    st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, horizontal=True, height=100*data['年份'].nunique())
+
+
+def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
+    st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
 # def draw_1col_bar(data: dict, title: str, height=0):
