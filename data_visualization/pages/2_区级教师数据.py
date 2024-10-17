@@ -216,6 +216,10 @@ def show_multi_years_teacher_0(year_list: list) -> None:
         st.info("教师数随年份变化情况")
         r.show_multi_years_teacher_0_area(year_list=year_list)
 
+        st.empty()
+        st.info("学段人数随年份变化情况")
+        r.show_multi_years_teacher_0_period(year_list=year_list)
+
 
 year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
     "list_for_update_teacher_info"]])
