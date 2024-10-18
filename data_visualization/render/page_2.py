@@ -56,230 +56,142 @@ def get_discipline_dataframe_columns_list() -> list:
     return ["年份", "学科", "人数"]
 
 
-def show_multi_years_teacher_0_area(year_list: list) -> None:
+def get_grad_school_list() -> list:
+    return ["985院校", "部属师范院校", "211院校"]
+
+
+def get_grad_school_dataframe_columns_list() -> list:
+    return ["年份", "院校级别", "人数"]
+
+
+def show_multi_years_teacher_0_basic(year_list: list, json_field: str,
+                                     dataframe_columns_list: list, info_list: list,
+                                     block_left_img: bool = False, block_right_img: bool = False,
+                                     block_bottom_img: bool = False) -> None:
+    """
+    年份对比中基础三张图的生成
+    :param year_list: 对比所用的年份列表
+    :param json_field: json文件对应的子字典对应的字段
+    :param dataframe_columns_list: 生成pd.Dataframe的列名
+    :param info_list: 需要统计的选项列表
+    :param block_left_img:
+    :param block_right_img:
+    :param block_bottom_img:
+    :return:
+    """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-    output = {}
+    left, right = st.columns(spec=2)
 
-    df = pd.DataFrame(columns=get_area_dataframe_columns_list())
+    # 展示左侧折线图
+    if not block_left_img:
+        output = {}
 
-    temp = []
-    for year in year_list:
-        for area in get_area_list():
-            temp.append(
-                pd.DataFrame(
-                    [[year, area, data[year]["在编"]["全区"]["所有学段"]["片区统计"].get(area, None)]],
-                    columns=get_area_dataframe_columns_list()
-                )
-            )
-
-    df = pd.concat(temp, ignore_index=True)
-
-    for area in get_area_list():
-        output[f"{area}"] = [[year, data[year]["在编"]["全区"]["所有学段"]["片区统计"].get(area, None)] for year in
-                             year_list]
-
-    with st.container(border=True):
-
-        left, right = st.columns(spec=2)
+        for area in info_list:
+            output[f"{area}"] = [[year, data[year]["在编"]["全区"]["所有学段"][json_field].get(area, None)] for year in
+                                 year_list]
 
         with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=get_area_list(),
+            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
                                         is_symbol_show=False)
-        with right:
-            visual_func.draw_unstack_bar_chart(data=df, x_axis=get_area_dataframe_columns_list()[0],
-                                               y_axis=get_area_dataframe_columns_list()[2],
-                                               label=get_area_dataframe_columns_list()[1])
 
-        visual_func.draw_horizontal_bar_chart(data=df, x_axis=get_area_dataframe_columns_list()[0],
-                                              y_axis=get_area_dataframe_columns_list()[2],
-                                              label=get_area_dataframe_columns_list()[1])
+    if not block_right_img or not block_bottom_img:
+        df = pd.DataFrame(columns=dataframe_columns_list)
+        temp = []
+
+        for year in year_list:
+            for info in info_list:
+                temp.append(
+                    pd.DataFrame(
+                        [[year, info, data[year]["在编"]["全区"]["所有学段"][json_field].get(info, None)]],
+                        columns=dataframe_columns_list
+                    )
+                )
+
+        df = pd.concat(temp, ignore_index=True)
+
+        # 展示右侧分散柱状图
+        if not block_right_img:
+            with right:
+                visual_func.draw_unstack_bar_chart(data=df, x_axis=dataframe_columns_list[0],
+                                                   y_axis=dataframe_columns_list[2],
+                                                   label=dataframe_columns_list[1])
+        # 展示底部水平柱状图
+        if not block_bottom_img:
+            visual_func.draw_horizontal_bar_chart(data=df, x_axis=dataframe_columns_list[0],
+                                                  y_axis=dataframe_columns_list[2],
+                                                  label=dataframe_columns_list[1])
+
+    return None
+
+
+def show_multi_years_teacher_0_count(year_list: list) -> None:
+    with st.container(border=True):
+        data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+        output = {"教师数": []}
+
+        for year in year_list:
+            output["教师数"].append([f"{year}", data[year]["在编"]["全区"]["所有学段"]["总人数"]])
+
+        visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=["教师数"])
+
+
+def show_multi_years_teacher_0_area(year_list: list) -> None:
+    with st.container(border=True):
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="片区统计",
+                                         dataframe_columns_list=get_area_dataframe_columns_list(),
+                                         info_list=get_area_list())
 
     return None
 
 
 def show_multi_years_teacher_0_period(year_list: list) -> None:
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-    output = {}
-
-    df = pd.DataFrame(columns=get_period_dataframe_columns_list())
-
-    temp = []
-    for year in year_list:
-        for period in get_period_list():
-            temp.append(
-                pd.DataFrame(
-                    [[year, period, data[year]["在编"]["全区"]["所有学段"]["学段统计"].get(period, None)]],
-                    columns=get_period_dataframe_columns_list()
-                )
-            )
-
-    df = pd.concat(temp, ignore_index=True)
-
-    for period in get_period_list():
-        output[f"{period}"] = [[year, data[year]["在编"]["全区"]["所有学段"]["学段统计"].get(period, None)] for year in
-                               year_list]
-
     with st.container(border=True):
-        left, right = st.columns(spec=2)
-
-        with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=get_period_list())
-
-        with right:
-            visual_func.draw_unstack_bar_chart(data=df, x_axis=get_period_dataframe_columns_list()[0],
-                                               y_axis=get_period_dataframe_columns_list()[2],
-                                               label=get_period_dataframe_columns_list()[1])
-
-        visual_func.draw_horizontal_bar_chart(data=df, x_axis=get_period_dataframe_columns_list()[0],
-                                              y_axis=get_period_dataframe_columns_list()[2],
-                                              label=get_period_dataframe_columns_list()[1])
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="学段统计",
+                                         dataframe_columns_list=get_period_dataframe_columns_list(),
+                                         info_list=get_period_list())
 
     return None
 
 
 def show_multi_years_teacher_0_edu_bg(year_list: list) -> None:
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-    output = {}
-
-    df = pd.DataFrame(columns=get_edu_bg_dataframe_columns_list())
-
-    temp = []
-    for year in year_list:
-        for edu_bg in get_edu_bg_list():
-            temp.append(
-                pd.DataFrame(
-                    [[year, edu_bg, data[year]["在编"]["全区"]["所有学段"]["最高学历"].get(edu_bg, None)]],
-                    columns=get_edu_bg_dataframe_columns_list()
-                )
-            )
-
-    df = pd.concat(temp, ignore_index=True)
-
-    for edu_bg in get_edu_bg_list():
-        output[f"{edu_bg}"] = [[year, data[year]["在编"]["全区"]["所有学段"]["最高学历"].get(edu_bg, None)] for year in
-                               year_list]
-
     with st.container(border=True):
-        left, right = st.columns(spec=2)
-
-        with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=get_edu_bg_list(),
-                                        is_symbol_show=False)
-
-        with right:
-            visual_func.draw_unstack_bar_chart(data=df, x_axis=get_edu_bg_dataframe_columns_list()[0],
-                                               y_axis=get_edu_bg_dataframe_columns_list()[2],
-                                               label=get_edu_bg_dataframe_columns_list()[1])
-
-        visual_func.draw_horizontal_bar_chart(data=df, x_axis=get_edu_bg_dataframe_columns_list()[0],
-                                              y_axis=get_edu_bg_dataframe_columns_list()[2],
-                                              label=get_edu_bg_dataframe_columns_list()[1])
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高学历",
+                                         dataframe_columns_list=get_edu_bg_dataframe_columns_list(),
+                                         info_list=get_edu_bg_list())
 
     return None
 
 
 def show_multi_years_teacher_0_vocational_level(year_list: list) -> None:
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-    output = {}
-
-    df = pd.DataFrame(columns=get_vocational_level_dataframe_columns_list())
-    df_detail = pd.DataFrame(columns=get_vocational_level_detail_dataframe_columns_list())
-
-    temp = []
-    for year in year_list:
-        for vocational_level in get_vocational_level_list():
-            temp.append(
-                pd.DataFrame(
-                    [[year, vocational_level,
-                      data[year]["在编"]["全区"]["所有学段"]["最高职称"].get(vocational_level, None)]],
-                    columns=get_vocational_level_dataframe_columns_list()
-                )
-            )
-
-    df = pd.concat(temp, ignore_index=True)
-
-    for vocational_level in get_vocational_level_list():
-        output[f"{vocational_level}"] = [
-            [year, data[year]["在编"]["全区"]["所有学段"]["最高职称"].get(vocational_level, None)] for year in
-            year_list]
-
-    temp_detail = []
-    for year in year_list:
-        for vocational_level_detail in get_vocational_level_detail_list():
-            temp_detail.append(
-                pd.DataFrame(
-                    [[year, vocational_level_detail,
-                      data[year]["在编"]["全区"]["所有学段"]["专业技术岗位"].get(vocational_level_detail, None)]],
-                    columns=get_vocational_level_detail_dataframe_columns_list()
-                )
-            )
-
-    df_detail = pd.concat(temp_detail, ignore_index=True)
-
     with st.container(border=True):
-        left, right = st.columns(spec=2)
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高职称",
+                                         dataframe_columns_list=get_vocational_level_dataframe_columns_list(),
+                                         info_list=get_vocational_level_list(),
+                                         block_bottom_img=True)
 
-        with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=get_vocational_level_list(),
-                                        is_symbol_show=False)
-
-        with right:
-            visual_func.draw_unstack_bar_chart(data=df, x_axis=get_vocational_level_dataframe_columns_list()[0],
-                                               y_axis=get_vocational_level_dataframe_columns_list()[2],
-                                               label=get_vocational_level_dataframe_columns_list()[1])
-
-        visual_func.draw_horizontal_bar_chart(data=df_detail,
-                                              x_axis=get_vocational_level_detail_dataframe_columns_list()[0],
-                                              y_axis=get_vocational_level_detail_dataframe_columns_list()[2],
-                                              label=get_vocational_level_detail_dataframe_columns_list()[1])
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="专业技术岗位",
+                                         dataframe_columns_list=get_vocational_level_detail_dataframe_columns_list(),
+                                         info_list=get_vocational_level_detail_list(),
+                                         block_left_img=True, block_right_img=True)
 
     return None
 
 
 def show_multi_years_teacher_0_discipline(year_list: list) -> None:
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-    output = {}
-
-    df = pd.DataFrame(columns=get_discipline_dataframe_columns_list())
-
-    temp = []
-    for year in year_list:
-        for discipline in get_discipline_list():
-            temp.append(
-                pd.DataFrame(
-                    [[year, discipline, data[year]["在编"]["全区"]["所有学段"]["主教学科"].get(discipline, None)]],
-                    columns=get_discipline_dataframe_columns_list()
-                )
-            )
-
-    df = pd.concat(temp, ignore_index=True)
-
-    for discipline in get_discipline_list():
-        output[f"{discipline}"] = [[year, data[year]["在编"]["全区"]["所有学段"]["主教学科"].get(discipline, None)] for
-                                   year in
-                                   year_list]
-
     with st.container(border=True):
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="主教学科",
+                                         dataframe_columns_list=get_discipline_dataframe_columns_list(),
+                                         info_list=get_discipline_list())
+    return None
 
-        left, right = st.columns(spec=2)
 
-        with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=get_discipline_list(),
-                                        is_symbol_show=False)
-        with right:
-            visual_func.draw_unstack_bar_chart(data=df, x_axis=get_discipline_dataframe_columns_list()[0],
-                                               y_axis=get_discipline_dataframe_columns_list()[2],
-                                               label=get_discipline_dataframe_columns_list()[1])
-
-        visual_func.draw_horizontal_bar_chart(data=df, x_axis=get_discipline_dataframe_columns_list()[0],
-                                              y_axis=get_discipline_dataframe_columns_list()[2],
-                                              label=get_discipline_dataframe_columns_list()[1])
-
+def show_multi_years_teacher_0_grad_school(year_list: list) -> None:
+    with st.container(border=True):
+        show_multi_years_teacher_0_basic(year_list=year_list, json_field="院校级别",
+                                         dataframe_columns_list=get_grad_school_dataframe_columns_list(),
+                                         info_list=get_grad_school_list())
     return None
 
 
