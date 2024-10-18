@@ -64,6 +64,218 @@ def get_grad_school_dataframe_columns_list() -> list:
     return ["年份", "院校级别", "人数"]
 
 
+# 这里是给片区不同学段的可视化做的，在编信息
+def show_1_year_given_period(year: str, period: str) -> None:
+    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+    st.info(f"在编{period}信息", icon="😋")
+
+    with st.container(border=False):
+        c0, c1 = st.columns([2, 1])
+
+        with c0:
+            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
+                                       end=visual_func.end_dict[period])
+
+        with c1:
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
+                                       center_to_bottom="64%")
+
+        c0, c1, c2 = st.columns(spec=3)
+
+        with c0:
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高学历"], title="最高学历")
+
+        with c1:
+            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校",
+                                       is_show_visual_map=False)
+
+        with c2:
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
+
+
+# 展示某一学年所有学段在编教师数据
+def show_1_year_all_period(year: str):
+    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+    st.success(f"在编教职工总人数：{data[year]['在编']['全区']['所有学段']['总人数']}")
+
+    with st.container(border=False):
+        c0, c1, c2 = st.columns(spec=3)
+
+        with c0:
+            # 在编片区统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["片区统计"], title="片区统计")
+
+            # 在编学历统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高学历"], title="最高学历")
+
+        with c1:
+            # 在编学段统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["学段统计"], title="学段统计")
+
+            # 在编职称统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高职称"], title="职称")
+
+        with c2:
+            # 在编年龄统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%",
+                                       center_to_bottom="64%")
+
+            # 在编行政职务统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务",
+                                       center_to_bottom="68%")
+
+        # 学科统计占两列
+        c0, c1 = st.columns([2, 1])
+
+        with c0:
+            # 在编学科统计
+            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
+                                       end=70)
+
+        with c1:
+            # 在编毕业院校统计
+            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
+                                       is_show_visual_map=False)
+
+        c0, c1, c2 = st.columns(spec=3)
+
+        with c0:
+            # 在编骨干教师统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
+
+        with c1:
+            # 在编教师支教统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["支教地域"], title="支教地域")
+
+        with c2:
+            # 在编四名教师统计
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
+
+        # 教师分布前三十统计
+        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
+
+        # 在编教师数后三十的学校统计
+        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数", end=100)
+
+
+def show_1_year_teacher_0(year: str, ):
+    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+    # 小标题
+    st.markdown(
+        body="<h2 style='text-align: center;'>在编教师数据</h2>",
+        unsafe_allow_html=True
+    )
+
+    period_list = st.multiselect(
+        label="请选择需要查询的学段",
+        options=["所有学段", "高中", "初中", "小学", "幼儿园"],
+        default=["所有学段", "高中"]
+    )
+
+    if "所有学段" in period_list:
+        show_1_year_all_period(year=year)
+
+    if "高中" in period_list:
+        show_1_year_given_period(year=year, period="高中")
+
+    if "初中" in period_list:
+        show_1_year_given_period(year=year, period="初中")
+
+    if "小学" in period_list:
+        show_1_year_given_period(year=year, period="小学")
+
+    if "幼儿园" in period_list:
+        show_1_year_given_period(year=year, period="幼儿园")
+
+
+def show_1_year_teacher_1(year: str):
+    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+    # 小标题
+    st.markdown(
+        body="<h2 style='text-align: center;'>编外教师数据</h2>",
+        unsafe_allow_html=True
+    )
+
+    st.info(f"编外教职工总人数：{data[year]['编外']['全区']['所有学段']['总人数']}")
+
+    c0, c1, c2 = st.columns(spec=3)
+
+    with c0:
+        # 编外片区统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
+
+        # 编外学段统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["学段统计"], title="学段统计")
+
+    with c1:
+        # 编外学历统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
+
+        # 编外职称统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
+
+    with c2:
+        # 编外骨干教师统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
+
+        # 编外四名教师统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
+
+    # 教师分布统计
+    visual_func.draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
+
+    c0, c1, c2 = st.columns(spec=3)
+
+    with c0:
+        # 编外教师资格统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
+
+    with c1:
+        # 编外中小学教师资格统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
+
+    with c2:
+        # 编外幼儿园教师资格统计
+        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
+
+
+def show_multi_years_teacher_0(year_list: list) -> None:
+    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>年份对比</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        st.info("在编教师数随年份变化情况")
+        show_multi_years_teacher_0_count(year_list=year_list)
+
+        st.info("片镇教师数随年份变化情况")
+        show_multi_years_teacher_0_area(year_list=year_list)
+
+        st.info("学段教师数随年份变化情况")
+        show_multi_years_teacher_0_period(year_list=year_list)
+
+        st.info("学历水平随年份变化情况")
+        show_multi_years_teacher_0_edu_bg(year_list=year_list)
+
+        st.info("专技职称随年份变化情况")
+        show_multi_years_teacher_0_vocational_level(year_list=year_list)
+
+        st.info("学科教师数随年份变化情况")
+        show_multi_years_teacher_0_discipline(year_list=year_list)
+
+        st.info("教师毕业院校水平随年份变化情况")
+        show_multi_years_teacher_0_grad_school(year_list=year_list)
+
+
 def show_multi_years_teacher_0_basic(year_list: list, json_field: str,
                                      dataframe_columns_list: list, info_list: list,
                                      block_left_img: bool = False, block_right_img: bool = False,
@@ -74,10 +286,10 @@ def show_multi_years_teacher_0_basic(year_list: list, json_field: str,
     :param json_field: json文件对应的子字典对应的字段
     :param dataframe_columns_list: 生成pd.Dataframe的列名
     :param info_list: 需要统计的选项列表
-    :param block_left_img:
-    :param block_right_img:
-    :param block_bottom_img:
-    :return:
+    :param block_left_img: 是否屏蔽左侧图，默认不屏蔽，True则屏蔽
+    :param block_right_img: 是否屏蔽右侧图，默认不屏蔽，True则屏蔽
+    :param block_bottom_img: 是否屏蔽底部图，默认不屏蔽，True则屏蔽
+    :return: 无
     """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
