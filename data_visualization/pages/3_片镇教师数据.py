@@ -21,12 +21,14 @@ visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
 
 
 def get_year_list() -> list:
-    return list(
-        set(
-            [
-                data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]
-            ]
-        )
+    return sorted(
+        list(
+            set(
+                [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+                    "list_for_update_teacher_info"]]
+            )
+        ),
+        reverse=True
     )
 
 

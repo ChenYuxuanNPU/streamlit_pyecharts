@@ -21,7 +21,10 @@ visual_func.set_page_configuration(title="教育数字大屏", icon=":sparkler:"
 
 
 def get_year_list() -> list:
-    return visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"]
+    return sorted(
+        visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"],
+        reverse=True
+    )
 
 
 st.markdown(
@@ -36,14 +39,14 @@ left, right = st.columns(spec=2)
 with left:
     year_0 = st.selectbox(
         label="请选择需要查询的年份",
-        options=sorted(get_year_list(), reverse=True),
+        options=get_year_list(),
         index=0,
     )
 
 with right:
     year_1 = st.selectbox(
         label="请选择需要比较的年份",
-        options=sorted(get_year_list(), reverse=True),
+        options=get_year_list(),
         index=None,
         placeholder="可选项"
     )

@@ -21,10 +21,14 @@ visual_func.set_page_configuration(title="区级教师数据", icon=":classical_
 
 
 def get_year_list() -> list:
-    return list(
-        set(
-            [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]]
-        )
+    return sorted(
+        list(
+            set(
+                [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+                    "list_for_update_teacher_info"]]
+            )
+        ),
+        reverse=True
     )
 
 
@@ -40,7 +44,7 @@ col0, col1 = st.columns(spec=2)
 with col0:
     year_0 = st.selectbox(
         label="请选择需要查询的年份",
-        options=sorted(get_year_list(), reverse=True),
+        options=get_year_list(),
         index=0,
     )
 
@@ -49,7 +53,7 @@ with col1:
         st.multiselect(
             label="请选择需要比较的年份",
             # [year for year in year_list if year != year_0],
-            options=sorted(get_year_list(), reverse=True),
+            options=get_year_list(),
             default=[],
             placeholder="可选项"
         )
