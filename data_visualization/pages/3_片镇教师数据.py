@@ -19,11 +19,20 @@ visual_func.session_state_reset(page=3)
 # 设置页面格式
 visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
 
-# 读取现有json文件
-json_data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
-    "list_for_update_teacher_info"]])
+def get_year_list() -> list:
+    return list(
+        set(
+            [
+                data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]
+            ]
+        )
+    )
+
+
+def get_area_list() -> list:
+    return ["永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"]
+
 
 # 标题
 st.markdown(
@@ -38,29 +47,29 @@ with st.container(border=True):
 
     with col0:
         year_0 = st.selectbox(
-            "请选择需要查询的年份",
-            year_list,
+            label="请选择需要查询的年份",
+            options=get_year_list(),
             index=0,
         )
 
         area_0 = st.selectbox(
-            "想查询哪一个片镇的信息？",
-            ("永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"),
+            label="想查询哪一个片镇的信息？",
+            options=get_area_list(),
             index=None,
             placeholder="必选项"
         )
 
     with col1:
         year_1 = st.selectbox(
-            "请选择需要对比的年份",
-            [year for year in year_list if year != year_0],
+            label="请选择需要对比的年份",
+            options=get_year_list(),
             index=None,
             placeholder="可选项"
         )
 
         area_1 = st.selectbox(
-            "想对比哪一个片镇的信息？",
-            [area for area in ["永平", "石井", "新市", "人和", "江高", "太和", "钟落潭"] if area != area_0],
+            label="想对比哪一个片镇的信息？",
+            options=get_area_list(),
             index=None,
             placeholder="可选项"
         )
@@ -69,7 +78,7 @@ with st.container(border=True):
     if year_0 is not None and year_1 is None and area_0 is not None and area_1 is None:
 
         try:
-            r.show_teacher_0(year=year_0, area=area_0, data=json_data)
+            r.show_teacher_0(year=year_0, area=area_0)
 
         except KeyError as e:
 
@@ -87,7 +96,7 @@ with st.container(border=True):
                 st.error(str(e), icon="😭")
 
         try:
-            r.show_teacher_1(year=year_0, area=area_0, data=json_data)
+            r.show_teacher_1(year=year_0, area=area_0)
 
         except KeyError as e:
 

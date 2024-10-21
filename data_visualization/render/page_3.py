@@ -4,6 +4,10 @@ import streamlit as st
 from data_visualization.tool import func as visual_func
 
 
+def get_base_data() -> dict:
+    return visual_func.load_json_data(folder="result", file_name="teacher_info")
+
+
 # 用于展示指导中心信息
 def show_text_info() -> None:
     st.divider()
@@ -35,7 +39,9 @@ def show_text_info() -> None:
         )
 
 
-def show_teacher_0(year: str, area: str, data: dict) -> None:
+def show_teacher_0(year: str, area: str) -> None:
+    data = get_base_data()
+
     st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
 
     with st.container(border=False):
@@ -90,7 +96,9 @@ def show_teacher_0(year: str, area: str, data: dict) -> None:
                                        title="四名统计")
 
 
-def show_teacher_1(year: str, area: str, data: dict) -> None:
+def show_teacher_1(year: str, area: str) -> None:
+    data = get_base_data()
+
     st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
 
     with st.container(border=False):
