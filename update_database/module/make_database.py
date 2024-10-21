@@ -6,11 +6,20 @@
 import sqlite3
 from pathlib import Path
 
+from openpyxl.pivot.fields import Boolean
+
 from update_database.module import make_sql_sentence
 from update_database.tool import func as makedb_func
 
 
-def clear_table(database_name: str, table_name: str, kind: str):
+def clear_table(database_name: str, table_name: str, kind: str) -> None:
+    """
+    创建新的数据表或清空已有数据表
+    :param database_name: 数据库名
+    :param table_name: 数据表名
+    :param kind: 在编/编外
+    :return: 无
+    """
     # 用来连接数据库插入数据
     result = [0]
     conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
@@ -52,4 +61,5 @@ def clear_table(database_name: str, table_name: str, kind: str):
         conn.commit()
         conn.close()
 
-    return True
+    print(f"{kind}数据表创建成功 (make_database.py)")
+

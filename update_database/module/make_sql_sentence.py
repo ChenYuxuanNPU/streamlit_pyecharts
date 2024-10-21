@@ -7,6 +7,11 @@ from pathlib import Path
 
 
 def get_words_dict() -> dict:
+    """
+    获取存储数据表字段名的字典
+    :return: 字段名字典
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r",
               encoding="UTF-8") as file:
         json_data = json.load(file)
@@ -16,7 +21,13 @@ def get_words_dict() -> dict:
         return words_dict
 
 
-def make_sql_sentence(kind):
+def make_sql_sentence(kind) -> str:
+    """
+    生成形如("校名" TEXT,"学校类型" TEXT,"统一社会信用代码" TEXT)的sql语句片段
+    :param kind:在编/编外
+    :return:sql语句片段
+    """
+
     lang = "chn"  # 默认字段名为中文
 
     # 分为在编教师（2023年在编教师信息）、编外教师（2023年编外教师信息）、学校数据（2023年学校情况一览表）几类
@@ -43,7 +54,7 @@ def make_sql_sentence(kind):
 
     else:
         print(r"参数错误 (make_sql_sentence.py)")
-        return -1
+        return "-1"
 
     sentence_title = words.split()
 

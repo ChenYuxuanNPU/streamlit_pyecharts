@@ -9,14 +9,24 @@ import openpyxl
 
 
 def get_database_basic_info() -> dict:
-    # 读取现有json文件
+    """
+    读取数据库基本信息
+    :return: 数据库信息字典
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r", encoding="UTF-8") as f:
         json_data = json.load(f)
 
     return json_data
 
 
-def read_input_data(kind):
+def read_input_data(kind) -> list:
+    """
+    用于从数据源的表格中提取数据
+    :param kind: 在编/编外
+    :return: 二维列表，每一行代表一个老师的信息
+    """
+
     result = []
     json_data = get_database_basic_info()
 
@@ -55,12 +65,12 @@ def read_input_data(kind):
 
     else:
         print(fr"kind参数错误:{kind} (make_input_data.py)")
-        return -1
+        return [-1]
 
     # 判断一下result是否为空值
     if len(result) == 0:
         print("读取的数据为空值 (make_input_data.py)")
-        return -1
+        return [-1]
 
     # 用来验证所有数据是否等长
     flag = 0
@@ -77,7 +87,7 @@ def read_input_data(kind):
     else:
         print(fr"{kind}数据长度不相同 (make_input_data.py)")
 
-        return -1
+        return [-1]
 
 
 if __name__ == '__main__':
