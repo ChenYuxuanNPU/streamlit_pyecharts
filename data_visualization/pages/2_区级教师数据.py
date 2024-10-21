@@ -19,8 +19,14 @@ visual_func.session_state_reset(page=2)
 # 设置全局属性
 visual_func.set_page_configuration(title="区级教师数据", icon=":classical_building:")
 
-year_list = set([data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
-    "list_for_update_teacher_info"]])
+
+def get_year_list() -> list:
+    return list(
+        set(
+            [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_teacher_info"]]
+        )
+    )
+
 
 # 标题
 st.markdown(
@@ -34,7 +40,7 @@ col0, col1 = st.columns(spec=2)
 with col0:
     year_0 = st.selectbox(
         label="请选择需要查询的年份",
-        options=year_list,
+        options=sorted(get_year_list(), reverse=True),
         index=0,
     )
 
@@ -43,7 +49,7 @@ with col1:
         st.multiselect(
             label="请选择需要比较的年份",
             # [year for year in year_list if year != year_0],
-            options=year_list,
+            options=sorted(get_year_list(), reverse=True),
             default=[],
             placeholder="可选项"
         )

@@ -171,8 +171,8 @@ def show_1_year_teacher_0(year: str, ):
 
     period_list = st.multiselect(
         label="请选择需要查询的学段",
-        options=["所有学段", "高中", "初中", "小学", "幼儿园"],
-        default=["所有学段", "高中"]
+        options=["所有学段"] + get_period_list(),
+        default=["所有学段", get_period_list()[0]]
     )
 
     if "所有学段" in period_list:
@@ -286,9 +286,9 @@ def show_multi_years_teacher_0_basic(year_list: list, json_field: str,
     :param json_field: json文件对应的子字典对应的字段
     :param dataframe_columns_list: 生成pd.Dataframe的列名
     :param info_list: 需要统计的选项列表
-    :param block_left_img: 是否屏蔽左侧图，默认不屏蔽，True则屏蔽
-    :param block_right_img: 是否屏蔽右侧图，默认不屏蔽，True则屏蔽
-    :param block_bottom_img: 是否屏蔽底部图，默认不屏蔽，True则屏蔽
+    :param block_left_img: 是否屏蔽左侧图，默认False不屏蔽，True则屏蔽
+    :param block_right_img: 是否屏蔽右侧图，默认False不屏蔽，True则屏蔽
+    :param block_bottom_img: 是否屏蔽底部图，默认False不屏蔽，True则屏蔽
     :return: 无
     """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
