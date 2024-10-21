@@ -1,6 +1,8 @@
 import copy
 import json
 import sqlite3
+
+from typing import Tuple
 from pathlib import Path
 
 from teacher_data_processing.read_database import get_database_data as gd
@@ -61,11 +63,26 @@ class MyError(Exception):
 
 
 def print_color_text(text: str, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+    """
+    输出带颜色的字符串，可以用于控制台警告
+    :param text: 输出的文本
+    :param color_code: 颜色起始代码
+    :param reset_code: 颜色结束代码
+    :return: 无
+    """
+
     print(color_code + text + reset_code)
+
+    return None
 
 
 # kind:"在编","编外"
-def connect_database():
+def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+    """
+    用于连接数据库
+    :return:
+    """
+
     conn = sqlite3.connect(
         fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}"
     )
@@ -75,11 +92,25 @@ def connect_database():
 
 
 def disconnect_database(conn) -> None:
+    """
+    用于断开数据库
+    :param conn:
+    :return:
+    """
+
     conn.close()
+
+    return None
 
 
 def load_json_data(folder: str, file_name: str) -> dict:
-    # 读取现有json文件
+    """
+    从文件夹中加载json文件
+    :param folder: json_file下的文件夹名
+    :param file_name: json文件名，不需要带.json后缀
+    :return: json文件形成的字典
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "r", encoding="UTF-8") as f:
         json_data = json.load(f)
@@ -88,6 +119,14 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
+    """
+    将dict保存到json_file下folder/file_name.json下
+    :param json_data: 要保存的dict
+    :param folder: json_file下的文件夹名
+    :param file_name: json文件名，不需要带.json后缀
+    :return:
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
@@ -97,6 +136,11 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
 
 def get_database_name() -> str:
+    """
+    根据database_basic_info.json获取数据库名
+    :return:数据库名
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
               "r", encoding='UTF-8') as file:  # ISO-8859-1
         loaded_data = json.load(file)
@@ -107,6 +151,12 @@ def get_database_name() -> str:
 
 
 def reverse_label_and_value(old_list: list) -> list:
+    """
+    用于反转子列表的顺序
+    :param old_list: 原二维列表
+    :return: 子列表反转后的列表
+    """
+
     new_list = []
     for sub_list in old_list:
         new_list.append(sub_list[::-1])
@@ -115,6 +165,12 @@ def reverse_label_and_value(old_list: list) -> list:
 
 
 def simplify_school_name(dict1: dict) -> dict:
+    """
+    简化校名，删除前缀“广州市白云区”、“广州市”、“白云区”、“广州”，删除后缀“学校”
+    :param dict1:
+    :return:
+    """
+
     temp = [item for item in dict1.items()]
     temp_item = ""
     output = []
@@ -150,8 +206,13 @@ def simplify_school_name(dict1: dict) -> dict:
     return output_dict
 
 
-# 将无和其他合并到无中
 def combine_none_and_others(input_dict: dict) -> dict:
+    """
+    将字典中键为无和其他的值合并到无中
+    :param input_dict: 需要合并的字典
+    :return: 合并后的字典
+    """
+
     output = copy.deepcopy(input_dict)
 
     if "无" in list(input_dict.keys()) and "其他" in list(input_dict.keys()):
@@ -160,9 +221,14 @@ def combine_none_and_others(input_dict: dict) -> dict:
     return output
 
 
-# age_list参数代表年龄列表，如[22,23,25]
-# age_count_list参数代表求和后的年龄列表，如[(年龄,个数),(年龄,个数)]
 def age_statistics(age_list=None, age_count_list=None) -> dict:
+    """
+    用于将零散的年龄列表合并为统计求和后的年龄列表
+    :param age_list: 年龄列表，如[22,23,25]
+    :param age_count_list: 求和后的年龄列表，如[(年龄,个数),(年龄,个数)]
+    :return: 年龄及个数的二维列表
+    """
+
     data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     label = ["20岁及以下", "21-25岁", "25-29岁", "30-34岁", "35-39岁", "40-44岁", "45-49岁", "50-54岁", "55-60岁", "60岁及以上"]
 
@@ -249,6 +315,13 @@ def age_statistics(age_list=None, age_count_list=None) -> dict:
 
 
 def combine_label_and_data(label: list, data: list) -> dict:
+    """
+    将画图用的label与data列表合并为字典
+    :param label:label列表
+    :param data:data列表
+    :return:合并后的字典
+    """
+
     if not len(label) == len(data):
         raise MyError("label和data长度不对")
 
@@ -256,6 +329,15 @@ def combine_label_and_data(label: list, data: list) -> dict:
 
 
 def del_tuple_in_list(data: list) -> list:
+    """
+    将形如[('1',), ('2',), ('3',),]的数据转化为[1, 2, 3,]
+    :param data:带有元组的列表
+    :return:清洗后的列表
+    """
+
+    if not isinstance(data[0], tuple):
+        return data
+
     output = []
 
     for single_data in data:
@@ -265,6 +347,12 @@ def del_tuple_in_list(data: list) -> list:
 
 
 def distinguish_school_id(school_id: str) -> list:
+    """
+    根据院校代码生成学校所属类型的列表（由于985要统计到211里）
+    :param school_id: 给定的院校代码
+    :return: ["985院校", "211院校", "部属师范院校", "其他院校"]的某个子串
+    """
+
     output = []
 
     if school_id in code_of_985:
@@ -283,6 +371,12 @@ def distinguish_school_id(school_id: str) -> list:
 
 
 def count_school_id(data: list) -> dict:
+    """
+    统计985211人数
+    :param data: 院校代码列表，形如[('10699',), ('10558',), ('10561',),]
+    :return:985、211、部署示范及其他的人数列表
+    """
+
     output = {
         '985院校': 0,
         '部属师范院校': 0,
@@ -302,6 +396,12 @@ def count_school_id(data: list) -> dict:
 
 
 def combine_highest_title(title_list: list) -> dict:
+    """
+    将非中小学系列职称合并
+    :param title_list:职称列表
+    :return:合并后的职称字典
+    """
+
     output = {
         "未取得职称": 0,
         "三级教师": 0,
@@ -346,6 +446,15 @@ def combine_highest_title(title_list: list) -> dict:
 
 # 用来检查是否有这个学校/这个学校有没有这个学段
 def school_name_and_period_check(kind: str, school_name: str, year: str, period=None) -> list:
+    """
+    用于检查给定的校名或校名和学段的组合在某一年的数据中是否存在
+    :param kind: 在编或编外
+    :param school_name: 校名
+    :param year: 年份
+    :param period: 学段，不填默认所有学段
+    :return: [True/False, 错误信息]
+    """
+
     if kind not in ["在编", '编外']:
         return [False, "kind参数错误"]
 
@@ -418,10 +527,15 @@ def school_name_and_period_check(kind: str, school_name: str, year: str, period=
     return [False, "school_name_or_period_check函数异常"]
 
 
-# 这个函数用来解决字典赋值但找不到位置的问题
-# route的格式：字段1/字段2/字段3
-
 def dict_assignment(route: str, value, json_data: dict) -> dict:
+    """
+    在不知道字典是否有对应路径的情况下插入数据，避免了无中间路径报key error
+    :param route: 数据在字典中的位置，每一层的key使用斜杠"/"分开，如f"{year}/{kind}/片区/{area}/所有学段/"
+    :param value: 需要插入的数据
+    :param json_data: 原字典
+    :return: 插入后字典
+    """
+
     route_list = route.split("/")
     temp = json_data
 
