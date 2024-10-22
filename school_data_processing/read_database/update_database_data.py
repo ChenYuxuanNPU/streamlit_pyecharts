@@ -1,7 +1,13 @@
 from school_data_processing.tool import func as sch_proc_func
 
 
-def get_school_data_sum(json_data: dict, year: str, ):
+def get_school_data_sum(json_data: dict, year: str, ) -> dict:
+    """
+    从数据库中读取某一年学校信息的表，获取字段名及数据，并将数据保存至json文件中
+    :param json_data: json文件原数据
+    :param year: 需要更新的年份
+    :return: 更新后的json文件数据
+    """
 
     table_name = sch_proc_func.load_json_data(folder="database", file_name="database_basic_info")["table_name_dict"][f"{year}年学校情况一览表"]
 
