@@ -21,6 +21,11 @@ visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
 
 
 def get_year_list() -> list:
+    """
+    获取教师信息年份列表并按照年份逆序排序（由后到前）
+    :return:
+    """
+
     return sorted(
         list(
             set(
@@ -34,7 +39,7 @@ def get_year_list() -> list:
 
 def get_area_list() -> list:
     """
-    片镇列表：["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
+    获取片镇列表：["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
     :return:
     """
 

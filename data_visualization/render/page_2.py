@@ -14,43 +14,83 @@ def get_area_list() -> list:
 
 
 def get_area_dataframe_columns_list() -> list:
+    """
+    片镇表头列表：["年份", "片镇", "人数"]
+    :return:
+    """
     return ["年份", "片镇", "人数"]
 
 
 def get_period_list() -> list:
+    """
+    学段列表：["高中", "初中", "小学", "幼儿园"]
+    :return:
+    """
     return ["高中", "初中", "小学", "幼儿园"]
 
 
 def get_period_dataframe_columns_list() -> list:
+    """
+    学段表头列表：["年份", "学段", "人数"]
+    :return:
+    """
     return ["年份", "学段", "人数"]
 
 
 def get_edu_bg_list() -> list:
+    """
+    学历列表：["博士研究生", "硕士研究生", "本科", "专科"]
+    :return:
+    """
     return ["博士研究生", "硕士研究生", "本科", "专科"]
 
 
 def get_edu_bg_dataframe_columns_list() -> list:
+    """
+    学历表头列表：["年份", "最高学历", "人数"]
+    :return:
+    """
     return ["年份", "最高学历", "人数"]
 
 
 def get_vocational_level_list() -> list:
+    """
+    职称列表：["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师"]
+    :return:
+    """
     return ["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师"]
 
 
 def get_vocational_level_dataframe_columns_list() -> list:
+    """
+    职称表头列表：["年份", "聘用职称", "人数"]
+    :return:
+    """
     return ["年份", "聘用职称", "人数"]
 
 
 def get_vocational_level_detail_list() -> list:
+    """
+    专业技术等级列表：["试用期（未定级）", "专业技术十三级", "专业技术十二级", "专业技术十一级", "专业技术十级", "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
+    :return:
+    """
     return ["试用期（未定级）", "专业技术十三级", "专业技术十二级", "专业技术十一级", "专业技术十级",
             "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
 
 
 def get_vocational_level_detail_dataframe_columns_list() -> list:
+    """
+    专业技术等级表头列表：["年份", "专业技术等级", "人数"]
+    :return:
+    """
     return ["年份", "专业技术等级", "人数"]
 
 
 def get_discipline_list() -> list:
+    """
+    学科列表：["语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术", "科学", "信息技术", "通用技术", "劳动", "心理健康"]
+    :return:
+    """
     return [
         "语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术",
         "科学", "信息技术", "通用技术", "劳动", "心理健康"
@@ -58,19 +98,37 @@ def get_discipline_list() -> list:
 
 
 def get_discipline_dataframe_columns_list() -> list:
+    """
+    学科表头列表：["年份", "学科", "人数"]
+    :return:
+    """
     return ["年份", "学科", "人数"]
 
 
 def get_grad_school_list() -> list:
+    """
+    毕业院校类型列表：["985院校", "部属师范院校", "211院校"]
+    :return:
+    """
     return ["985院校", "部属师范院校", "211院校"]
 
 
 def get_grad_school_dataframe_columns_list() -> list:
+    """
+    毕业院校类型表头列表：["年份", "院校级别", "人数"]
+    :return:
+    """
     return ["年份", "院校级别", "人数"]
 
 
-# 这里是给片区不同学段的可视化做的，在编信息
 def show_1_year_given_period(year: str, period: str) -> None:
+    """
+    展示某一年某一学段的在编教师信息
+    :param year: 年份
+    :param period: 学段
+    :return:
+    """
+
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
     st.info(f"在编{period}信息", icon="😋")
@@ -99,8 +157,12 @@ def show_1_year_given_period(year: str, period: str) -> None:
             visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
 
 
-# 展示某一学年所有学段在编教师数据
 def show_1_year_all_period(year: str):
+    """
+    展示某一年所有学段的在编教师信息
+    :param year: 年份
+    :return:
+    """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
     st.success(f"在编教职工总人数：{data[year]['在编']['全区']['所有学段']['总人数']}")
@@ -166,6 +228,11 @@ def show_1_year_all_period(year: str):
 
 
 def show_1_year_teacher_0(year: str, ):
+    """
+    在编教师展示框架
+    :param year: 年份
+    :return:
+    """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 小标题
@@ -197,6 +264,11 @@ def show_1_year_teacher_0(year: str, ):
 
 
 def show_1_year_teacher_1(year: str):
+    """
+    展示某一年编外教师信息
+    :param year: 年份
+    :return:
+    """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 小标题
@@ -249,6 +321,11 @@ def show_1_year_teacher_1(year: str):
 
 
 def show_multi_years_teacher_0(year_list: list) -> None:
+    """
+    展示年份对比功能中在编教师的信息
+    :param year_list: 年份列表
+    :return:
+    """
     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
     with st.container(border=True):
@@ -343,6 +420,11 @@ def show_multi_years_teacher_0_basic(year_list: list, json_field: str,
 
 
 def show_multi_years_teacher_0_count(year_list: list) -> None:
+    """
+    展示多年份教师数对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
@@ -355,6 +437,11 @@ def show_multi_years_teacher_0_count(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_area(year_list: list) -> None:
+    """
+    展示多年份片镇教师数对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="片区统计",
                                          dataframe_columns_list=get_area_dataframe_columns_list(),
@@ -364,6 +451,11 @@ def show_multi_years_teacher_0_area(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_period(year_list: list) -> None:
+    """
+    展示多年份不同学段教师数对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="学段统计",
                                          dataframe_columns_list=get_period_dataframe_columns_list(),
@@ -373,6 +465,11 @@ def show_multi_years_teacher_0_period(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_edu_bg(year_list: list) -> None:
+    """
+    展示多年份教师学历对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高学历",
                                          dataframe_columns_list=get_edu_bg_dataframe_columns_list(),
@@ -382,6 +479,11 @@ def show_multi_years_teacher_0_edu_bg(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_vocational_level(year_list: list) -> None:
+    """
+    展示多年份教师专业技术级别对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高职称",
                                          dataframe_columns_list=get_vocational_level_dataframe_columns_list(),
@@ -397,6 +499,11 @@ def show_multi_years_teacher_0_vocational_level(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_discipline(year_list: list) -> None:
+    """
+    展示多年份不同学科教师数对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="主教学科",
                                          dataframe_columns_list=get_discipline_dataframe_columns_list(),
@@ -405,6 +512,11 @@ def show_multi_years_teacher_0_discipline(year_list: list) -> None:
 
 
 def show_multi_years_teacher_0_grad_school(year_list: list) -> None:
+    """
+    展示多年份教师毕业院校质量对比
+    :param year_list: 年份列表
+    :return:
+    """
     with st.container(border=True):
         show_multi_years_teacher_0_basic(year_list=year_list, json_field="院校级别",
                                          dataframe_columns_list=get_grad_school_dataframe_columns_list(),

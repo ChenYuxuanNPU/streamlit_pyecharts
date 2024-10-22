@@ -5,10 +5,19 @@ from data_visualization.tool import func as visual_func
 
 
 def get_base_data() -> dict:
+    """
+    获取全区学校数据
+    :return:
+    """
     return visual_func.load_json_data(folder="result", file_name="school_info")
 
 
 def show_pie_chart_info(year: str) -> None:
+    """
+    使用饼图展示某一年的全区对比数据
+    :param year: 年份
+    :return:
+    """
     # 横向比较
     with st.container(border=True):
         st.markdown(
@@ -137,7 +146,12 @@ def show_pie_chart_info(year: str) -> None:
 
 
 def show_summarized_info(year: str, ) -> None:
-    # 汇总展示
+    """
+    用于展示全区的合计数据
+    :param year: 年份
+    :return:
+    """
+
     with st.container(border=True):
         st.markdown(
             body="<h2 style='text-align: center;'>合计数据</h2>",
@@ -241,7 +255,12 @@ def show_summarized_info(year: str, ) -> None:
 
 
 def show_period_detail_info(year: str) -> None:
-    # 单一学段展示
+    """
+    展示单一学段所用的框架
+    :param year: 年份
+    :return:
+    """
+
     with (st.container(border=True)):
 
         st.markdown(
@@ -385,7 +404,11 @@ def show_period_detail_info(year: str) -> None:
 
 
 def show_detail_button() -> None:
-    # 放一个展开详细信息的按钮
+    """
+    用于放置展开详细信息的按钮
+    :return:
+    """
+
     _, col_mid, _ = st.columns([4, 1, 4])
 
     with col_mid:
@@ -396,6 +419,11 @@ def show_detail_button() -> None:
 
 
 def hide_detail_button() -> None:
+    """
+    用于放置收起详细信息的按钮
+    :return:
+    """
+
     _, col_mid, _ = st.columns([8, 1, 8])
     with col_mid:
         st.button(

@@ -21,6 +21,11 @@ visual_func.set_page_configuration(title="区级教师数据", icon=":classical_
 
 
 def get_year_list() -> list:
+    """
+    获取教师信息年份列表并按照年份逆序排序（由后到前）
+    :return:
+    """
+
     return sorted(
         list(
             set(

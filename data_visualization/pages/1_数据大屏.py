@@ -21,6 +21,11 @@ visual_func.set_page_configuration(title="教育数字大屏", icon=":sparkler:"
 
 
 def get_year_list() -> list:
+    """
+    获取学校信息年份列表并按照年份逆序排序（由后到前）
+    :return:
+    """
+
     return sorted(
         visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"],
         reverse=True

@@ -22,10 +22,19 @@ visual_func.set_page_configuration(title="学校教师数据", icon=":house_with
 
 # 读取现有json文件
 def get_json_data() -> dict:
+    """
+    获取json文件数据，用于展示云图、下拉框等预先需要排序的内容
+    :return:
+    """
     return visual_func.load_json_data(folder="result", file_name="teacher_info")
 
 
 def get_year_list() -> list:
+    """
+    获取教师信息年份列表并按照年份逆序排序（由后到前）
+    :return:
+    """
+
     return sorted(
         list(
             set(
@@ -38,6 +47,10 @@ def get_year_list() -> list:
 
 
 def get_period_list() -> list:
+    """
+    获取学段列表：["所有学段", "高中", "初中", "小学"]
+    :return:
+    """
     return ["所有学段", "高中", "初中", "小学"]
 
 

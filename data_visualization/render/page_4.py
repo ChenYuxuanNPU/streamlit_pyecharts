@@ -6,6 +6,10 @@ from teacher_data_processing.tool import func as tch_proc_func
 
 
 def get_base_data() -> dict:
+    """
+    获取全区教师数据
+    :return:
+    """
     return visual_func.load_json_data(folder="result", file_name="teacher_info")
 
 

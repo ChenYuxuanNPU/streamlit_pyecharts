@@ -19,18 +19,25 @@
     <connection id="241533e1-a1fa-48fd-9609-347158fc61f3">
       <console name="Connection" type="STANDARD" schema="educational_data" session="Main"><![CDATA[pragma table_info(school_info_sum_2023)
 
-select political_status,count(*) from teacher_data_0 where current_administrative_position != '无' and current_administrative_position != '中层正职' and current_administrative_position != '中层副职' group by political_status order by count(*) desc
-
-select distinct school_name from teacher_data_1
-
-select school_name, school_id, school_classification, area, count(school_name) count, "0" as kind from teacher_data_0 group by school_name
 
 select * from (select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as kind 
 from teacher_data_0_2023 group by "校名" 
 union all 
 select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as kind 
 from teacher_data_1_2023 group by "校名") 
-order by count desc]]></console>
+order by count desc
+
+SELECT  '2023' as year,"区域", COUNT(*) as count  
+FROM teacher_data_0_2023  
+GROUP BY "区域"  
+UNION ALL  
+SELECT  '2024' as year,"区域", COUNT(*) as count  
+FROM teacher_data_0_2024
+GROUP BY "区域"
+
+select "专业技术岗位",count(*) from teacher_data_0_2023  group by "专业技术岗位"
+
+select  "参加工作前毕业院校代码"  from teacher_data_0_2023  where ("参加工作前学历" = "本科" or "参加工作前学历" = "硕士研究生" or "参加工作前学历" = "博士研究生")]]></console>
     </connection>
     <connection id="e18163ac-1f2c-4c16-afbf-4bdddc5d6129">
       <console name="vocal" type="STANDARD" schema="" session="Main" />

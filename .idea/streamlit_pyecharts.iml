@@ -11,4 +11,7 @@
     <orderEntry type="jdk" jdkName="C:\Users\1012986131\miniconda3" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
 </module>
