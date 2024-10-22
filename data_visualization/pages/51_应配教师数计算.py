@@ -13,14 +13,33 @@ sys.path.append(
 from data_visualization.tool import func as visual_func
 from data_visualization.render import page_51 as r
 
-# 初始化全局变量
-# visual_func.session_state_initial()
-
 # 清空其他页暂用变量
 visual_func.session_state_reset(page=51)
 
 # 设置全局属性
 visual_func.set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
+
+
+def show_calculation_result() -> None:
+    """
+    展示应配教师数运算结果
+    :return:
+    """
+
+    r.show_result(
+        lessons_pri=lessons_pri,
+        lessons_jun=lessons_jun,
+        grade_1=grade_1,
+        grade_2=grade_2,
+        grade_3=grade_3,
+        grade_4=grade_4,
+        grade_5=grade_5,
+        grade_6=grade_6,
+        grade_7=grade_7,
+        grade_8=grade_8,
+        grade_9=grade_9
+    )
+
 
 # 标题
 st.markdown(
@@ -47,10 +66,19 @@ with col2:
     grade_6 = st.number_input("六年级班数", value=0, min_value=0, max_value=30)
     grade_9 = st.number_input("九年级班数", value=0, min_value=0, max_value=30)
 
-_, col_mid, _ = st.columns([1, 2, 1])
-with col_mid:
-    lessons = st.number_input(
-        "输入课时量",
+_, left, _, right, _ = st.columns([1, 3, 1, 3, 1])
+
+with left:
+    lessons_pri = st.number_input(
+        "输入小学课时量",
+        value=10,
+        min_value=0,
+        max_value=35
+    )
+
+with right:
+    lessons_jun = st.number_input(
+        "输入初中课时量",
         value=10,
         min_value=0,
         max_value=35
@@ -58,15 +86,4 @@ with col_mid:
 
 st.divider()
 
-r.show_result(
-    lessons=lessons,
-    grade_1=grade_1,
-    grade_2=grade_2,
-    grade_3=grade_3,
-    grade_4=grade_4,
-    grade_5=grade_5,
-    grade_6=grade_6,
-    grade_7=grade_7,
-    grade_8=grade_8,
-    grade_9=grade_9
-)
+show_calculation_result()
