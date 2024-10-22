@@ -247,7 +247,7 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 def get_database_name() -> str:
     """
     根据database_basic_info.json获取数据库名
-    :return:数据库名
+    :return: 数据库名
     """
 
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
@@ -429,7 +429,7 @@ def combine_label_and_data(label: list, data: list) -> dict:
     将画图用的label与data列表合并为字典
     :param label:label列表
     :param data:data列表
-    :return:合并后的字典
+    :return: 合并后的字典
     """
 
     if not len(label) == len(data):
@@ -442,7 +442,7 @@ def del_tuple_in_list(data: list) -> list:
     """
     将形如[('1',), ('2',), ('3',),]的数据转化为[1, 2, 3,]
     :param data:带有元组的列表
-    :return:清洗后的列表
+    :return: 清洗后的列表
     """
 
     if not isinstance(data[0], tuple):
@@ -484,7 +484,7 @@ def count_school_id(data: list) -> dict:
     """
     统计985211人数
     :param data: 院校代码列表，形如[('10699',), ('10558',), ('10561',),]
-    :return:985、211、部署示范及其他的人数列表
+    :return: 985、211、部署示范及其他的人数列表
     """
 
     output = {
@@ -509,7 +509,7 @@ def combine_highest_title(title_list: list) -> dict:
     """
     将非中小学系列职称合并
     :param title_list:职称列表
-    :return:合并后的职称字典
+    :return: 合并后的职称字典
     """
 
     output = {

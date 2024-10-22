@@ -24,8 +24,8 @@ def get_words_dict() -> dict:
 def make_sql_sentence(kind) -> str:
     """
     生成形如("校名" TEXT,"学校类型" TEXT,"统一社会信用代码" TEXT)的sql语句片段
-    :param kind:在编/编外
-    :return:sql语句片段
+    :param kind: 在编/编外
+    :return: sql语句片段
     """
 
     lang = "chn"  # 默认字段名为中文

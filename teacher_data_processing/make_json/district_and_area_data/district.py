@@ -1,11 +1,16 @@
+import sqlite3
+
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
-kind_list = tch_proc_func.get_kind_list()
-period_list = tch_proc_func.get_period_list()
-
 
 def update(year: str, kind: str) -> dict:
+    """
+    更新某一年某一类型区级教师数据
+    :param year: 年份
+    :param kind: 在编或编外
+    :return: 更新结果字典
+    """
     result = []
 
     c, conn = tch_proc_func.connect_database()
@@ -13,11 +18,6 @@ def update(year: str, kind: str) -> dict:
     json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
 
     # 下面更新在编和编外都有的字段
-
-    # 首先更新全区的在编编外信息
-    # for kind in kind_list:  # ["在编", "编外"]:
-
-    # 下面在字典中更新数据库查询结果
 
     # 先统计下总人数
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="全区", year=year)
@@ -34,7 +34,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/总人数", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['总人数'] = copy.deepcopy(result)
 
     result = []
 
@@ -63,7 +62,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高学历", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['最高学历'] = copy.deepcopy(result)
 
     result = []
 
@@ -118,7 +116,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/片区统计", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['片区统计'] = copy.deepcopy(result)
 
     result = []
 
@@ -146,7 +143,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/学段统计", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['学段统计'] = copy.deepcopy(result)
 
     result = []
 
@@ -176,7 +172,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/骨干教师", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['骨干教师'] = copy.deepcopy(result)
 
     result = []
 
@@ -203,7 +198,6 @@ def update(year: str, kind: str) -> dict:
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/未持有教师资格",
                                               value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -223,7 +217,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -248,7 +241,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/未持有教师资格", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['幼儿园']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -269,7 +261,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['幼儿园']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -293,7 +284,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/未持有教师资格", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['中小学']['教师资格']['未持教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -313,7 +303,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['中小学']['教师资格']['持有教师资格'] = copy.deepcopy(result)
 
     result = []
 
@@ -341,7 +330,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高职称", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['最高职称'] = copy.deepcopy(result)
 
     result = []
 
@@ -367,7 +355,6 @@ def update(year: str, kind: str) -> dict:
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/四名工作室主持人",
                                               value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['三名工作室']['三名工作室主持人'] = copy.deepcopy(result)
 
     result = []
 
@@ -386,7 +373,6 @@ def update(year: str, kind: str) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/无", value=result,
                                               json_data=json_data)
-    # json_data[kind]['全区']['所有学段']['三名工作室']['无'] = copy.deepcopy(result)
 
     result = []
 
@@ -470,11 +456,17 @@ def update(year: str, kind: str) -> dict:
     return json_data
 
 
-###
-# 这里更新在编独特的字段
-###
+def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "在编") -> dict:
+    """
+    更新在编独特的信息
+    :param json_data: 基础数据更新后的字典
+    :param year: 年份
+    :param c: 数据库连接
+    :param conn: 数据库连接
+    :param kind: 在编或编外，默认在编
+    :return:
+    """
 
-def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
     result = []
 
     ###
@@ -497,7 +489,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/年龄", value=result,
                                               json_data=json_data)
-    # json_data['在编']['全区']['所有学段']['年龄'] = copy.deepcopy(dict(result))
+
     result = []
 
     # 全区在编年龄统计结束
@@ -524,7 +516,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/主教学科", value=result,
                                               json_data=json_data)
-    # json_data['在编']['全区']['所有学段']['主教学科'] = copy.deepcopy(result)
+
     result = []
 
     # 全区在编人员主教学科统计结束
@@ -578,7 +570,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别", value=result,
                                               json_data=json_data)
-    # json_data['在编']['全区']['所有学段']['院校级别'] = copy.deepcopy(result)
+
     result = []
 
     # 全区在编人员院校级别统计结束
@@ -611,7 +603,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/行政职务", value=result,
                                               json_data=json_data)
-    # json_data['在编']['全区']['所有学段']['行政职务'] = copy.deepcopy(result)
+
     result = []
 
     # 全区在编人员行政职务统计结束
@@ -638,7 +630,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 
     json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/支教地域", value=result,
                                               json_data=json_data)
-    # json_data['在编']['全区']['所有学段']['支教地域'] = copy.deepcopy(result)
+
     result = []
 
     # 全区在编人员支教地域统计结束
@@ -650,19 +642,35 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
 # 这里更新编外独特的字段
 ###
 
-def data_01_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
+def data_01_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "编外") -> dict:
+    """
+    更新编外独特的信息
+    :param json_data: 基础数据更新后的字典
+    :param year: 年份
+    :param c: 数据库连接
+    :param conn: 数据库连接
+    :param kind: 在编或编外，默认编外
+    :return:
+    """
+
     return json_data
 
 
-###
-# 这里更新在编不同学段的统计信息
-###
+def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "在编") -> dict:
+    """
+    更新在编不同学段的统计信息
+    :param json_data: 基础数据更新后的字典
+    :param year: 年份
+    :param c: 数据库连接
+    :param conn: 数据库连接
+    :param kind: 在编或编外，默认在编
+    :return:
+    """
 
-def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
     result = []
 
     # 遍历四个学段
-    for period in period_list:
+    for period in tch_proc_func.get_period_list():
 
         ###
         # 全区分学段人员年龄统计

@@ -4,8 +4,13 @@ import sys
 from teacher_data_processing.tool import func as tch_proc_func
 
 
-# 当缺少编外数据表时收集在编数据
 def update_teacher_0_only(year: str, c: sqlite3.Cursor) -> list:
+    """
+    当缺少编外数据表时收集在编数据
+    :param year: 年份
+    :param c: 数据库连接
+    :return: [[校名，统一社会信用代码，学校类型，区域，学校人数，0]]
+    """
 
     c.execute(
         f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" from teacher_data_0_{year} group by "校名" order by count desc')
@@ -13,8 +18,13 @@ def update_teacher_0_only(year: str, c: sqlite3.Cursor) -> list:
     return c.fetchall()
 
 
-# 当缺少编内数据表时收集编外数据
 def update_teacher_1_only(year: str, c: sqlite3.Cursor) -> list:
+    """
+    当缺少在编数据表时收集编外数据
+    :param year: 年份
+    :param c: 数据库连接
+    :return: [[校名，统一社会信用代码，学校类型，区域，学校人数，1]]
+    """
 
     c.execute(
         f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" from teacher_data_1_{year} group by "校名" order by count desc')
@@ -23,6 +33,12 @@ def update_teacher_1_only(year: str, c: sqlite3.Cursor) -> list:
 
 
 def update(year: str) -> dict:
+    """
+    更新某一年的所有学校教师总数
+    :param year: 年份
+    :return: 校名：学校信息
+    """
+
     result = []
 
     c, conn = tch_proc_func.connect_database()
@@ -43,7 +59,7 @@ def update(year: str) -> dict:
         result = c.fetchall()
 
     except Exception as e:
-        print(str(e))
+        print(f"{e}，正在处理")
 
         if str(e) == f"no such table: teacher_data_0_{year}":
 
