@@ -1,8 +1,8 @@
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
-kind_list = tch_proc_func.kind_list
-period_list = tch_proc_func.period_list
+kind_list = tch_proc_func.get_kind_list()
+period_list = tch_proc_func.get_period_list()
 
 
 # 这里根据校名、学段、是否在编进行学校信息统计
@@ -73,7 +73,7 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.educational_background_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_educational_background_order()[x[0]]
             )
         )
 
@@ -129,7 +129,7 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
         c.execute(sql_sentence)
         result = tch_proc_func.combine_highest_title(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.highest_title_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_highest_title_order()[x[0]]
             )
         )
 
@@ -159,7 +159,7 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
         result = tch_proc_func.combine_none_and_others(
             dict(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.cadre_teacher_order[x[0]]
+                    c.fetchall(), key=lambda x: tch_proc_func.get_cadre_teacher_order()[x[0]]
                 )
             )
         )
@@ -390,7 +390,7 @@ def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c, c
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.area_of_supporting_education_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_area_of_supporting_education_order()[x[0]]
             )
         )
 

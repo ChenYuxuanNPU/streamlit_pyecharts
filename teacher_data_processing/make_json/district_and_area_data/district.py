@@ -1,8 +1,8 @@
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
-kind_list = tch_proc_func.kind_list
-period_list = tch_proc_func.period_list
+kind_list = tch_proc_func.get_kind_list()
+period_list = tch_proc_func.get_period_list()
 
 
 def update(year: str, kind: str) -> dict:
@@ -51,7 +51,7 @@ def update(year: str, kind: str) -> dict:
 
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.educational_background_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_educational_background_order()[x[0]]
             )
         )
 
@@ -105,7 +105,7 @@ def update(year: str, kind: str) -> dict:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.area_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_area_order()[x[0]]
             )
         )
 
@@ -134,7 +134,7 @@ def update(year: str, kind: str) -> dict:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.period_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_period_order()[x[0]]
             )
         )
 
@@ -163,7 +163,7 @@ def update(year: str, kind: str) -> dict:
         result = tch_proc_func.combine_none_and_others(
             dict(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.cadre_teacher_order[x[0]]
+                    c.fetchall(), key=lambda x: tch_proc_func.get_cadre_teacher_order()[x[0]]
                 )
             )
         )
@@ -329,7 +329,7 @@ def update(year: str, kind: str) -> dict:
         c.execute(sql_sentence)
         result = tch_proc_func.combine_highest_title(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.highest_title_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_highest_title_order()[x[0]]
             )
         )
 
@@ -593,13 +593,13 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         c.execute(sql_sentence)
         # result = tch_proc_func.combine_administrative_position(
         #     sorted(
-        #         c.fetchall(), key=lambda x: tch_proc_func.current_administrative_position_order[x[0]]
+        #         c.fetchall(), key=lambda x: tch_proc_func.get_current_administrative_position_order()[x[0]]
         #     )
         # )
 
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.current_administrative_position_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_current_administrative_position_order()[x[0]]
             )
         )
 
@@ -626,7 +626,7 @@ def data_00_unique(json_data: dict, year: str, kind: str, c, conn) -> dict:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.area_of_supporting_education_order[x[0]]
+                c.fetchall(), key=lambda x: tch_proc_func.get_area_of_supporting_education_order()[x[0]]
             )
         )
 
@@ -754,7 +754,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             c.execute(sql_sentence)
             result = dict(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.educational_background_order[x[0]]
+                    c.fetchall(), key=lambda x: tch_proc_func.get_educational_background_order()[x[0]]
                 )
             )
 
@@ -783,7 +783,7 @@ def period_update(json_data: dict, year: str, kind: str, c, conn) -> dict:
             c.execute(sql_sentence)
             result = tch_proc_func.combine_highest_title(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.highest_title_order[x[0]]
+                    c.fetchall(), key=lambda x: tch_proc_func.get_highest_title_order()[x[0]]
                 )
             )
 

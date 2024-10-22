@@ -19,6 +19,14 @@ def disconnect_database(conn) -> None:
 
 
 def dict_assignment(route: str, value, json_data: dict) -> dict:
+    """
+    在不知道字典是否有对应路径的情况下插入数据
+    :param route: 数据在字典中的位置，每一层的key使用斜杠"/"分开，如f"{year}/{kind}/片区/{area}/所有学段/"
+    :param value: 需要插入的数据
+    :param json_data: 原字典
+    :return: 插入后字典
+    """
+
     route_list = route.split("/")
     temp = json_data
 

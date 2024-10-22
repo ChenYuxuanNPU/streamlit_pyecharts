@@ -5,6 +5,11 @@ from data_visualization.tool import func as visual_func
 
 
 def get_area_list() -> list:
+    """
+    片镇列表：["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
+    :return:
+    """
+
     return ["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
 
 
