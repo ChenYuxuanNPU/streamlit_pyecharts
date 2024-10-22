@@ -3,6 +3,11 @@ from pathlib import Path
 
 
 def get_teacher_table_list() -> dict:
+    """
+    获取在编与否、年份与教师信息表名的逻辑关系，供其他模块查询json文件时获取
+    :return: get_teacher_table_list()["在编"]["2024"]='teacher_data_0_2024'
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
               "r", encoding='UTF-8') as file:  # ISO-8859-1
         loaded_data = json.load(file)
@@ -11,14 +16,9 @@ def get_teacher_table_list() -> dict:
 
     return teacher_table_list
 
-# 为了简化前面所有kind参数，直接用在编编外，在查数据库的时候因为json文件用的是跟其他信息区分的名字，所以要在这里加一步区分
-# trans_kind = {
-#     "在编": "在编教师信息",
-#     "编外": "编外教师信息"
-# }
-
 
 class MyError(Exception):
+
     def __init__(self, value):
         self.value = value
 
@@ -26,43 +26,15 @@ class MyError(Exception):
         return repr(self.value)
 
 
-# 切记空格后置
-# kind:在编，编外(str)
-# info_num:提取的参数个数，多个参数则一起取.1代表统计个数，大于1代表提取所有参数，0代表提取某一参数但不count,-1代表只统计count值(int)
-# info:字段名(最高学历、最高职称等),放文本列表(list)
-# scope:全区，片区，学校(str)
-# school_name:校名(str)
-# area_name:片区(str)
-# period:高中、初中、小学、幼儿园（str）
-# limit:限制搜索条数(int)
-# order:限制特定搜索顺序，asc/desc(str)
-# additional_requirement:额外的查询条件(list)
-
-
-# 由于改成了中文字段名，不需要在这里做转换了
-# def info_trans(info: str):
-#     info_dict = {
-#         "最高学历": "educational_background_highest",
-#         "最高职称": "highest_title",
-#         "年龄": "current_age",
-#         "主教学科": "major_discipline",
-#         "院校代码": "graduate_school_id",  # 切记这里搜完数据库以后要数据统计，生成统计结果以后插院校级别的json文件里
-#         "行政职务": "current_administrative_position",
-#         "骨干教师": "cadre_teacher",
-#         "三名工作室": "title_01",
-#         "支教地域": "area_of_supporting_education",
-#         "教师资格": "level_of_teacher_certification",
-#         "片区": "area",
-#         "任教年级": "grade_to_teach",
-#         "学段": "period",
-#         "学校": "school_name",
-#         "性别": "gender"
-#     }
-#
-#     return info_dict.get(info, "*")
-
-
 def string_link(str1: str, str2: str, start_sign: int):
+    """
+    生成sql语句时连接查询条件
+    :param str1: 查询语句或条件
+    :param str2: 条件
+    :param start_sign: str1是sql语句还是条件。0代表是语句，因此用where开头；1代表是条件，因此用and连接
+    :return: 连接后的sql语句
+    """
+
     if start_sign == 0:
         return f'{str1} where {str2} '
 
@@ -73,7 +45,18 @@ def string_link(str1: str, str2: str, start_sign: int):
         raise MyError("字符串结合不符合预期")
 
 
-def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, info: list, kind: str, period=None):
+def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, info: list, kind: str, period: str = None) -> list[bool | str]:
+    """
+    检查生成sql语句所用的参数是否有不合理的地方
+    :param scope: 查询范围，可以填全区、片区、学校
+    :param area_name: 片区名
+    :param school_name: 校名
+    :param info: 字段列表
+    :param kind: 教师类型，在编或编外
+    :param period: 学段，可以不填或填高中、初中、小学、幼儿园
+    :return: 返回一个结果列表，首项为布尔值，真代表通过检验；第二项是文本型错误信息
+    """
+
     # 判断是否有选择限定类型但未填信息的情况
     if scope == "片区" and area_name == "":
         return [False, "未填写片区"]
@@ -86,31 +69,39 @@ def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, in
         return [False, "传入info不是列表"]
 
     if kind not in ["在编", '编外']:
-        return [False, "kind参数错误"]
+        return [False, f"kind参数错误:{kind}"]
 
     if period not in [None, "高中", "初中", "小学", "幼儿园", ""]:
-        return [False, "period参数错误"]
+        return [False, f"period参数错误:{period}"]
 
-    return [True]
+    return [True, "正常"]
 
 
 def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: str,
-                                  kind: str, school_name="", area_name="", period=None,
-                                  limit=0, order="", additional_requirement=None, ) -> str:
+                                  kind: str, school_name: str = "", area_name: str = "", period: str = None,
+                                  limit: int = 0, order: str = "", additional_requirement: list = None, ) -> str:
+    """
+    根据参数填充sql语句
+    :param info_num: 字段数量
+    :param info: 字段列表
+    :param scope: 查询范围（全区，片区，学校）
+    :param year: 年份
+    :param kind: 教师类别（在编、编外）
+    :param school_name: 校名
+    :param area_name: 片区名
+    :param period: 学段
+    :param limit: 限制查询结果的数量
+    :param order: 正序（asc）或逆序（desc）
+    :param additional_requirement:
+    :return: 返回sql语句
+    """
+
     start_sign = 0  # 0代表初始第一个条件，1代表后续条件
 
     # 采集某一字段的统计数据
     if info_num == 1:
 
         sql_sentence = fr'select "{info[0]}",count(*) from {get_teacher_table_list()[kind][year]} '
-
-        # 最新的版本中删掉了is_teacher字段
-        # if kind == "在编":
-        #     pass
-        #
-        # elif kind == "编外":
-        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher = '是'", start_sign=start_sign)
-        #     start_sign = 1
 
         if scope == "全区":
             pass
@@ -166,14 +157,6 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
 
         sql_sentence += f' from {get_teacher_table_list()[kind][year]} '
 
-        # 最新的版本中删掉了is_teacher字段
-        # if kind == "在编":
-        #     pass
-        #
-        # elif kind == "编外":
-        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher = '是'", start_sign=start_sign)
-        #     start_sign = 1
-
         if scope == "全区":
             pass
 
@@ -203,14 +186,6 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
 
         sql_sentence = fr'select count(*) from {get_teacher_table_list()[kind][year]} '
 
-        # 最新的版本中删掉了is_teacher字段
-        # if kind == "在编":
-        #     pass
-        #
-        # elif kind == "编外":
-        #     sql_sentence = string_link(str1=sql_sentence, str2=fr"is_teacher == '是'", start_sign=start_sign)
-        #     start_sign = 1
-
         if scope == "全区":
             pass
 
@@ -238,21 +213,24 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
     return sql_sentence
 
 
-# 切记空格后置
-# kind:在编，编外(str)
-# info_num:提取的参数个数，多个参数则一起取.1代表统计个数，大于1代表提取所有参数，0代表提取某一参数但不count,-1代表只统计count值(int)
-# info:字段名(最高学历、最高职称等),放文本列表(list)
-# scope:全区，片区，学校(str)
-# school_name:校名(str)
-# area_name:片区(str)
-# period:高中、初中、小学、幼儿园(str)
-# limit:限制搜索条数(int)
-# order:限制特定搜索顺序，asc/desc(str)
-# additional_requirement:额外的查询条件(list)
-
 def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str, year: str,
-                          school_name="", area_name="", period=None,
-                          limit=0, order="", additional_requirement=None, ):
+                          school_name: str = "", area_name: str = "", period: str = None,
+                          limit: int = 0, order: str = "", additional_requirement: list = None, ) -> str:
+    """
+    用于根据参数检查并生成sql语句
+    :param kind: 教师类型（在编，编外）
+    :param info_num: 字段数
+    :param info: 字段列表
+    :param scope: 查询范围（全区，片区，学校）
+    :param year: 年份
+    :param school_name: 校名
+    :param area_name: 片区名
+    :param period: 学段
+    :param limit: 结果条数限制
+    :param order: 正序（asc）或逆序（desc）
+    :param additional_requirement: 额外查询条件列表
+    :return: sql语句
+    """
     check_result = generate_sql_sentence_check(scope=scope, area_name=area_name, school_name=school_name, info=info,
                                                kind=kind, period=period)
     if not check_result[0]:

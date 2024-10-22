@@ -5,6 +5,14 @@ doc_path = fr"{Path(__file__).resolve().parent.parent.parent}\doc\data.txt"
 
 
 def write_doc(label, data, kind, content):
+    """
+    写入文档
+    :param label:
+    :param data:
+    :param kind:
+    :param content:
+    :return:
+    """
 
     with open(doc_path, mode="w", encoding="utf-8") as f:
 

@@ -1,3 +1,5 @@
+import sqlite3
+
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
@@ -5,8 +7,16 @@ kind_list = tch_proc_func.get_kind_list()
 period_list = tch_proc_func.get_period_list()
 
 
-# 这里根据校名、学段、是否在编进行学校信息统计
-def update(kind: str, school_name: str, year: str, period=None) -> None:
+def update(kind: str, school_name: str, year: str, period: str = None) -> None:
+    """
+    根据校名、学段、是否在编进行某所学校内教师信息统计
+    :param kind: 是否在编
+    :param school_name: 校名
+    :param year: 年份
+    :param period: 学段
+    :return: 无
+    """
+
     if kind not in ["在编", '编外']:
         raise tch_proc_func.MyError("kind参数错误")
 
@@ -49,14 +59,6 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
     json_data = tch_proc_func.dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数",
         value=result, json_data=json_data)
-
-    # print(f"{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数")
-
-    # if period is None:
-    #     json_data['在编']['学校'][school_name]['所有学段']['总人数'] = copy.deepcopy(result)
-    #
-    # if period is not None:
-    #     json_data['在编']['学校'][school_name][period]['总人数'] = copy.deepcopy(result)
 
     result = []
 
@@ -238,7 +240,19 @@ def update(kind: str, school_name: str, year: str, period=None) -> None:
 
 
 # 更新一些在编特有的信息
-def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c, conn, period=None) -> dict:
+def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c: sqlite3.Cursor, conn: sqlite3.Connection, period: str = None) -> dict:
+    """
+    根据校名、学段、是否在编进行某所学校内在编教师信息统计
+    :param json_data: 经过更新在编编外都有的信息后的json文件
+    :param school_name: 校名
+    :param year: 年份
+    :param kind: 是否在编
+    :param c: 数据库连接
+    :param conn: 数据库连接
+    :param period: 学段
+    :return: 更新后生成的字典
+    """
+
     result = []
 
     ###
@@ -263,12 +277,6 @@ def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c, c
     json_data = tch_proc_func.dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/年龄",
         value=result, json_data=json_data)
-
-    # if period is None:
-    #     json_data['在编']['学校'][school_name]['所有学段']['年龄'] = copy.deepcopy(dict(result))
-    #
-    # if period is not None:
-    #     json_data['在编']['学校'][school_name][period]['年龄'] = copy.deepcopy(dict(result))
 
     result = []
 
@@ -412,7 +420,18 @@ def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c, c
 
 
 # 更新一些非在编特有的信息
-def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c, conn, period=None) -> dict:
+def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c: sqlite3.Cursor, conn: sqlite3.Connection, period: str = None) -> dict:
+    """
+    根据校名、学段、是否在编进行某所学校内在编教师信息统计
+    :param json_data: 经过更新在编编外都有的信息后的json文件
+    :param school_name: 校名
+    :param year: 年份
+    :param kind: 是否在编
+    :param c: 数据库连接
+    :param conn: 数据库连接
+    :param period: 学段
+    :return: 更新后生成的字典
+    """
     return json_data
 
 
