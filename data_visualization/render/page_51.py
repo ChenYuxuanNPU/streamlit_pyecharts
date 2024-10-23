@@ -14,8 +14,10 @@ sys.path.append(
 )
 
 
-def show_result(lessons_pri: int, lessons_jun: int, grade_1=0, grade_2=0, grade_3=0, grade_4=0,
-                grade_5=0, grade_6=0, grade_7=0, grade_8=0, grade_9=0) -> pd.DataFrame | None:
+def show_result(lessons_pri: int, lessons_jun: int,
+                grade_1=0, grade_2=0, grade_3=0,
+                grade_4=0, grade_5=0, grade_6=0,
+                grade_7=0, grade_8=0, grade_9=0) -> pd.DataFrame | None:
     """
     用于计算应配教师数的结果
     :param lessons_pri: 小学教师课时量
@@ -31,10 +33,6 @@ def show_result(lessons_pri: int, lessons_jun: int, grade_1=0, grade_2=0, grade_
     :param grade_9: 九年级班数
     :return:
     """
-    pass
-    if lessons_pri == 0 or lessons_jun == 0:
-        st.toast("课时量不能为空！", icon="⚠️")
-        return None
 
     df = cur.cal_expected_teacher(lessons_pri=lessons_pri, lessons_jun=lessons_jun,
                                   grade_1=grade_1, grade_2=grade_2, grade_3=grade_3,
