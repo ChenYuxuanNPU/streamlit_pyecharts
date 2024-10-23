@@ -37,7 +37,7 @@ def calculate_exact_grade(classes: int, lessons: int, grade: str, base: pd.DataF
     return df
 
 
-def summarize_row(df: pd.DataFrame, subject_list: list, title: str):
+def summarize_row(df: pd.DataFrame, subject_list: list, title: str) -> pd.DataFrame:
     """
     某个学段合计行的生成，可以基于df前几行生成求和行
     :param df: 待求和的Dataframe
@@ -46,12 +46,21 @@ def summarize_row(df: pd.DataFrame, subject_list: list, title: str):
     :return: 加入求和行后的Dataframe
     """
 
-    df.loc[len(df)] = [title] + [df[s].sum() for s in subject_list]
+    match title:
+        case "小学" | "初中":
+            df.loc[len(df)] = [title] + [df[s].sum() for s in subject_list]
+
+        case "合计":
+            df.loc["合计", df.columns.difference(["年级"])] = df[df["年级"].isin(["小学", "初中"])].drop(columns=["年级"]).sum().to_frame().T.iloc[0]
+            df.at['合计', '年级'] = "合计"
+
+        case _:
+            pass
 
     return df
 
 
-def summarize_column(df: pd.DataFrame, subject_list: list):
+def summarize_column(df: pd.DataFrame, subject_list: list) -> pd.DataFrame:
     """
     生成求和列，对每一行的数据进行求和计算
     :param df: 原Dataframe
@@ -69,7 +78,7 @@ def summarize_column(df: pd.DataFrame, subject_list: list):
 # 统计小学的教师需求
 def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.DataFrame,
                                  grade_1=0, grade_2=0, grade_3=0,
-                                 grade_4=0, grade_5=0, grade_6=0):
+                                 grade_4=0, grade_5=0, grade_6=0) -> pd.DataFrame:
     df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
 
     if grade_1:
@@ -133,7 +142,7 @@ def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.Data
 
 # 统计初中的教师需求
 def cal_junior_expected_teacher(lessons: int, subject_list: list, base: pd.DataFrame,
-                                grade_7=0, grade_8=0, grade_9=0):
+                                grade_7=0, grade_8=0, grade_9=0) -> pd.DataFrame:
     df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
 
     if grade_7:
@@ -210,6 +219,8 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
 
     df = summarize_column(df=df, subject_list=subject_list)
 
+    df = summarize_row(df=df, subject_list=subject_list, title="合计")
+
     # 清洗一下索引
     df = df.reset_index(drop=True)
 
@@ -217,6 +228,5 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
 
 
 if __name__ == '__main__':
-
-    print(cal_expected_teacher(lessons=12, grade_7=10, grade_8=10, grade_9=12))
+    pass
 
