@@ -79,6 +79,20 @@ def summarize_column(df: pd.DataFrame, subject_list: list) -> pd.DataFrame:
 def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.DataFrame,
                                  grade_1=0, grade_2=0, grade_3=0,
                                  grade_4=0, grade_5=0, grade_6=0) -> pd.DataFrame:
+    """
+    统计小学学段教师需求
+    :param lessons: 教师课时量
+    :param subject_list: 学科列表
+    :param base: 学段学科对应的课时量
+    :param grade_1: 小学一年级班数
+    :param grade_2: 小学二年级班数
+    :param grade_3: 小学三年级班数
+    :param grade_4: 小学四年级班数
+    :param grade_5: 小学五年级班数
+    :param grade_6: 小学六年级班数
+    :return: 返回带有学段汇总行的统计结果
+    """
+
     df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
 
     if grade_1:
@@ -140,9 +154,19 @@ def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.Data
     return df
 
 
-# 统计初中的教师需求
 def cal_junior_expected_teacher(lessons: int, subject_list: list, base: pd.DataFrame,
                                 grade_7=0, grade_8=0, grade_9=0) -> pd.DataFrame:
+    """
+    统计初中学段教师需求
+    :param lessons: 教师课时量
+    :param subject_list: 学科列表
+    :param base: 学段学科对应的课时量
+    :param grade_7: 初中一年级班数
+    :param grade_8: 初中二年级班数
+    :param grade_9: 初中三年级班数
+    :return: 返回带有学段汇总行的统计结果
+    """
+
     df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
 
     if grade_7:
@@ -184,6 +208,21 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
                          grade_1=0, grade_2=0, grade_3=0,
                          grade_4=0, grade_5=0, grade_6=0,
                          grade_7=0, grade_8=0, grade_9=0) -> pd.DataFrame:
+    """
+    计算预期需要的教师数量
+    :param lessons_pri: 小学课时量
+    :param lessons_jun: 初中课时量
+    :param grade_1: 小学一年级班数
+    :param grade_2: 小学二年级班数
+    :param grade_3: 小学三年级班数
+    :param grade_4: 小学四年级班数
+    :param grade_5: 小学五年级班数
+    :param grade_6: 小学六年级班数
+    :param grade_7: 初中一年级班数
+    :param grade_8: 初中二年级班数
+    :param grade_9: 初中三年级班数
+    :return: 返回Dataframe类型的查询结果
+    """
 
     # 读取各科目课时量
     curriculum_sheet = cal_func.load_json_data(folder="source", file_name="课时量")
