@@ -27,19 +27,19 @@ def calculate_exact_grade(classes: int, lessons: int, grade: str, base: pd.DataF
     计算某一年级的应配教师数
     :param classes: 年级班数
     :param lessons: 年级教师平均课时量
-    :param grade: 年级
+    :param grade: 年级或学段
     :param base: 原数据
     :param subject_list: 学科列表
     :return: 插入一条数据后的数据
     """
 
-    df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
+    df = pd.DataFrame(data=None, columns=["年级或学段"] + subject_list)
 
     # 插入一条空数据
     df = df._append(pd.Series(dtype=float), ignore_index=True)
 
     # 给空数据开头加上年级
-    df.at[0, "年级"] = grade
+    df.at[0, "年级或学段"] = grade
 
     for subject in subject_list:
 
@@ -66,9 +66,9 @@ def summarize_row(df: pd.DataFrame, subject_list: list, title: str) -> pd.DataFr
             df.loc[len(df)] = [title] + [df[s].sum() for s in subject_list]
 
         case "合计":
-            df.loc["合计", df.columns.difference(["年级"])] = \
-                df[df["年级"].isin(["小学", "初中"])].drop(columns=["年级"]).sum().to_frame().T.iloc[0]
-            df.at['合计', '年级'] = "合计"
+            df.loc["合计", df.columns.difference(["年级或学段"])] = \
+                df[df["年级或学段"].isin(["小学", "初中"])].drop(columns=["年级或学段"]).sum().to_frame().T.iloc[0]
+            df.at['合计', '年级或学段'] = "合计"
 
         case _:
             pass
@@ -88,6 +88,7 @@ def summarize_column(df: pd.DataFrame, subject_list: list) -> pd.DataFrame:
     df["直接求和"] = df[subject_list].sum(axis=1)
 
     # 对每一门学科四舍五入后求和
+    # df["取整求和"] = df.apply(lambda row: sum(math.ceil(row[col]) if int(str(row[col]).split(".")[1][0]) >= 5 else math.floor(row[col]) for col in subject_list), axis=1)
     df["取整求和"] = df.apply(
         lambda row: sum(custom_round(row[col]) for col in subject_list if pd.notna(row[col])), axis=1
     )
@@ -113,7 +114,7 @@ def cal_primary_expected_teacher(lessons: int, subject_list: list, base: pd.Data
     :return: 返回带有学段汇总行的统计结果
     """
 
-    df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
+    df = pd.DataFrame(data=None, columns=["年级或学段"] + subject_list)
 
     if grade_1:
         df = pd.concat(
@@ -187,7 +188,7 @@ def cal_junior_expected_teacher(lessons: int, subject_list: list, base: pd.DataF
     :return: 返回带有学段汇总行的统计结果
     """
 
-    df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
+    df = pd.DataFrame(data=None, columns=["年级或学段"] + subject_list)
 
     if grade_7:
         df = pd.concat(
@@ -245,7 +246,7 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
     curriculum_sheet = cal_func.load_json_data(folder="source", file_name="课时量")
     subject_list = list(curriculum_sheet.keys())
 
-    df = pd.DataFrame(data=None, columns=["年级"] + subject_list)
+    df = pd.DataFrame(data=None, columns=["年级或学段"] + subject_list)
 
     # 转换为列表插入dataframe中
     base = pd.DataFrame(data=[[key] + value for key, value in curriculum_sheet.items()],
