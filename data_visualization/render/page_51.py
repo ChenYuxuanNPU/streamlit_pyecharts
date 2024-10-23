@@ -39,6 +39,6 @@ def show_result(lessons_pri: int, lessons_jun: int,
                                   grade_4=grade_4, grade_5=grade_5, grade_6=grade_6,
                                   grade_7=grade_7, grade_8=grade_8, grade_9=grade_9)
 
-    st.dataframe(df)
+    st.dataframe(df, height=493)
 
     return df
