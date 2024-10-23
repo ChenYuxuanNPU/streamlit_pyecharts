@@ -1,5 +1,6 @@
-import pandas as pd
 import math
+
+import pandas as pd
 
 from calculation.tool import func as cal_func
 
@@ -7,7 +8,21 @@ pd.set_option('display.max_rows', None)  # 显示所有行
 pd.set_option('display.max_columns', None)  # 显示所有列
 
 
-def calculate_exact_grade(classes: int, lessons: int, grade: str, base: pd.DataFrame, subject_list: list) -> pd.DataFrame:
+def custom_round(value: float | int | str | None) -> int | str | None:
+    """
+    对小数或整数进行四舍五入
+    :param value: 四舍五入前的值
+    :return:
+    """
+    # 如果值是浮点数且小数点后有数字，则根据小数点后第一位决定是否向上取整
+    if isinstance(value, float) and value != int(value):
+        return math.ceil(value) if value - int(value) >= 0.5 else math.floor(value)
+    # 对于整数、NaN和其他非浮点数类型，直接返回原始值
+    return value
+
+
+def calculate_exact_grade(classes: int, lessons: int, grade: str, base: pd.DataFrame,
+                          subject_list: list) -> pd.DataFrame:
     """
     计算某一年级的应配教师数
     :param classes: 年级班数
@@ -51,7 +66,8 @@ def summarize_row(df: pd.DataFrame, subject_list: list, title: str) -> pd.DataFr
             df.loc[len(df)] = [title] + [df[s].sum() for s in subject_list]
 
         case "合计":
-            df.loc["合计", df.columns.difference(["年级"])] = df[df["年级"].isin(["小学", "初中"])].drop(columns=["年级"]).sum().to_frame().T.iloc[0]
+            df.loc["合计", df.columns.difference(["年级"])] = \
+                df[df["年级"].isin(["小学", "初中"])].drop(columns=["年级"]).sum().to_frame().T.iloc[0]
             df.at['合计', '年级'] = "合计"
 
         case _:
@@ -68,9 +84,13 @@ def summarize_column(df: pd.DataFrame, subject_list: list) -> pd.DataFrame:
     :return: 插入直接求和列后的Dataframe
     """
 
+    # 对学科教师直接全部加起来
     df["直接求和"] = df[subject_list].sum(axis=1)
 
-    # df["取整求和"] = df.apply(lambda row: sum(math.ceil(row[col]) if int(str(row[col]).split('.')[1][0]) >= 5 else math.floor(row[col]) for col in subject_list), axis=1)
+    # 对每一门学科四舍五入后求和
+    df["取整求和"] = df.apply(
+        lambda row: sum(custom_round(row[col]) for col in subject_list if pd.notna(row[col])), axis=1
+    )
 
     return df
 
@@ -201,9 +221,6 @@ def cal_junior_expected_teacher(lessons: int, subject_list: list, base: pd.DataF
     return df
 
 
-# 计算每个学段需要的教师数量和合计教师数量
-# 其中输入量lessons代表了每周课时量
-# 输入量grade_x代表了该年级班数
 def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
                          grade_1=0, grade_2=0, grade_3=0,
                          grade_4=0, grade_5=0, grade_6=0,
@@ -268,4 +285,3 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
 
 if __name__ == '__main__':
     pass
-
