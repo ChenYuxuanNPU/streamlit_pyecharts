@@ -1,6 +1,8 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+from teacher_data_processing.tool import func as tch_proc_func
+
 
 def get_age_from_citizen_id(citizen_id: str) -> int:
     """
@@ -12,16 +14,21 @@ def get_age_from_citizen_id(citizen_id: str) -> int:
     if len(citizen_id) != 18:
         return 0
 
-    return abs(
-        relativedelta(
-            datetime(
-                year=int(citizen_id[6:10]),
-                month=int(citizen_id[10:12]),
-                day=int(citizen_id[12:14])
-            ),
-            datetime.today()
-        ).years
-    )
+    try:
+        return abs(
+            relativedelta(
+                datetime(
+                    year=int(citizen_id[6:10]),
+                    month=int(citizen_id[10:12]),
+                    day=int(citizen_id[12:14])
+                ),
+                datetime.today()
+            ).years
+        )
+
+    except Exception as e:
+        tch_proc_func.print_color_text(text=f"{e}:{citizen_id}")
+        return -1
 
 
 if __name__ == '__main__':
