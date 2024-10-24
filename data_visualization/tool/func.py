@@ -1,6 +1,5 @@
 import json
 import time
-from inspect import stack
 from pathlib import Path
 
 import pandas as pd
@@ -15,31 +14,49 @@ from streamlit_echarts import st_pyecharts
 
 from teacher_data_processing.tool.func import print_color_text
 
-kind_list = ["在编", "编外"]
 
-end_dict = {
-    "高中": 70,
-    "初中": 70,
-    "小学": 70,
-    "幼儿园": 95
-}
+def get_kind_list() -> list:
+    """
 
-trans_period = {
-    "所有学段": None,
-    "高中": "高中",
-    "初中": "初中",
-    "小学": "小学",
-    None: None
-}
+    :return: ["在编", "编外"]
+    """
+    return ["在编", "编外"]
 
 
-# 用来检查module模块是否被正确import
-def hello() -> str:
-    return "hello world"
+def get_end_dict() -> dict:
+    """
+
+    :return: {"高中": 70,"初中": 70,"小学": 70,"幼儿园": 95}
+    """
+    return {
+        "高中": 70,
+        "初中": 70,
+        "小学": 70,
+        "幼儿园": 95
+    }
 
 
-# 设置页面全局属性
+def get_trans_period() -> dict:
+    """
+
+    :return: {"所有学段": None,"高中": "高中","初中": "初中","小学": "小学",None: None}
+    """
+    return {
+        "所有学段": None,
+        "高中": "高中",
+        "初中": "初中",
+        "小学": "小学",
+        None: None
+    }
+
+
 def set_page_configuration(title: str, icon: str) -> None:
+    """
+    设置页面全局属性
+    :param title: 标签页标题
+    :param icon: 标签页图表
+    :return:
+    """
     st.set_page_config(
         page_title=title,
         page_icon=icon,
@@ -49,9 +66,20 @@ def set_page_configuration(title: str, icon: str) -> None:
     return None
 
 
-# 记得画图的代码顺序是先插入数据再set样式！
+# 切记画图的代码顺序是先插入数据再set样式！
 def draw_pie_chart(data: pd.DataFrame | dict, title: str, height=0, formatter="{b}:{d}%", pos_left='20%',
                    center_to_bottom='60%') -> None:
+    """
+    绘制饼图
+    :param data: 绘图所用数据
+    :param title: 图表标题
+    :param height: 图标高度
+    :param formatter: 图表标签形式
+    :param pos_left: 图表离左侧间距，百分比，如"20%"
+    :param center_to_bottom: 图标中心离底部间距，百分比，如"60%"
+    :return:
+    """
+
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -82,6 +110,16 @@ def draw_pie_chart(data: pd.DataFrame | dict, title: str, height=0, formatter="{
 
 # 画之前先测试下有没有问题
 def draw_multi_pie_chart(inner_data: dict, outer_data: dict, title: str, height=0, formatter="{b}:{d}%") -> None:
+    """
+    绘制两层饼图
+    :param inner_data: 内圈数据
+    :param outer_data: 外圈数据
+    :param title: 图表标题
+    :param height: 图表高度
+    :param formatter: 图表标签形式
+    :return:
+    """
+
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -150,7 +188,8 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
     return None
 
 
-def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0, is_symbol_show=True) -> None:
+def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0,
+                    is_symbol_show=True) -> None:
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -179,12 +218,20 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_l
 
 
 def draw_horizontal_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
-
-    st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, horizontal=True, height=100*data['年份'].nunique())
+    st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, horizontal=True, height=100 * data['年份'].nunique())
 
 
 def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
+
+
+def draw_mixed_bar_and_line(df: pd.DataFrame, bar_label_list: list[str], line_label_list: list[str], x_list: list,
+                            height: int = 0) -> None:
+    if height == 0:
+        height = int(get_monitors()[0].height / 1080) * 700
+
+    # 处理一下可能存在的空值
+    df.fillna(value=0, inplace=True)
 
 
 # def draw_1col_bar(data: dict, title: str, height=0):
