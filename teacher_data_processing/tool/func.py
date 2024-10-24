@@ -214,17 +214,24 @@ def disconnect_database(conn) -> None:
 
 def load_json_data(folder: str, file_name: str) -> dict:
     """
-    从文件夹中加载json文件
+    根据文件夹名和json文件名读取json文件中的数据
     :param folder: json_file下的文件夹名
-    :param file_name: json文件名，不需要带.json后缀
-    :return: json文件形成的字典
+    :param file_name: 文件夹内的json文件名（不带json后缀）
+    :return: dict型数据
     """
 
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
-              "r", encoding="UTF-8") as f:
-        json_data = json.load(f)
+    json_data = {}
 
-    return json_data
+    try:
+        with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
+                  "r", encoding="UTF-8") as f:
+            json_data = json.load(f)
+
+    except Exception as e:
+        print_color_text(text=f"{e}")
+
+    finally:
+        return json_data
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:

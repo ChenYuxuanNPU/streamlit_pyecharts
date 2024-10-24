@@ -5,6 +5,8 @@ import sqlite3
 from pathlib import Path
 from typing import Tuple
 
+from teacher_data_processing.tool.func import print_color_text
+
 
 def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
     conn = sqlite3.connect(
@@ -52,17 +54,24 @@ def dict_assignment(route: str, value: str | int | list | dict | bool, json_data
 
 def load_json_data(folder: str, file_name: str) -> dict:
     """
-    读取现有json文件
-    :param folder: json_file下文件夹的名字
-    :param file_name: json文件名，不需要.json后缀
-    :return: json文件内容
+    根据文件夹名和json文件名读取json文件中的数据
+    :param folder: json_file下的文件夹名
+    :param file_name: 文件夹内的json文件名（不带json后缀）
+    :return: dict型数据
     """
 
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
-              "r", encoding="UTF-8") as f:
-        json_data = json.load(f)
+    json_data = {}
 
-    return json_data
+    try:
+        with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
+                  "r", encoding="UTF-8") as f:
+            json_data = json.load(f)
+
+    except Exception as e:
+        print_color_text(text=f"{e}")
+
+    finally:
+        return json_data
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:

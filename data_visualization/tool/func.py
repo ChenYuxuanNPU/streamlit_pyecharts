@@ -13,6 +13,8 @@ from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
 
+from teacher_data_processing.tool.func import print_color_text
+
 kind_list = ["在编", "编外"]
 
 end_dict = {
@@ -263,12 +265,25 @@ def draw_word_cloud_chart(words: list, title: str, height=-1, height_factor=1300
 
 
 def load_json_data(folder: str, file_name: str) -> dict:
-    # 读取现有json文件
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
-              "r", encoding="UTF-8") as f:
-        json_data = json.load(f)
+    """
+    根据文件夹名和json文件名读取json文件中的数据
+    :param folder: json_file下的文件夹名
+    :param file_name: 文件夹内的json文件名（不带json后缀）
+    :return: dict型数据
+    """
 
-    return json_data
+    json_data = {}
+
+    try:
+        with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
+                  "r", encoding="UTF-8") as f:
+            json_data = json.load(f)
+
+    except Exception as e:
+        print_color_text(text=f"{e}")
+
+    finally:
+        return json_data
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:

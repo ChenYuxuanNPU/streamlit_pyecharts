@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from teacher_data_processing.tool.func import print_color_text
+
 
 def load_json_data(folder: str, file_name: str) -> dict | None:
     """
@@ -10,11 +12,18 @@ def load_json_data(folder: str, file_name: str) -> dict | None:
     :return: dict型数据
     """
 
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
-              "r", encoding="UTF-8") as f:
-        json_data = json.load(f)
+    json_data = {}
 
-    return json_data
+    try:
+        with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
+                  "r", encoding="UTF-8") as f:
+            json_data = json.load(f)
+
+    except Exception as e:
+        print_color_text(text=f"{e}")
+
+    finally:
+        return json_data
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
