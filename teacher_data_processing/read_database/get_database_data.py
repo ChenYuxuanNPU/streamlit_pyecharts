@@ -82,7 +82,7 @@ def fill_scope_kind_period_others(info_num: int, info: list, scope: str, year: s
                                   limit: int = 0, order: str = "", additional_requirement: list = None, ) -> str:
     """
     根据参数填充sql语句
-    :param info_num: 字段数量
+    :param info_num: 字段数量，-1代表统计count(*)，0代表统计某一个字段，1代表统计某一个字段及其count(*)，info_num>1代表查询多个字段
     :param info: 字段列表
     :param scope: 查询范围（全区，片区，学校）
     :param year: 年份
@@ -219,7 +219,7 @@ def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str, year
     """
     用于根据参数检查并生成sql语句
     :param kind: 教师类型（在编，编外）
-    :param info_num: 字段数
+    :param info_num: ，-1代表统计count(*)，0代表统计某一个字段，1代表统计某一个字段及其count(*)，info_num>1代表查询多个字段
     :param info: 字段列表
     :param scope: 查询范围（全区，片区，学校）
     :param year: 年份
