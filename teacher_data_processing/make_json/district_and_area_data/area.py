@@ -587,7 +587,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/院校级别", value=result,
                                                   json_data=json_data)
-        # json_data['在编']['片区'][area]['所有学段']['院校级别'] = copy.deepcopy(result)
+
         result = []
 
         # 片区在编人员院校级别统计结束
