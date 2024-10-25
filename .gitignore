@@ -1,5 +1,6 @@
 *.db
 *.xlsx
+*.xml
 /database/
 /json_file/result/
 /moyu/
