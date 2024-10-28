@@ -157,6 +157,16 @@ def draw_multi_pie_chart(inner_data: dict, outer_data: dict, title: str, height=
 
 
 def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
+    """
+    绘制柱状图
+    :param data: 绘图所用数据
+    :param title: 图表标题
+    :param height: 图表高度，默认根据分辨率自适应
+    :param end: 图标下方动态进度条最大值
+    :param is_show_visual_map: 是否显示动态进度条
+    :return:
+    """
+
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -190,6 +200,17 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
 
 def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0,
                     is_symbol_show=True) -> None:
+    """
+    绘制折线图
+    :param data: 绘图所用数据
+    :param title: 图表标题
+    :param x_axis: x轴字段
+    :param label_list: 不同折线对应的label
+    :param height: 图表高度，默认根据分辨率自适应
+    :param is_symbol_show: 是否在数据点上显示数值
+    :return:
+    """
+
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 350
 
@@ -218,10 +239,27 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_l
 
 
 def draw_horizontal_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
+    """
+    绘制streamlit原生水平柱状图
+    :param data: 绘图所用数据
+    :param x_axis: x轴名称
+    :param y_axis: y轴名称
+    :param label: 柱状数据对应标签
+    :return:
+    """
+
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, horizontal=True, height=100 * data['年份'].nunique())
 
 
 def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
+    """
+    绘制streamlit原生不堆叠的柱状图
+    :param data: 绘图所用数据
+    :param x_axis: x轴名称
+    :param y_axis: y轴名称
+    :param label: 柱状数据对应标签
+    :return:
+    """
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
@@ -278,7 +316,16 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, bar_label_list: list[str], line_la
 #         )
 
 
-def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
+def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, height=-1) -> None:
+    """
+    绘制streamlit原生dataframe表格
+    :param data: 绘制的内容
+    :param hide_index: 是否隐藏最左侧序号列
+    :param width: 宽度，默认1920
+    :param height: 高度，默认388（标题行+12行数据）
+    :return:
+    """
+
     if height == -1:
         height = int(get_monitors()[0].height / 1080) * 388  # 可以取350、388
 
@@ -291,6 +338,16 @@ def draw_dataframe(data, hide_index=True, width=1920, height=-1) -> None:
 
 
 def draw_word_cloud_chart(words: list, title: str, height=-1, height_factor=1300, shape="circle") -> None:
+    """
+    绘制词云图
+    :param words: 词列表，以出现频率作为数值
+    :param title: 图表标题
+    :param height: 图表高度，默认按照相对高度设置
+    :param height_factor: 图表相对高度，默认1300
+    :param shape: 词云图形状，默认圆形
+    :return:
+    """
+
     if height == -1:
         height = int(get_monitors()[0].height / 1080) * height_factor  # 可以取350、388
 
@@ -334,6 +391,14 @@ def load_json_data(folder: str, file_name: str) -> dict:
 
 
 def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
+    """
+    将dict数据保存至json_file下某个文件夹下的json文件中
+    :param json_data: 需要保存的dict数据
+    :param folder: json_file下的文件夹名
+    :param file_name: json文件名，不需要带.json后缀
+    :return:
+    """
+
     with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
               "w", encoding="UTF-8") as f:
         # 将生成的数据保存至json文件中
@@ -344,13 +409,23 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
 # 用来插入st.write_stream的数据
 def stream_data(sentence: str, delay=0.015) -> str:
+    """
+    用于分批输出数据，配合st.write_stream()实现逐条一个个字生成的效果
+    :param sentence: 需要输出的语句
+    :param delay: 字间时间延迟
+    :return:
+    """
     for word in sentence:
         yield word
         time.sleep(delay)
 
 
-# 用来简化校名
 def simplify_school_name(dict1: dict) -> dict:
+    """
+    简化校名（对于输入的字典只化简key的校名）
+    :param dict1: 校名数据，形如：{'广州市培英中学': ['124401114553841006', '完全中学', '直管', 412, 0, 412], '广州市第六十五中学': ['12440111455384127X', '完全中学', '直管', 349, 0, 349],}
+    :return: 返回化简后的字典，只有每一个校名key被修改了，value不变
+    """
     temp = [item for item in dict1.items()]
     temp_item = ""
     output = []
@@ -387,6 +462,11 @@ def simplify_school_name(dict1: dict) -> dict:
 
 
 def count_empty_values(lst: list) -> int:
+    """
+    判断列表中空值的数量，空值包括None，""，空列表，空字典，空元组等
+    :param lst: 需要查空的列表
+    :return:
+    """
     count = 0
 
     for item in lst:
@@ -399,8 +479,11 @@ def count_empty_values(lst: list) -> int:
     return count
 
 
-# 初始化软件所有session_state变量，仅在主页使用
 def session_state_initial() -> None:
+    """
+    初始化软件所有session_state变量，仅在主页使用
+    :return:
+    """
     # page1数据大屏的按钮和具体信息展示
     if 'page1_show_detail' not in st.session_state:
         st.session_state.page1_show_detail = False
@@ -419,6 +502,11 @@ def session_state_initial() -> None:
 
 
 def reset_others(page: int) -> None:
+    """
+    重置其他页的session_state变量
+    :param page: 当前页标签
+    :return:
+    """
     if page != 1:
         st.session_state.page1_show_detail = False
 
@@ -435,7 +523,12 @@ def reset_others(page: int) -> None:
 
 
 def reset_self(page: int) -> None:
-    # 重置所有页面变量
+    """
+    重置本页面session_state变量
+    :param page: 当前页标签
+    :return:
+    """
+
     match page:
 
         case 4:
@@ -448,6 +541,12 @@ def reset_self(page: int) -> None:
 
 
 def session_state_reset(page: int) -> None:
+    """
+    重置所有页面的session_state变量
+    :param page: 当前页标签
+    :return:
+    """
+
     # 刷新其他页面
     reset_others(page=page)
 
@@ -456,8 +555,16 @@ def session_state_reset(page: int) -> None:
 
 
 def page1_show_detail_info() -> None:
+    """
+    page1中展开信息按钮绑定的函数
+    :return:
+    """
     st.session_state.page1_show_detail = True
 
 
 def page1_hide_detail_info() -> None:
+    """
+    page1中收起信息按钮绑定的函数
+    :return:
+    """
     st.session_state.page1_show_detail = False
