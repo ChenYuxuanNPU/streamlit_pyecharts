@@ -138,7 +138,7 @@ def show_1_year_given_period(year: str, period: str) -> None:
 
         with c0:
             visual_func.draw_bar_chart(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
-                                       end=visual_func.end_dict[period])
+                                       end=visual_func.get_end_dict()[period])
 
         with c1:
             visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",

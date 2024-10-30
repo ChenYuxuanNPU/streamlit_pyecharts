@@ -263,13 +263,94 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
-def draw_mixed_bar_and_line(df: pd.DataFrame, bar_label_list: list[str], line_label_list: list[str], x_list: list,
-                            height: int = 0) -> None:
+# df格式：label类别 x1 x2 x3
+#        label1   y1 y2 y3
+#        label2   y1 y2 y3
+# line_label_list默认比df的行的单元格数少1（他没有label列，只有数据）
+# df：数据 | x_list:x轴取值范围 | label_column: label列的列名 | line_label: label列中折线图对应的label
+# bar_axis_max_factor\line_axis_max_factor: 最大值的系数
+# 折线图的数据只有两种可能：1.指定label中某个label（line_label）对应的行为折线数据 2.不提供line_label，默认对所有行求和
+def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
+                            label_column: str,
+                            xaxis_label: str, yaxis_label: str,
+                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 2,
+                            height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
+    # 处理一下可能存在的空值
+    df.fillna(value=0, inplace=True)
+
+    if label_column not in df.columns.to_list():
+        print_color_text(text="未在df数据中找到标签列 （draw_mixed_bar_and_line()）")
+        return None
+
+    if None in df[label_column].to_list():
+        print_color_text(text="df数据标签列中包含空值 （draw_mixed_bar_and_line()）")
+        return None
+
+    if line_label is not None and line_label not in df[label_column].drop_duplicates().to_list():
+        print_color_text(text="未在df数据标签列中找到折线图对应行标签 （draw_mixed_bar_and_line()）")
+        return None
+
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 700
 
-    # 处理一下可能存在的空值
-    df.fillna(value=0, inplace=True)
+    bar_chart = Bar()
+    bar_chart.add_xaxis(xaxis_data=x_list)
+
+    for label in df[label_column].drop_duplicates().to_list():
+        if label != line_label:
+            bar_chart.add_yaxis(
+                series_name=label,
+                y_axis=df[df[df.columns[0]] == label].drop(columns=label_column, axis=1).iloc[0].tolist(),
+                label_opts=opts.LabelOpts(is_show=False),
+            )
+
+    line_chart = Line()
+    line_chart.add_xaxis(xaxis_data=x_list)
+    line_chart.add_yaxis(
+        series_name="合计" if line_label is None else line_label,
+        yaxis_index=1,
+        y_axis=df[df.columns.difference([label_column])].sum().tolist() if line_label is None else
+        df[df[label_column] == line_label].drop(columns=[label_column]).iloc[0].tolist(),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+
+    bar_chart.set_global_opts(
+        tooltip_opts=opts.TooltipOpts(
+            is_show=True, trigger="axis", axis_pointer_type="cross"
+        ),
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
+        ),
+        yaxis_opts=opts.AxisOpts(
+            name=xaxis_label,
+            type_="value",
+            min_=0,
+            max_=bar_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            interval=bar_axis_max_factor / 20 * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            axislabel_opts=opts.LabelOpts(formatter=formatter),
+            axistick_opts=opts.AxisTickOpts(is_show=True),
+            splitline_opts=opts.SplitLineOpts(is_show=True),
+        ),
+    )
+
+    print_color_text(str(bar_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max())))
+
+    bar_chart.extend_axis(
+        yaxis=opts.AxisOpts(
+            name=yaxis_label,
+            type_="value",
+            min_=0,
+            max_=line_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            interval=line_axis_max_factor / 20 * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            axislabel_opts=opts.LabelOpts(formatter=formatter),
+        )
+    )
+
+    bar_chart.overlap(line_chart)
+
+    with st.container(border=True):
+        st_pyecharts(bar_chart, height="700px")
 
 
 # def draw_1col_bar(data: dict, title: str, height=0):

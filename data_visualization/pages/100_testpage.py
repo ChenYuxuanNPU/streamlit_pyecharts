@@ -184,65 +184,76 @@ st.markdown(
 age_list = [str(x) for x in range(17, 66)]
 df = pd.DataFrame(
     data={
-        "性别": ["男", "女", "合计"],
+        "性别": ["男", "女"],
     },
     columns=["性别"] + age_list
 )
-df.fillna(value=10, inplace=True)
+df.fillna(value=20, inplace=True)
 
-x_data = age_list
-chart_1 = Bar()
-chart_1.add_xaxis(xaxis_data=x_data)
-chart_1.add_yaxis(
-    series_name="男",
-    y_axis=df[df['性别'] == "男"].drop('性别', axis=1).iloc[0].tolist(),
-    label_opts=opts.LabelOpts(is_show=False),
-)
-chart_1.add_yaxis(
-    series_name="女",
-    y_axis=df[df['性别'] == "女"].drop('性别', axis=1).iloc[0].tolist(),
-    label_opts=opts.LabelOpts(is_show=False),
-)
-chart_1.extend_axis(
-    yaxis=opts.AxisOpts(
-        name="人数",
-        type_="value",
-        min_=0,
-        max_=100,
-        interval=20,
-        axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
-    )
-)
+df.loc[len(df)] = ["合计"] + df[df.columns.difference(['性别'])].sum().tolist()
+#
+# print(df)
+#
+# x_data = age_list
+# chart_1 = Bar()
+# chart_1.add_xaxis(xaxis_data=x_data)
+# chart_1.add_yaxis(
+#     series_name="男",
+#     y_axis=df[df['性别'] == "男"].drop('性别', axis=1).iloc[0].tolist(),
+#     label_opts=opts.LabelOpts(is_show=False),
+# )
+# chart_1.add_yaxis(
+#     series_name="女",
+#     y_axis=df[df['性别'] == "女"].drop('性别', axis=1).iloc[0].tolist(),
+#     label_opts=opts.LabelOpts(is_show=False),
+# )
+# chart_1.extend_axis(
+#     yaxis=opts.AxisOpts(
+#         name="人数",
+#         type_="value",
+#         min_=0,
+#         max_=100,
+#         interval=20,
+#         axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
+#     )
+# )
+#
+# chart_1.set_global_opts(
+#     tooltip_opts=opts.TooltipOpts(
+#         is_show=True, trigger="axis", axis_pointer_type="cross"
+#     ),
+#     xaxis_opts=opts.AxisOpts(
+#         type_="category",
+#         axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
+#     ),
+#     yaxis_opts=opts.AxisOpts(
+#         name="人数",
+#         type_="value",
+#         min_=0,
+#         max_=100,
+#         interval=20,
+#         axislabel_opts=opts.LabelOpts(formatter="{value} ml"),
+#         axistick_opts=opts.AxisTickOpts(is_show=True),
+#         splitline_opts=opts.SplitLineOpts(is_show=True),
+#     ),
+# )
+#
+# chart_2 = Line()
+# chart_2.add_xaxis(xaxis_data=x_data)
+# chart_2.add_yaxis(
+#     series_name="合计",
+#     yaxis_index=1,
+#     y_axis=df[df['性别'] == "合计"].drop(columns=['性别']).iloc[0].tolist(),
+#     label_opts=opts.LabelOpts(is_show=False),
+# )
+#
+# chart_1.overlap(chart_2)
+# with st.container(border=True):
+#     st_pyecharts(chart_1, height="700px")
 
-chart_1.set_global_opts(
-    tooltip_opts=opts.TooltipOpts(
-        is_show=True, trigger="axis", axis_pointer_type="cross"
-    ),
-    xaxis_opts=opts.AxisOpts(
-        type_="category",
-        axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
-    ),
-    yaxis_opts=opts.AxisOpts(
-        name="人数",
-        type_="value",
-        min_=0,
-        max_=100,
-        interval=20,
-        axislabel_opts=opts.LabelOpts(formatter="{value} ml"),
-        axistick_opts=opts.AxisTickOpts(is_show=True),
-        splitline_opts=opts.SplitLineOpts(is_show=True),
-    ),
-)
+# print(df.drop(columns="性别", axis=1).values.max()
+print(df)
+print(df[df["性别"] != "合计"].drop(columns="性别", axis=1).values.max())
 
-chart_2 = Line()
-chart_2.add_xaxis(xaxis_data=x_data)
-chart_2.add_yaxis(
-    series_name="合计",
-    yaxis_index=1,
-    y_axis=df[df['性别'] == "合计"].drop(columns=['性别']).iloc[0].tolist(),
-    label_opts=opts.LabelOpts(is_show=False),
-)
+visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴",line_label="合计")
 
-chart_1.overlap(chart_2)
-with st.container(border=True):
-    st_pyecharts(chart_1, height="700px")
