@@ -272,9 +272,28 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 # 折线图的数据只有两种可能：1.指定label中某个label（line_label）对应的行为折线数据 2.不提供line_label，默认对所有行求和
 def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                             label_column: str,
-                            xaxis_label: str, yaxis_label: str,
+                            bar_axis_label: str, line_axis_label: str,
                             bar_axis_max_factor: int = 2, line_axis_max_factor: int = 2,
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
+    """
+    根据dataframe的数据生成一个柱状图和折线图并存的图表\n
+df格式：\n
+label列名 x1 x2 x3\n
+label1   y1 y2 y3\n
+label2   y4 y5 y6\n
+    :param df: 数据表
+    :param x_list: x轴坐标列表list[int]
+    :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱代表什么内容
+    :param bar_axis_label: 左侧柱状图坐标轴名
+    :param line_axis_label: 右侧柱状图坐标轴名
+    :param bar_axis_max_factor: 柱状图坐标轴最高值系数
+    :param line_axis_max_factor: 折线图坐标轴最高值系数
+    :param height: 图表高度
+    :param line_label: 折线图对应标签，若为空则自动统计对于x的求和
+    :param formatter: 坐标轴单位
+    :return:
+    """
+
     # 处理一下可能存在的空值
     df.fillna(value=0, inplace=True)
 
@@ -323,7 +342,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
         ),
         yaxis_opts=opts.AxisOpts(
-            name=xaxis_label,
+            name=bar_axis_label,
             type_="value",
             min_=0,
             max_=bar_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
@@ -336,7 +355,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
 
     bar_chart.extend_axis(
         yaxis=opts.AxisOpts(
-            name=yaxis_label,
+            name=line_axis_label,
             type_="value",
             min_=0,
             max_=line_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
@@ -348,7 +367,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
     bar_chart.overlap(line_chart)
 
     with st.container(border=True):
-        st_pyecharts(bar_chart, height="700px")
+        st_pyecharts(bar_chart, height=f"{height}px")
 
 
 # def draw_1col_bar(data: dict, title: str, height=0):

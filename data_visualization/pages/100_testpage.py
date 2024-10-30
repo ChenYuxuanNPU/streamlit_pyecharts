@@ -190,7 +190,7 @@ df = pd.DataFrame(
 )
 df.fillna(value=20, inplace=True)
 
-df.loc[len(df)] = ["合计"] + df[df.columns.difference(['性别'])].sum().tolist()
+
 #
 # print(df)
 #
@@ -252,8 +252,9 @@ df.loc[len(df)] = ["合计"] + df[df.columns.difference(['性别'])].sum().tolis
 #     st_pyecharts(chart_1, height="700px")
 
 # print(df.drop(columns="性别", axis=1).values.max()
-print(df)
-print(df[df["性别"] != "合计"].drop(columns="性别", axis=1).values.max())
+visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴")
 
-visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴",line_label="合计")
+
+df.loc[len(df)] = ["合计1"] + df[df.columns.difference(['性别'])].sum().tolist()
+visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴",line_label="合计1")
 
