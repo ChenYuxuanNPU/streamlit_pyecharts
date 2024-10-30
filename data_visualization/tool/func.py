@@ -326,23 +326,21 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             name=xaxis_label,
             type_="value",
             min_=0,
-            max_=bar_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
-            interval=bar_axis_max_factor / 20 * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            max_=bar_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            interval=bar_axis_max_factor / 20 * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
         ),
     )
 
-    print_color_text(str(bar_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max())))
-
     bar_chart.extend_axis(
         yaxis=opts.AxisOpts(
             name=yaxis_label,
             type_="value",
             min_=0,
-            max_=line_axis_max_factor * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
-            interval=line_axis_max_factor / 20 * (df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            max_=line_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            interval=line_axis_max_factor / 20 * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
     )
