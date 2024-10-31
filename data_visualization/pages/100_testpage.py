@@ -2,9 +2,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-import pyecharts.options as opts
 import streamlit as st
-from pyecharts.charts import Bar, Line
 
 # 加入项目路径
 sys.path.append(
@@ -15,7 +13,6 @@ sys.path.append(
 
 from data_visualization.tool import func as visual_func
 from screeninfo import get_monitors
-from streamlit_echarts import st_pyecharts
 
 height = int(get_monitors()[0].height / 1080) * 350
 
@@ -190,7 +187,6 @@ df = pd.DataFrame(
 )
 df.fillna(value=20, inplace=True)
 
-
 #
 # print(df)
 #
@@ -252,9 +248,10 @@ df.fillna(value=20, inplace=True)
 #     st_pyecharts(chart_1, height="700px")
 
 # print(df.drop(columns="性别", axis=1).values.max()
-visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴")
-
+visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
+                                    bar_axis_label="柱状图轴", line_axis_label="折线图轴")
 
 df.loc[len(df)] = ["合计1"] + df[df.columns.difference(['性别'])].sum().tolist()
-visual_func.draw_mixed_bar_and_line(df=df,x_list=[str(x) for x in range(17, 66)],label_column="性别",xaxis_label="柱状图轴",yaxis_label="折线图轴",line_label="合计1")
+visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
+                                    bar_axis_label="柱状图轴", line_axis_label="折线图轴", line_label="合计1")
 

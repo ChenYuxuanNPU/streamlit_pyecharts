@@ -12,8 +12,6 @@ from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
 
-from teacher_data_processing.tool.func import print_color_text
-
 
 def get_kind_list() -> list:
     """
@@ -48,6 +46,20 @@ def get_trans_period() -> dict:
         "小学": "小学",
         None: None
     }
+
+
+def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+    """
+    输出带颜色的字符串，可以用于控制台警告
+    :param text: 输出的文本
+    :param color_code: 颜色起始代码
+    :param reset_code: 颜色结束代码
+    :return: 无
+    """
+
+    print(f"{color_code} {str(text)} {reset_code}")
+
+    return None
 
 
 def set_page_configuration(title: str, icon: str) -> None:
@@ -263,27 +275,23 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
-# df格式：label类别 x1 x2 x3
-#        label1   y1 y2 y3
-#        label2   y1 y2 y3
-# line_label_list默认比df的行的单元格数少1（他没有label列，只有数据）
-# df：数据 | x_list:x轴取值范围 | label_column: label列的列名 | line_label: label列中折线图对应的label
-# bar_axis_max_factor\line_axis_max_factor: 最大值的系数
-# 折线图的数据只有两种可能：1.指定label中某个label（line_label）对应的行为折线数据 2.不提供line_label，默认对所有行求和
 def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                             label_column: str,
                             bar_axis_label: str, line_axis_label: str,
-                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 2,
+                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 1.25,
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
-df格式：\n
-label列名 x1 x2 x3\n
-label1   y1 y2 y3\n
-label2   y4 y5 y6\n
+    df格式：\n
+    label列名  x1 x2 x3\n
+    label1    y1 y2 y3\n
+    label2    y4 y5 y6\n
+    如果要对label3做折线图，line_label=label3\n
+    label3    y7 y8 y9\n
+    line_label不填则自动加一条求和汇总行作为折线图
     :param df: 数据表
     :param x_list: x轴坐标列表list[int]
-    :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱代表什么内容
+    :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱是谁的数据
     :param bar_axis_label: 左侧柱状图坐标轴名
     :param line_axis_label: 右侧柱状图坐标轴名
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
@@ -310,7 +318,7 @@ label2   y4 y5 y6\n
         return None
 
     if height == 0:
-        height = int(get_monitors()[0].height / 1080) * 700
+        height = int(get_monitors()[0].height / 1080) * 720
 
     bar_chart = Bar()
     bar_chart.add_xaxis(xaxis_data=x_list)
@@ -345,8 +353,14 @@ label2   y4 y5 y6\n
             name=bar_axis_label,
             type_="value",
             min_=0,
-            max_=bar_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
-            interval=bar_axis_max_factor / 20 * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            max_=bar_axis_max_factor * int(
+                df.drop(columns=label_column, axis=1).values.max() if line_label is None else
+                df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+            ),
+            interval=bar_axis_max_factor / 10 * int(
+                df.drop(columns=label_column, axis=1).values.max() if line_label is None else
+                df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+            ),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
@@ -358,8 +372,14 @@ label2   y4 y5 y6\n
             name=line_axis_label,
             type_="value",
             min_=0,
-            max_=line_axis_max_factor * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
-            interval=line_axis_max_factor / 20 * int(df.drop(columns=label_column, axis=1).values.max() if line_label is None else df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()),
+            max_=line_axis_max_factor * int(
+                df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
+                df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+            ),
+            interval=line_axis_max_factor / 10 * int(
+                df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
+                df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+            ),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
     )
