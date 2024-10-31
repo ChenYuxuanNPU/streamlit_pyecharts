@@ -105,6 +105,46 @@ def disconnect_database(conn) -> None:
     return None
 
 
+def execute_sql_sentence(sentence: str,) -> list:
+    """
+    执行数据库语句并返回列表
+    :param sentence: 需要执行的语句
+    :return:
+    """
+
+    c, conn = connect_database()
+
+    result = []
+    try:
+        c.execute(sentence)
+        result = c.fetchall()
+
+    except Exception as e:
+        print_color_text(text=str(e))
+
+    disconnect_database(conn=conn)
+
+    return result
+
+
+def del_tuple_in_list(data: list) -> list:
+    """
+    将形如[('1',), ('2',), ('3',),]的数据转化为[1, 2, 3,]
+    :param data:带有元组的列表
+    :return: 清洗后的列表
+    """
+
+    if not isinstance(data[0], tuple):
+        return data
+
+    output = []
+
+    for single_data in data:
+        output.append(single_data[0])
+
+    return output
+
+
 def set_page_configuration(title: str, icon: str) -> None:
     """
     设置页面全局属性
