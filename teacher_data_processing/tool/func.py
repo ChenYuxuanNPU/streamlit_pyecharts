@@ -171,7 +171,7 @@ class MyError(Exception):
         return repr(self.value)
 
 
-def print_color_text(text: str, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+def print_color_text(text: str | int | float | dict | list, color_code='\033[1;91m', reset_code='\033[0m') -> None:
     """
     输出带颜色的字符串，可以用于控制台警告
     :param text: 输出的文本
@@ -180,7 +180,7 @@ def print_color_text(text: str, color_code='\033[1;91m', reset_code='\033[0m') -
     :return: 无
     """
 
-    print(color_code + text + reset_code)
+    print(f"{color_code} {str(text)} {reset_code}")
 
     return None
 
