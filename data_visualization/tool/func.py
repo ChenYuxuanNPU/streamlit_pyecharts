@@ -384,7 +384,7 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                             label_column: str,
                             bar_axis_label: str, line_axis_label: str,
-                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 1.25,
+                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 1,
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
@@ -466,7 +466,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                         df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
                     )
                 ),
-                n=100
+                n=50
             ),
             interval=smallest_multiple_of_n_geq(
                 number=int(
@@ -475,7 +475,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                         df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
                     )
                 ),
-                n=100
+                n=50
             ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
@@ -495,7 +495,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                         df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
                     )
                 ),
-                n=100
+                n=50
             ),
             interval=smallest_multiple_of_n_geq(
                 number=int(
@@ -504,7 +504,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
                         df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
                     )
                 ),
-                n=100
+                n=50
             ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
