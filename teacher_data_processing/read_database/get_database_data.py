@@ -45,7 +45,8 @@ def string_link(str1: str, str2: str, start_sign: int):
         raise MyError("字符串结合不符合预期")
 
 
-def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, info: list, kind: str, period: str = None) -> list[bool | str]:
+def generate_sql_sentence_check(scope: str, area_name: str, school_name: str, info: list, kind: str,
+                                period: str = None) -> list[bool | str]:
     """
     检查生成sql语句所用的参数是否有不合理的地方
     :param scope: 查询范围，可以填全区、片区、学校
@@ -242,3 +243,7 @@ def generate_sql_sentence(kind: str, info_num: int, info: list, scope: str, year
                                                  period=period, additional_requirement=additional_requirement)
 
     return sql_sentence
+
+
+if __name__ == '__main__':
+    pass
