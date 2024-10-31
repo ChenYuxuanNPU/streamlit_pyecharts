@@ -6,9 +6,10 @@ from teacher_data_processing.tool import func as tch_proc_func
 
 def get_age_from_citizen_id(citizen_id: str) -> int:
     """
-    通过身份证号计算当前年龄
+    通过身份证号计算当前年龄\n
+    get_age_from_citizen_id(citizen_id = "440105200102220000") -> 23
     :param citizen_id: 身份证号
-    :return: 年龄
+    :return: 年龄,两位数int
     """
 
     if len(citizen_id) != 18:
