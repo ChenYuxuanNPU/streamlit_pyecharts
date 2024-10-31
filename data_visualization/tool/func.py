@@ -1,16 +1,18 @@
 import json
 import time
-from pathlib import Path
-
+import sqlite3
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
+
+from pathlib import Path
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
+from typing import Tuple
 
 
 def get_kind_list() -> list:
@@ -58,6 +60,47 @@ def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_cod
     """
 
     print(f"{color_code} {str(text)} {reset_code}")
+
+    return None
+
+
+def get_database_name() -> str:
+    """
+    根据database_basic_info.json获取数据库名
+    :return: 数据库名
+    """
+
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
+              "r", encoding='UTF-8') as file:  # ISO-8859-1
+        loaded_data = json.load(file)
+
+    database_name = loaded_data["database_name"]
+
+    return database_name
+
+
+def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+    """
+    用于连接数据库
+    :return:
+    """
+
+    conn = sqlite3.connect(
+        fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}"
+    )
+    c = conn.cursor()
+
+    return c, conn
+
+
+def disconnect_database(conn) -> None:
+    """
+    用于断开数据库
+    :param conn:
+    :return:
+    """
+
+    conn.close()
 
     return None
 

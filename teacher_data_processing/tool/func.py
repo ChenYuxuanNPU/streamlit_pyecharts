@@ -185,6 +185,21 @@ def print_color_text(text: str | int | float | dict | list, color_code='\033[1;9
     return None
 
 
+def get_database_name() -> str:
+    """
+    根据database_basic_info.json获取数据库名
+    :return: 数据库名
+    """
+
+    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
+              "r", encoding='UTF-8') as file:  # ISO-8859-1
+        loaded_data = json.load(file)
+
+    database_name = loaded_data["database_name"]
+
+    return database_name
+
+
 # kind:"在编","编外"
 def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
@@ -249,21 +264,6 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
     return None
-
-
-def get_database_name() -> str:
-    """
-    根据database_basic_info.json获取数据库名
-    :return: 数据库名
-    """
-
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json",
-              "r", encoding='UTF-8') as file:  # ISO-8859-1
-        loaded_data = json.load(file)
-
-    database_name = loaded_data["database_name"]
-
-    return database_name
 
 
 def reverse_label_and_value(old_list: list) -> list:
