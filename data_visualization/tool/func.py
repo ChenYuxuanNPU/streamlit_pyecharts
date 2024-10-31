@@ -4,6 +4,7 @@ import sqlite3
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
+import re
 
 from pathlib import Path
 from pyecharts.charts import Bar
@@ -143,6 +144,28 @@ def del_tuple_in_list(data: list) -> list:
         output.append(single_data[0])
 
     return output
+
+
+def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    将给定的dataframe按照列名重新排序，汉字在前，数字在后且从小到大（即使数字在列名中为文本格式）
+    :param df: 需要重新排序的数据
+    :return:
+    """
+    return df[[col for col in df.columns if re.match(r'[\u4e00-\u9fff]+', col)] + sorted([col for col in df.columns if col.isdigit()], key=int)]
+
+
+def smallest_multiple_of_n_geq(number: int, n: int) -> int:
+    """
+    返回比输入值大的最小的n的倍数
+    :param number:
+    :param n:
+    :return:
+    """
+    if number % n == 0:
+        return number
+    else:
+        return (number // n + 1) * n
 
 
 def set_page_configuration(title: str, icon: str) -> None:
@@ -436,14 +459,24 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             name=bar_axis_label,
             type_="value",
             min_=0,
-            max_=bar_axis_max_factor * int(
-                df.drop(columns=label_column, axis=1).values.max() if line_label is None else
-                df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+            max_=smallest_multiple_of_n_geq(
+                number=int(
+                    bar_axis_max_factor * int(
+                        df.drop(columns=label_column, axis=1).values.max() if line_label is None else
+                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+                    )
+                ),
+                n=100
             ),
-            interval=bar_axis_max_factor / 10 * int(
-                df.drop(columns=label_column, axis=1).values.max() if line_label is None else
-                df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
-            ),
+            interval=smallest_multiple_of_n_geq(
+                number=int(
+                    bar_axis_max_factor * int(
+                        df.drop(columns=label_column, axis=1).values.max() if line_label is None else
+                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+                    )
+                ),
+                n=100
+            ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
@@ -455,14 +488,24 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             name=line_axis_label,
             type_="value",
             min_=0,
-            max_=line_axis_max_factor * int(
-                df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
-                df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+            max_=smallest_multiple_of_n_geq(
+                number=int(
+                    line_axis_max_factor * int(
+                        df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
+                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+                    )
+                ),
+                n=100
             ),
-            interval=line_axis_max_factor / 10 * int(
-                df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
-                df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
-            ),
+            interval=smallest_multiple_of_n_geq(
+                number=int(
+                    line_axis_max_factor * int(
+                        df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
+                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+                    )
+                ),
+                n=100
+            ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
     )
