@@ -407,12 +407,10 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     label3    y7 y8 y9\n
     line_label不填则自动计算求和汇总行作为折线图
     :param df: 数据表
-    # :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱是谁的数据
     :param bar_axis_label: 左侧柱状图坐标轴名
     :param line_axis_label: 右侧柱状图坐标轴名
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
     :param line_axis_max_factor: 折线图坐标轴最高值系数
-    # :param x_list: x轴坐标列表list[int],如果不填则默认除标签列名外的所有列名
     :param height: 图表高度
     :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
     :param formatter: 坐标轴单位
@@ -513,50 +511,6 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
 
     with st.container(border=True):
         st_pyecharts(bar_chart, height=f"{height}px")
-
-
-# def draw_1col_bar(data: dict, title: str, height=0):
-#
-#     if height == 0:
-#         height = int(get_monitors()[0].height / 1080) * 350
-#
-#     with st.container(border=True):
-#         st_pyecharts(
-#             chart=(
-#                 Bar()
-#                 .add_xaxis([keys for keys in data.keys()])
-#                 .add_yaxis("总人数", [values for values in data.values()])
-#                 .set_series_opts(label_opts=opts.LabelOpts(position="top"))
-#                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
-#                                  legend_opts=opts.LegendOpts(is_show=False),
-#                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=100),
-#                                  visualmap_opts=opts.VisualMapOpts(is_show=False,
-#                                                                    max_=max([values for values in data.values()])))
-#             ),
-#             height=f"{height}px"
-#         )
-
-
-# def draw_2col_bar(data: dict, title: str, height=0, end=70):
-#
-#     if height == 0:
-#         height = int(get_monitors()[0].height / 1080) * 350
-#
-#     with st.container(border=True):
-#         st_pyecharts(
-#             chart=(
-#                 Bar()
-#                 .add_xaxis([keys for keys in data.keys()])
-#                 .add_yaxis("总人数", [values for values in data.values()])
-#                 .set_series_opts(label_opts=opts.LabelOpts(position="top"))
-#                 .set_global_opts(title_opts=opts.TitleOpts(title=title),
-#                                  legend_opts=opts.LegendOpts(is_show=False),
-#                                  datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
-#                                  visualmap_opts=opts.VisualMapOpts(is_show=True, pos_right="1%", pos_top="30%",
-#                                                                    max_=max([values for values in data.values()])))
-#             ),
-#             height=f"{height}px"
-#         )
 
 
 def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, height=-1) -> None:
@@ -670,7 +624,6 @@ def simplify_school_name(dict1: dict) -> dict:
     :return: 返回化简后的字典，只有每一个校名key被修改了，value不变
     """
     temp = [item for item in dict1.items()]
-    temp_item = ""
     output = []
 
     for item in temp:
