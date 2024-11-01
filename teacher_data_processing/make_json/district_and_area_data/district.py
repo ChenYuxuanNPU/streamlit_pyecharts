@@ -636,29 +636,6 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     # 全区在编人员支教地域统计结束
 
-    ###
-    # 全区人员详细年龄统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=2, info=["身份证号", "性别", "姓名", "任教学段", "校名", "区域"], scope="全区", year=year)
-
-    # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = [[get_age_from_citizen_id(citizen_id=item[0])] + list(item[1:]) for item in c.fetchall()]
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/详细年龄列表", value=result,
-                                              json_data=json_data)
-
-    result = []
-
-    # 全区人员详细年龄统计结束
-
     return json_data
 
 
