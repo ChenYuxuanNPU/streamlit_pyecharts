@@ -1,11 +1,9 @@
-from datetime import datetime
-
 import pandas as pd
 import streamlit as st
 
 from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
-from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe
+from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -134,13 +132,13 @@ def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
     :return:
     """
 
+    df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为年龄列
+    ages = set()  # 用于检查age_dict中是否有对应的年龄
+
     id_list = visual_func.execute_sql_sentence(
         sentence=generate_sql_sentence_teacher(kind="在编", info_num=2, info=["身份证号", "性别"], scope="全区",
                                                year=year)
     )
-
-    age_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为年龄列，内层为性别行
-    ages = set()  # 用于检查age_dict中是否有对应的年龄
 
     for item in id_list:
 
@@ -149,13 +147,41 @@ def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
         if age not in ages:
 
             for gender in ["男", "女"]:
-                age_dict[gender][age] = 0
+                df_dict[gender][age] = 0
 
-        age_dict[item[1]][age] += 1
+        df_dict[item[1]][age] += 1
 
         ages.add(age)
 
-    return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(input_dict=age_dict))
+    return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(input_dict=df_dict))
+
+
+def get_1_year_discipline_and_gender_list(year: str, ) -> pd.DataFrame:
+    """
+    根据年份生成列为学科，行为性别的dataframe
+    :param year: 查询的年份
+    :return:
+    """
+
+    df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为学科列
+
+    discipline_list = del_tuple_in_list(
+        visual_func.execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
+                                                   year=year, limit=16, order="desc", additional_requirement=['"主教学科" != "无"'])
+        )
+    )
+
+    for discipline in discipline_list:
+        data = visual_func.execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["性别"], scope="全区",
+                                                   year=year, additional_requirement=[f'"主教学科" = "{discipline}"'])
+        )
+
+        for item in data:
+            df_dict[item[0]][discipline] = item[1]
+
+    return convert_dict_to_dataframe(input_dict=df_dict)
 
 
 def show_1_year_given_period(year: str, period: str) -> None:
@@ -206,7 +232,7 @@ def show_1_year_all_period(year: str):
 
     with st.container(border=False):
 
-        # 这个图生成时要查询数据库，所以做个错误处理
+        # 年龄性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
             visual_func.draw_mixed_bar_and_line(
                 df=get_1_year_age_and_gender_list(year=year),
@@ -241,6 +267,16 @@ def show_1_year_all_period(year: str):
             # 在编行政职务统计
             visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务",
                                        center_to_bottom="68%")
+
+        # 学科性别柱状折线图，生成时要查询数据库，所以做个错误处理
+        try:
+            visual_func.draw_mixed_bar_and_line(
+                df=get_1_year_discipline_and_gender_list(year=year),
+                bar_axis_label="人数", line_axis_label="合计人数",
+            )
+        except Exception as e:
+            print_color_text("学科柱状折线图展示异常")
+            st.toast("学科柱状折线图展示异常", icon="😕")
 
         # 学科统计占两列
         c0, c1 = st.columns([2, 1])
@@ -577,4 +613,4 @@ def show_multi_years_teacher_0_grad_school(year_list: list) -> None:
 
 
 if __name__ == '__main__':
-    print(f"{get_1_year_age_and_gender_list("2024")}")
+    get_1_year_discipline_and_gender_list("2024")
