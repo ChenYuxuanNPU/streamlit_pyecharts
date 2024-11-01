@@ -1,7 +1,11 @@
 import pandas as pd
 import streamlit as st
 
+from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
+from data_visualization.tool.func import print_color_text
+from teacher_data_processing.read_database.get_database_data import \
+    generate_sql_sentence as generate_sql_sentence_teacher
 
 
 def get_area_list() -> list:
@@ -121,6 +125,35 @@ def get_grad_school_dataframe_columns_list() -> list:
     return ["年份", "院校级别", "人数"]
 
 
+def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
+    """
+    根据年份生成列为年龄，行为性别的dataframe
+    :param year: 查询的年份
+    :return:
+    """
+
+    id_list = visual_func.execute_sql_sentence(
+        sentence=generate_sql_sentence_teacher(kind="在编", info_num=2, info=["身份证号", "性别"], scope="全区",
+                                               year=year)
+    )
+
+    # 新建两行代表不同性别
+    output = pd.DataFrame({"性别": list(set(item[1] for item in id_list))})
+
+    for item in id_list:
+
+        if str(get_age_from_citizen_id(item[0])) not in output.columns:
+
+            output[str(get_age_from_citizen_id(item[0]))] = 0
+            output.loc[output["性别"] == item[1], str(get_age_from_citizen_id(item[0]))] += 1
+
+        else:
+
+            output.loc[output["性别"] == item[1], str(get_age_from_citizen_id(item[0]))] += 1
+
+    return visual_func.sort_dataframe_columns(df=output)
+
+
 def show_1_year_given_period(year: str, period: str) -> None:
     """
     展示某一年某一学段的在编教师信息
@@ -168,6 +201,19 @@ def show_1_year_all_period(year: str):
     st.success(f"在编教职工总人数：{data[year]['在编']['全区']['所有学段']['总人数']}")
 
     with st.container(border=False):
+
+        # 这个图生成时要查询数据库，所以做个错误处理
+        # todo:x_list第二次调用了统计过程，造成了时间复杂
+        try:
+            visual_func.draw_mixed_bar_and_line(
+                df=get_1_year_age_and_gender_list(year=year),
+                x_list=[item for item in get_1_year_age_and_gender_list("2024").columns.to_list() if item not in ["性别"]],
+                label_column="性别", bar_axis_label="人数", line_axis_label="合计人数",
+            )
+        except Exception as e:
+            print_color_text("年龄柱状折线图展示异常")
+            st.toast("年龄柱状折线图展示异常", icon="😕")
+
         c0, c1, c2 = st.columns(spec=3)
 
         with c0:
@@ -186,7 +232,8 @@ def show_1_year_all_period(year: str):
 
         with c2:
             # 在编年龄统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄", pos_left="15%",
+            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄",
+                                       pos_left="15%",
                                        center_to_bottom="64%")
 
             # 在编行政职务统计
@@ -221,10 +268,12 @@ def show_1_year_all_period(year: str):
             visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
         # 教师分布前三十统计
-        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
+        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
+                                   end=100)
 
         # 在编教师数后三十的学校统计
-        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数", end=100)
+        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
+                                   end=100)
 
 
 def show_1_year_teacher_0(year: str, ):
@@ -303,7 +352,8 @@ def show_1_year_teacher_1(year: str):
         visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
     # 教师分布统计
-    visual_func.draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数", end=100)
+    visual_func.draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
+                               end=100)
 
     c0, c1, c2 = st.columns(spec=3)
 
@@ -525,4 +575,4 @@ def show_multi_years_teacher_0_grad_school(year_list: list) -> None:
 
 
 if __name__ == '__main__':
-    show_multi_years_teacher_0_vocational_level(year_list=["2023", "2024"])
+    print(f"{get_1_year_age_and_gender_list("2024")}")
