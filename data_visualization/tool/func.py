@@ -1,19 +1,20 @@
 import json
-import time
+import re
 import sqlite3
+import time
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
-import re
-
-from pathlib import Path
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
-from typing import Tuple
 
 
 def get_kind_list() -> list:
@@ -106,7 +107,7 @@ def disconnect_database(conn) -> None:
     return None
 
 
-def execute_sql_sentence(sentence: str,) -> list:
+def execute_sql_sentence(sentence: str, ) -> list:
     """
     执行数据库语句并返回列表
     :param sentence: 需要执行的语句
@@ -152,7 +153,8 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
     :param df: 需要重新排序的数据
     :return:
     """
-    return df[[col for col in df.columns if re.match(r'[\u4e00-\u9fff]+', col)] + sorted([col for col in df.columns if col.isdigit()], key=int)]
+    return df[[col for col in df.columns if re.match(r'[\u4e00-\u9fff]+', col)] + sorted(
+        [col for col in df.columns if col.isdigit()], key=int)]
 
 
 def smallest_multiple_of_n_geq(number: int, n: int) -> int:
@@ -381,29 +383,28 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
-def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
-                            label_column: str,
+def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
                             bar_axis_max_factor: int = 2, line_axis_max_factor: int = 1,
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
     df格式：\n
-    label列名  x1 x2 x3\n
+    index     x1 x2 x3\n
     label1    y1 y2 y3\n
     label2    y4 y5 y6\n
     如果要对label3做折线图，line_label=label3\n
     label3    y7 y8 y9\n
-    line_label不填则自动加一条求和汇总行作为折线图
+    line_label不填则自动计算求和汇总行作为折线图
     :param df: 数据表
-    :param x_list: x轴坐标列表list[int]
-    :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱是谁的数据
+    # :param label_column: 标签列的列名，这一列用于告诉图表柱状图每一条柱是谁的数据
     :param bar_axis_label: 左侧柱状图坐标轴名
     :param line_axis_label: 右侧柱状图坐标轴名
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
     :param line_axis_max_factor: 折线图坐标轴最高值系数
+    # :param x_list: x轴坐标列表list[int],如果不填则默认除标签列名外的所有列名
     :param height: 图表高度
-    :param line_label: 折线图对应标签，若为空则自动统计对于x的求和
+    :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
     :param formatter: 坐标轴单位
     :return:
     """
@@ -411,39 +412,31 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
     # 处理一下可能存在的空值
     df.fillna(value=0, inplace=True)
 
-    if label_column not in df.columns.to_list():
-        print_color_text(text="未在df数据中找到标签列 （draw_mixed_bar_and_line()）")
-        return None
-
-    if None in df[label_column].to_list():
-        print_color_text(text="df数据标签列中包含空值 （draw_mixed_bar_and_line()）")
-        return None
-
-    if line_label is not None and line_label not in df[label_column].drop_duplicates().to_list():
-        print_color_text(text="未在df数据标签列中找到折线图对应行标签 （draw_mixed_bar_and_line()）")
+    if line_label is not None and line_label not in df.index:
+        print_color_text(text="未在df.index中找到折线图对应行标签 （draw_mixed_bar_and_line()）")
         return None
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 720
 
     bar_chart = Bar()
-    bar_chart.add_xaxis(xaxis_data=x_list)
+    bar_chart.add_xaxis(xaxis_data=df.columns)
 
-    for label in df[label_column].drop_duplicates().to_list():
+    for label in df.index:
         if label != line_label:
             bar_chart.add_yaxis(
                 series_name=label,
-                y_axis=df[df[df.columns[0]] == label].drop(columns=label_column, axis=1).iloc[0].tolist(),
+                y_axis=df.loc[label].tolist(),
                 label_opts=opts.LabelOpts(is_show=False),
             )
 
     line_chart = Line()
-    line_chart.add_xaxis(xaxis_data=x_list)
+    line_chart.add_xaxis(xaxis_data=df.columns)
     line_chart.add_yaxis(
-        series_name="合计" if line_label is None else line_label,
+        series_name=line_label if line_label is not None else "合计",
         yaxis_index=1,
-        y_axis=df[df.columns.difference([label_column])].sum().tolist() if line_label is None else
-        df[df[label_column] == line_label].drop(columns=[label_column]).iloc[0].tolist(),
+        y_axis=df.loc[line_label].tolist() if line_label is not None else
+        df.select_dtypes(include=[np.number]).sum().tolist(),
         label_opts=opts.LabelOpts(is_show=False),
     )
 
@@ -462,8 +455,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             max_=smallest_multiple_of_n_geq(
                 number=int(
                     bar_axis_max_factor * int(
-                        df.drop(columns=label_column, axis=1).values.max() if line_label is None else
-                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                     )
                 ),
                 n=50
@@ -471,8 +463,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             interval=smallest_multiple_of_n_geq(
                 number=int(
                     bar_axis_max_factor * int(
-                        df.drop(columns=label_column, axis=1).values.max() if line_label is None else
-                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).values.max()
+                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                     )
                 ),
                 n=50
@@ -491,8 +482,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             max_=smallest_multiple_of_n_geq(
                 number=int(
                     line_axis_max_factor * int(
-                        df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
-                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+                        df.loc[df.index != line_label].sum().max() if line_label is not None else df.sum().max()
                     )
                 ),
                 n=50
@@ -500,8 +490,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame, x_list: list[str | int],
             interval=smallest_multiple_of_n_geq(
                 number=int(
                     line_axis_max_factor * int(
-                        df.drop(columns=label_column, axis=1).sum().max() if line_label is None else
-                        df[df[label_column] != line_label].drop(columns=label_column, axis=1).sum().max()
+                        df.loc[df.index != line_label].sum().max() if line_label is not None else df.sum().max()
                     )
                 ),
                 n=50

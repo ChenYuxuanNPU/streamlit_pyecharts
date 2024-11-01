@@ -1,8 +1,21 @@
-import sys
-from pathlib import Path
-
+import json
+import time
+import sqlite3
 import pandas as pd
+import pyecharts.options as opts
 import streamlit as st
+import re
+import sys
+
+from pathlib import Path
+from pyecharts.charts import Bar
+from pyecharts.charts import Line
+from pyecharts.charts import Pie
+from pyecharts.charts import WordCloud
+from screeninfo import get_monitors
+from streamlit_echarts import st_pyecharts
+from typing import Tuple
+from data_visualization.tool.func import draw_mixed_bar_and_line
 
 # 加入项目路径
 sys.path.append(
@@ -180,27 +193,26 @@ st.markdown(
 
 age_list = [str(x) for x in range(17, 66)]
 df = pd.DataFrame(
-    data={
-        "性别": ["男", "女"],
-    },
-    columns=["性别"] + age_list
+    index=["男", "女",],
+    columns=age_list
 )
 df.fillna(value=20, inplace=True)
 
-#
-# print(df)
-#
-# x_data = age_list
+
+print(df)
+
+draw_mixed_bar_and_line(df=df,bar_axis_label="人数",line_axis_label="人数合计")
+
 # chart_1 = Bar()
-# chart_1.add_xaxis(xaxis_data=x_data)
+# chart_1.add_xaxis(xaxis_data=age_list)
 # chart_1.add_yaxis(
 #     series_name="男",
-#     y_axis=df[df['性别'] == "男"].drop('性别', axis=1).iloc[0].tolist(),
+#     y_axis=df.loc['男'].tolist(),
 #     label_opts=opts.LabelOpts(is_show=False),
 # )
 # chart_1.add_yaxis(
 #     series_name="女",
-#     y_axis=df[df['性别'] == "女"].drop('性别', axis=1).iloc[0].tolist(),
+#     y_axis=df.loc['女'].tolist(),
 #     label_opts=opts.LabelOpts(is_show=False),
 # )
 # chart_1.extend_axis(
@@ -235,11 +247,11 @@ df.fillna(value=20, inplace=True)
 # )
 #
 # chart_2 = Line()
-# chart_2.add_xaxis(xaxis_data=x_data)
+# chart_2.add_xaxis(xaxis_data=age_list)
 # chart_2.add_yaxis(
 #     series_name="合计",
 #     yaxis_index=1,
-#     y_axis=df[df['性别'] == "合计"].drop(columns=['性别']).iloc[0].tolist(),
+#     y_axis=df.loc["合计"].tolist(),
 #     label_opts=opts.LabelOpts(is_show=False),
 # )
 #
@@ -248,10 +260,10 @@ df.fillna(value=20, inplace=True)
 #     st_pyecharts(chart_1, height="700px")
 
 # print(df.drop(columns="性别", axis=1).values.max()
-visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
-                                    bar_axis_label="柱状图轴", line_axis_label="折线图轴")
-
-df.loc[len(df)] = ["合计1"] + df[df.columns.difference(['性别'])].sum().tolist()
-visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
-                                    bar_axis_label="柱状图轴", line_axis_label="折线图轴", line_label="合计1")
+# visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
+#                                     bar_axis_label="柱状图轴", line_axis_label="折线图轴")
+#
+# df.loc[len(df)] = ["合计1"] + df[df.columns.difference(['性别'])].sum().tolist()
+# visual_func.draw_mixed_bar_and_line(df=df, x_list=[str(x) for x in range(17, 66)], label_column="性别",
+#                                     bar_axis_label="柱状图轴", line_axis_label="折线图轴", line_label="合计1")
 
