@@ -157,6 +157,16 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
         [col for col in df.columns if col.isdigit()], key=int)]
 
 
+def convert_dict_to_dataframe(input_dict: dict) -> pd.DataFrame:
+    """
+    将两层的嵌套字典转换为pd.Dataframe
+    :param input_dict: 输入的字典，其中第一层为行名，第二层为列名
+    :return:
+    """
+
+    return pd.DataFrame.from_dict(input_dict, orient='index')
+
+
 def smallest_multiple_of_n_geq(number: int, n: int) -> int:
     """
     返回比输入值大的最小的n的倍数
@@ -801,3 +811,7 @@ def page1_hide_detail_info() -> None:
     :return:
     """
     st.session_state.page1_show_detail = False
+
+
+if __name__ == '__main__':
+    pass
