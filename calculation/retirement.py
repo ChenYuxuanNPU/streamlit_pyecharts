@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from teacher_data_processing.tool import func as tch_proc_func
 
 
-def get_age_from_citizen_id(citizen_id: str, year: int = None, month: int = 9, day: int = 1) -> int:
+def get_age_from_citizen_id(citizen_id: str, year: str = None, month: int = 9, day: int = 1) -> int:
     """
     通过身份证号计算当前年龄或截止某一年某一月某一日（默认某一年的9月1日）\n
     get_age_from_citizen_id(citizen_id = "440105200102220000") -> 23
@@ -33,10 +33,10 @@ def get_age_from_citizen_id(citizen_id: str, year: int = None, month: int = 9, d
                 0
             )
 
-        elif 2000 <= year <= 3000:
+        elif 2000 <= int(year) <= 3000:
             return max(
                 relativedelta(
-                    dt1=datetime(year=year, month=month, day=day),
+                    dt1=datetime(year=int(year), month=month, day=day),
                     dt2=datetime(
                         year=int(citizen_id[6:10]),
                         month=int(citizen_id[10:12]),
@@ -58,4 +58,4 @@ def get_age_from_citizen_id(citizen_id: str, year: int = None, month: int = 9, d
 if __name__ == '__main__':
     str1 = "440000200102220000"
 
-    print(get_age_from_citizen_id(citizen_id=str1, year=2002))
+    print(get_age_from_citizen_id(citizen_id=str1, year="2002"))
