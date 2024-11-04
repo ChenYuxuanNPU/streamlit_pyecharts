@@ -142,7 +142,7 @@ def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
 
     for item in id_list:
 
-        age = str(get_age_from_citizen_id(item[0]))
+        age = str(get_age_from_citizen_id(item[0], year=year))
 
         if age not in ages:
 
@@ -182,6 +182,79 @@ def get_1_year_discipline_and_gender_list(year: str, ) -> pd.DataFrame:
             df_dict[item[0]][discipline] = item[1]
 
     return convert_dict_to_dataframe(input_dict=df_dict)
+
+
+def get_multi_years_age_list(year_list: list[str], ) -> pd.DataFrame:
+    """
+    根据年份列表生成列为年龄，行为年份，末行为增长率的dataframe
+    :param year_list: 查询的年份列表
+    :return:
+    """
+    df_dict = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+
+    for year in year_list:
+
+        df_dict[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            25:100,
+            26:200
+            },
+        "2023"：{
+            25：50，
+            24：100
+            }
+        }
+        """
+        ages = set()  # 用于检查age_dict中是否有对应的年龄
+
+        id_list = del_tuple_in_list(
+            data=visual_func.execute_sql_sentence(
+                sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["身份证号"], scope="全区", year=year)
+            )
+        )
+
+        for item in id_list:
+
+            age = str(get_age_from_citizen_id(item, year=year))
+
+            if age == "0":
+                print_color_text(item)
+                print_color_text(year)
+
+            if age in df_dict[year].keys():
+                df_dict[year][age] += 1
+            else:
+                df_dict[year][age] = 1
+
+    start_year = str(
+        min(
+            [int(year) for year in year_list]
+        )
+    )
+
+    end_year = str(
+        max(
+            [int(year) for year in year_list]
+        )
+    )
+
+    growth_rate_dict = {}
+    growth_rate_age_list = set(df_dict[start_year].keys()).union(set(df_dict[end_year].keys()))
+    growth_rate_age_check_list = set(df_dict[start_year].keys()).intersection(set(df_dict[end_year].keys()))
+
+    for age in growth_rate_age_list:
+
+        if age in growth_rate_age_check_list:
+            growth_rate_dict[age] = round((int(df_dict[end_year][age]) / int(df_dict[start_year][age])) - 1, 2)
+
+        else:
+            growth_rate_dict[age] = None
+
+    df_dict["增长率"] = growth_rate_dict
+
+    return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(input_dict=df_dict))
 
 
 def show_1_year_given_period(year: str, period: str) -> None:
@@ -236,7 +309,7 @@ def show_1_year_all_period(year: str):
         try:
             visual_func.draw_mixed_bar_and_line(
                 df=get_1_year_age_and_gender_list(year=year),
-                bar_axis_label="人数", line_axis_label="合计人数",
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num"
             )
         except Exception as e:
             print_color_text("年龄柱状折线图展示异常")
@@ -272,7 +345,7 @@ def show_1_year_all_period(year: str):
         try:
             visual_func.draw_mixed_bar_and_line(
                 df=get_1_year_discipline_and_gender_list(year=year),
-                bar_axis_label="人数", line_axis_label="合计人数",
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num"
             )
         except Exception as e:
             print_color_text("学科柱状折线图展示异常")
@@ -613,4 +686,5 @@ def show_multi_years_teacher_0_grad_school(year_list: list) -> None:
 
 
 if __name__ == '__main__':
-    get_1_year_discipline_and_gender_list("2024")
+    df = get_multi_years_age_list(["2023", "2024"])
+    print(df)
