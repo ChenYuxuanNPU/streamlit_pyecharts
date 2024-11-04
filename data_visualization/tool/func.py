@@ -395,11 +395,11 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
-                            bar_max_: int = None, bar_min_: int = None, bar_interval_: int = None,
-                            line_max_: int = None, line_min_: int = None, line_interval_: int = None,
-                            bar_axis_max_factor: int = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
-                            line_axis_max_factor: int = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
-                            height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
+                            bar_max_: int | float = None, bar_min_: int | float = None, bar_interval_: int | float = None,
+                            line_max_: int | float = None, line_min_: int | float = None, line_interval_: int | float = None,
+                            bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
+                            line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
+                            height: int | float = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
     df格式：\n
@@ -478,12 +478,16 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                 ),
                 n=50 if bar_axis_data_kind == "num" else 0.5
             ),
-            interval=bar_interval_ if bar_interval_ is not None else smallest_multiple_of_n_geq(
-                number=bar_axis_max_factor * (
-                    df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
-                ),
-                n=50 if bar_axis_data_kind == "num" else 0.5
-            ) / 10,
+            interval=bar_interval_ if bar_interval_ is not None else
+            (
+                (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
+                smallest_multiple_of_n_geq(
+                    number=bar_axis_max_factor * (
+                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
+                    ),
+                    n=50 if bar_axis_data_kind == "num" else 0.5
+                ) / 10
+            ),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
@@ -495,18 +499,23 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             name=line_axis_label,
             type_="value",
             min_=line_min_ if line_min_ is not None else 0,
-            max_=line_max_ if line_max_ is not None else smallest_multiple_of_n_geq(
+            max_=line_max_ if line_max_ is not None else
+            smallest_multiple_of_n_geq(
                 number=line_axis_max_factor * (
                     df.loc[line_label].max() if line_label is not None else df.sum().max()
                 ),
                 n=50 if line_axis_data_kind == "num" else 0.5
             ),
-            interval=line_interval_ if line_interval_ is not None else smallest_multiple_of_n_geq(
-                number=line_axis_max_factor * (
-                    df.loc[line_label].max() if line_label is not None else df.sum().max()
-                ),
-                n=50 if line_axis_data_kind == "num" else 0.5
-            ) / 10,
+            interval=line_interval_ if line_interval_ is not None else
+            (
+                (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
+                smallest_multiple_of_n_geq(
+                    number=line_axis_max_factor * (
+                        df.loc[line_label].max() if line_label is not None else df.sum().max()
+                    ),
+                    n=50 if line_axis_data_kind == "num" else 0.5
+                ) / 10
+            ),
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
     )
