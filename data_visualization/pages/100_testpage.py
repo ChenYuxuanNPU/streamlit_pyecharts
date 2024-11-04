@@ -191,17 +191,17 @@ st.markdown(
 #
 # tch_proc_func.disconnect_database(conn=conn)
 
-age_list = [str(x) for x in range(17, 66)]
+age_list = [str(x) for x in range(20,31)]
 df = pd.DataFrame(
     index=["男", "女",],
     columns=age_list
 )
-df.fillna(value=20, inplace=True)
+df.fillna(value=0.7, inplace=True)
 
 
 print(df)
 
-draw_mixed_bar_and_line(df=df,bar_axis_label="人数",line_axis_label="人数合计")
+draw_mixed_bar_and_line(df=df,bar_axis_label="人数",line_axis_label="人数合计", bar_axis_data_kind="num", line_axis_data_kind="frac")
 
 # chart_1 = Bar()
 # chart_1.add_xaxis(xaxis_data=age_list)

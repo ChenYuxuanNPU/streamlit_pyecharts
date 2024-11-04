@@ -3,7 +3,7 @@ import re
 import sqlite3
 import time
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Literal
 
 import numpy as np
 import pandas as pd
@@ -167,17 +167,17 @@ def convert_dict_to_dataframe(input_dict: dict) -> pd.DataFrame:
     return pd.DataFrame.from_dict(input_dict, orient='index')
 
 
-def smallest_multiple_of_n_geq(number: int, n: int) -> int:
+def smallest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
     """
-    返回比输入值大的最小的n的倍数
-    :param number:
-    :param n:
+    返回大于等于输入值的最小的n的倍数,返回值被强制类型转换为float以应对n为小数的情况
+    :param number: 输入值
+    :param n: 倍数因子
     :return:
     """
     if number % n == 0:
-        return number
+        return float(number)
     else:
-        return (number // n + 1) * n
+        return float((number // n + 1) * n)
 
 
 def set_page_configuration(title: str, icon: str) -> None:
@@ -395,7 +395,8 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
-                            bar_axis_max_factor: int = 2, line_axis_max_factor: int = 1,
+                            bar_axis_max_factor: int = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
+                            line_axis_max_factor: int = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
@@ -405,12 +406,16 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     label2    y4 y5 y6\n
     如果要对label3做折线图，line_label=label3\n
     label3    y7 y8 y9\n
-    line_label不填则自动计算求和汇总行作为折线图
+    line_label不填则自动计算求和汇总行作为折线图\n
+    图表最大值默认设置：分别以大于等于图表最大值的最小50的公倍数（普通数据）或0.5的公倍数（小数或比率）作为图表最大值，其中factor项用于调整bar和line的相对位置
+
     :param df: 数据表
     :param bar_axis_label: 左侧柱状图坐标轴名
     :param line_axis_label: 右侧柱状图坐标轴名
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
     :param line_axis_max_factor: 折线图坐标轴最高值系数
+    :param line_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
+    :param bar_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
     :param height: 图表高度
     :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
     :param formatter: 坐标轴单位
@@ -461,20 +466,16 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             type_="value",
             min_=0,
             max_=smallest_multiple_of_n_geq(
-                number=int(
-                    bar_axis_max_factor * int(
-                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
-                    )
+                number=bar_axis_max_factor * (
+                    df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                 ),
-                n=50
+                n=50 if bar_axis_data_kind == "num" else 0.5
             ),
             interval=smallest_multiple_of_n_geq(
-                number=int(
-                    bar_axis_max_factor * int(
-                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
-                    )
+                number=bar_axis_max_factor * (
+                    df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                 ),
-                n=50
+                n=50 if bar_axis_data_kind == "num" else 0.5
             ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
@@ -488,20 +489,16 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             type_="value",
             min_=0,
             max_=smallest_multiple_of_n_geq(
-                number=int(
-                    line_axis_max_factor * int(
-                        df.loc[df.index != line_label].sum().max() if line_label is not None else df.sum().max()
-                    )
+                number=line_axis_max_factor * (
+                    df.loc[line_label].max() if line_label is not None else df.sum().max()
                 ),
-                n=50
+                n=50 if line_axis_data_kind == "num" else 0.5
             ),
             interval=smallest_multiple_of_n_geq(
-                number=int(
-                    line_axis_max_factor * int(
-                        df.loc[df.index != line_label].sum().max() if line_label is not None else df.sum().max()
-                    )
+                number=line_axis_max_factor * (
+                    df.loc[line_label].max() if line_label is not None else df.sum().max()
                 ),
-                n=50
+                n=50 if line_axis_data_kind == "num" else 0.5
             ) / 10,
             axislabel_opts=opts.LabelOpts(formatter=formatter),
         )
