@@ -17,7 +17,7 @@ def get_age_from_citizen_id(citizen_id: str, year: str = None, month: int = 9, d
     """
 
     if len(citizen_id) != 18:
-        return 0
+        return -1
 
     try:
         if year is None:
@@ -48,11 +48,11 @@ def get_age_from_citizen_id(citizen_id: str, year: str = None, month: int = 9, d
             )
 
         else:
-            return -1
+            return -2
 
     except Exception as e:
         tch_proc_func.print_color_text(text=f"{e}:{citizen_id}")
-        return -1
+        return -3
 
 
 if __name__ == '__main__':
