@@ -395,6 +395,8 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
+                            bar_max_: int = None, bar_min_: int = None, bar_interval_: int = None,
+                            line_max_: int = None, line_min_: int = None, line_interval_: int = None,
                             bar_axis_max_factor: int = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
                             line_axis_max_factor: int = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
                             height: int = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
@@ -408,10 +410,15 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     label3    y7 y8 y9\n
     line_label不填则自动计算求和汇总行作为折线图\n
     图表最大值默认设置：分别以大于等于图表最大值的最小50的公倍数（普通数据）或0.5的公倍数（小数或比率）作为图表最大值，其中factor项用于调整bar和line的相对位置
-
     :param df: 数据表
     :param bar_axis_label: 左侧柱状图坐标轴名
     :param line_axis_label: 右侧柱状图坐标轴名
+    :param bar_max_: 柱状图强制最大值
+    :param bar_min_: 柱状图强制最小值
+    :param bar_interval_: 柱状图强制间隔
+    :param line_max_: 折线图强制最大值
+    :param line_min_: 折线图强制最小值
+    :param line_interval_: 折线图强制间隔
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
     :param line_axis_max_factor: 折线图坐标轴最高值系数
     :param line_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
@@ -464,14 +471,14 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
         yaxis_opts=opts.AxisOpts(
             name=bar_axis_label,
             type_="value",
-            min_=0,
-            max_=smallest_multiple_of_n_geq(
+            min_=bar_min_ if bar_min_ is not None else 0,
+            max_=bar_max_ if bar_max_ is not None else smallest_multiple_of_n_geq(
                 number=bar_axis_max_factor * (
                     df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                 ),
                 n=50 if bar_axis_data_kind == "num" else 0.5
             ),
-            interval=smallest_multiple_of_n_geq(
+            interval=bar_interval_ if bar_interval_ is not None else smallest_multiple_of_n_geq(
                 number=bar_axis_max_factor * (
                     df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
                 ),
@@ -487,14 +494,14 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
         yaxis=opts.AxisOpts(
             name=line_axis_label,
             type_="value",
-            min_=0,
-            max_=smallest_multiple_of_n_geq(
+            min_=line_min_ if line_min_ is not None else 0,
+            max_=line_max_ if line_max_ is not None else smallest_multiple_of_n_geq(
                 number=line_axis_max_factor * (
                     df.loc[line_label].max() if line_label is not None else df.sum().max()
                 ),
                 n=50 if line_axis_data_kind == "num" else 0.5
             ),
-            interval=smallest_multiple_of_n_geq(
+            interval=line_interval_ if line_interval_ is not None else smallest_multiple_of_n_geq(
                 number=line_axis_max_factor * (
                     df.loc[line_label].max() if line_label is not None else df.sum().max()
                 ),
