@@ -142,7 +142,7 @@ def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
 
     for item in id_list:
 
-        age = str(get_age_from_citizen_id(item[0], year=year))
+        age = str(get_age_from_citizen_id(citizen_id=item[0], year=year))
 
         if age not in ages:
 
@@ -217,7 +217,7 @@ def get_multi_years_age_list(year_list: list[str], ) -> pd.DataFrame:
 
         for item in id_list:
 
-            age = str(get_age_from_citizen_id(item, year=year))
+            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
 
             if age == "0":
                 print_color_text(item)
@@ -313,6 +313,7 @@ def show_1_year_all_period(year: str):
             )
         except Exception as e:
             print_color_text("年龄柱状折线图展示异常")
+            print(e)
             st.toast("年龄柱状折线图展示异常", icon="😕")
 
         c0, c1, c2 = st.columns(spec=3)
@@ -595,6 +596,17 @@ def show_multi_years_teacher_0_count(year_list: list) -> None:
             output["教师数"].append([f"{year}", data[year]["在编"]["全区"]["所有学段"]["总人数"]])
 
         visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=["教师数"])
+
+        visual_func.draw_mixed_bar_and_line(
+            df=get_multi_years_age_list(
+                year_list=year_list
+            ),
+            bar_axis_label="人数",
+            line_axis_label="首末年份增长率",
+            line_label="增长率",
+            line_max_=3,
+            line_min_=-6,
+        )
 
 
 def show_multi_years_teacher_0_area(year_list: list) -> None:
