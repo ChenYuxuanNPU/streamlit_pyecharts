@@ -395,10 +395,13 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
-                            bar_max_: int | float = None, bar_min_: int | float = None, bar_interval_: int | float = None,
-                            line_max_: int | float = None, line_min_: int | float = None, line_interval_: int | float = None,
+                            bar_max_: int | float = None, bar_min_: int | float = None,
+                            bar_interval_: int | float = None,
+                            line_max_: int | float = None, line_min_: int | float = None,
+                            line_interval_: int | float = None,
                             bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
                             line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
+                            mark_line_y: str = None, mark_line_type: str = None,
                             height: int | float = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
@@ -423,6 +426,8 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     :param line_axis_max_factor: 折线图坐标轴最高值系数
     :param line_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
     :param bar_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
+    :param mark_line_y: 折线图标记线高度（高优先级）
+    :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param height: 图表高度
     :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
     :param formatter: 坐标轴单位
@@ -452,13 +457,35 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
 
     line_chart = Line()
     line_chart.add_xaxis(xaxis_data=df.columns)
-    line_chart.add_yaxis(
-        series_name=line_label if line_label is not None else "合计",
-        yaxis_index=1,
-        y_axis=df.loc[line_label].tolist() if line_label is not None else
-        df.select_dtypes(include=[np.number]).sum().tolist(),
-        label_opts=opts.LabelOpts(is_show=False),
-    )
+
+    if mark_line_y is not None:
+        line_chart.add_yaxis(
+            series_name=line_label if line_label is not None else "合计",
+            yaxis_index=1,
+            y_axis=df.loc[line_label].tolist() if line_label is not None else
+            df.select_dtypes(include=[np.number]).sum().tolist(),
+            label_opts=opts.LabelOpts(is_show=False),
+            markline_opts=opts.MarkLineOpts(data=[opts.MarkLineItem(y=mark_line_y, symbol=None)])
+        )
+
+    elif mark_line_type is not None and mark_line_type in ["min", "max", "average"]:
+        line_chart.add_yaxis(
+            series_name=line_label if line_label is not None else "合计",
+            yaxis_index=1,
+            y_axis=df.loc[line_label].tolist() if line_label is not None else
+            df.select_dtypes(include=[np.number]).sum().tolist(),
+            label_opts=opts.LabelOpts(is_show=False),
+            markline_opts=opts.MarkLineOpts(data=[opts.MarkLineItem(type_=mark_line_type, symbol=None)])
+        )
+
+    else:
+        line_chart.add_yaxis(
+            series_name=line_label if line_label is not None else "合计",
+            yaxis_index=1,
+            y_axis=df.loc[line_label].tolist() if line_label is not None else
+            df.select_dtypes(include=[np.number]).sum().tolist(),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
 
     bar_chart.set_global_opts(
         tooltip_opts=opts.TooltipOpts(
