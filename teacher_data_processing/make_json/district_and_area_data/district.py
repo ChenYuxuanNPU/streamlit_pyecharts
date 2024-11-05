@@ -110,7 +110,6 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
-        print("111")
 
     finally:
         conn.commit()
