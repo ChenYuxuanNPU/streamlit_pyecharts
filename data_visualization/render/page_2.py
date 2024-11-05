@@ -309,7 +309,7 @@ def show_1_year_all_period(year: str):
         try:
             visual_func.draw_mixed_bar_and_line(
                 df=get_1_year_age_and_gender_list(year=year),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num"
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num", mark_line_type="average"
             )
         except Exception as e:
             print_color_text("年龄柱状折线图展示异常")
@@ -346,7 +346,7 @@ def show_1_year_all_period(year: str):
         try:
             visual_func.draw_mixed_bar_and_line(
                 df=get_1_year_discipline_and_gender_list(year=year),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num"
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num", mark_line_type="average"
             )
         except Exception as e:
             print_color_text("学科柱状折线图展示异常")
@@ -606,6 +606,7 @@ def show_multi_years_teacher_0_count(year_list: list) -> None:
             line_label="增长率",
             line_max_=3,
             line_min_=-6,
+            mark_line_y=0
         )
 
 
