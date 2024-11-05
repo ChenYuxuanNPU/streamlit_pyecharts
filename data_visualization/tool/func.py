@@ -465,7 +465,12 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             y_axis=df.loc[line_label].tolist() if line_label is not None else
             df.select_dtypes(include=[np.number]).sum().tolist(),
             label_opts=opts.LabelOpts(is_show=False),
-            markline_opts=opts.MarkLineOpts(data=[opts.MarkLineItem(y=mark_line_y, symbol=None)])
+            markline_opts=opts.MarkLineOpts(
+                data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
+                label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
+                                          distance=5),
+                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
+            # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
         )
 
     elif mark_line_type is not None and mark_line_type in ["min", "max", "average"]:
@@ -475,7 +480,11 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             y_axis=df.loc[line_label].tolist() if line_label is not None else
             df.select_dtypes(include=[np.number]).sum().tolist(),
             label_opts=opts.LabelOpts(is_show=False),
-            markline_opts=opts.MarkLineOpts(data=[opts.MarkLineItem(type_=mark_line_type, symbol=None)])
+            markline_opts=opts.MarkLineOpts(
+                data=[opts.MarkLineItem(type_=mark_line_type, symbol="none")],
+                symbol="none", label_opts=opts.LabelOpts(is_show=False),
+                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
+            # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
         )
 
     else:
