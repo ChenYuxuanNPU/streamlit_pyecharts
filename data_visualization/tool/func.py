@@ -401,7 +401,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                             line_interval_: int | float = None,
                             bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
                             line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
-                            mark_line_y: str = None, mark_line_type: str = None,
+                            mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             height: int | float = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
