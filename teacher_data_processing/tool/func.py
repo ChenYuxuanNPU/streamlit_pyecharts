@@ -2,7 +2,6 @@ import copy
 import json
 import sqlite3
 from pathlib import Path
-from typing import Tuple
 
 from teacher_data_processing.read_database import get_database_data as gd
 
@@ -99,7 +98,7 @@ def get_area_order() -> dict:
     return {"直管": 1, "永平": 2, "石井": 3, "新市": 4, "江高": 5, "人和": 6, "太和": 7, "钟落潭": 8, None: 9}
 
 
-def get_area_list() -> list:
+def get_area_list() -> list[str]:
     """
     片镇列表：["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
     :return:
@@ -108,7 +107,7 @@ def get_area_list() -> list:
     return ["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
 
 
-def get_kind_list() -> list:
+def get_kind_list() -> list[str]:
     """
     教师类型：["在编", "编外"]
     :return:
@@ -117,7 +116,7 @@ def get_kind_list() -> list:
     return ["在编", "编外"]
 
 
-def get_period_list() -> list:
+def get_period_list() -> list[str]:
     """
     常用学段列表：["高中", "初中", "小学", "幼儿园"]
     :return:
@@ -126,7 +125,7 @@ def get_period_list() -> list:
     return ["高中", "初中", "小学", "幼儿园"]
 
 
-def get_code_of_985() -> list:
+def get_code_of_985() -> list[str]:
     """
     985院校代码列表
     :return:
@@ -137,7 +136,7 @@ def get_code_of_985() -> list:
             "10730 10699 10712 10019 10052 1045 19248 91002 19246 7321").split()
 
 
-def get_code_of_211() -> list:
+def get_code_of_211() -> list[str]:
     """
     211院校代码列表
     :return:
@@ -153,7 +152,7 @@ def get_code_of_211() -> list:
             "11415 19635 19414").split()
 
 
-def get_code_of_affiliate() -> list:
+def get_code_of_affiliate() -> list[str]:
     """
     部属师范院校代码列表
     :return:
@@ -201,7 +200,7 @@ def get_database_name() -> str:
 
 
 # kind:"在编","编外"
-def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     用于连接数据库
     :return:

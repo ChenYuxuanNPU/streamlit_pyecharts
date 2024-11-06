@@ -14,7 +14,6 @@ from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
-from typing import Tuple
 from data_visualization.tool.func import draw_mixed_bar_and_line
 
 # 加入项目路径

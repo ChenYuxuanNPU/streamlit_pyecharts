@@ -2,13 +2,13 @@ import json
 import re
 import sqlite3
 import time
-from pathlib import Path
-from typing import Tuple, Literal
-
 import numpy as np
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
+
+from pathlib import Path
+from typing import Literal
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
@@ -17,7 +17,7 @@ from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
 
 
-def get_kind_list() -> list:
+def get_kind_list() -> list[str]:
     """
 
     :return: ["在编", "编外"]
@@ -81,7 +81,7 @@ def get_database_name() -> str:
     return database_name
 
 
-def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     用于连接数据库
     :return:

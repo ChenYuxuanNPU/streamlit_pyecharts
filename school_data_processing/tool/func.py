@@ -3,12 +3,11 @@ import json
 import sqlite3
 
 from pathlib import Path
-from typing import Tuple
 
 from teacher_data_processing.tool.func import print_color_text
 
 
-def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     conn = sqlite3.connect(
         fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}"
     )

@@ -1,7 +1,6 @@
 import sqlite3
 import json
 from pathlib import Path
-from typing import Tuple
 
 
 def get_database_name() -> str:
@@ -20,7 +19,7 @@ def get_database_name() -> str:
 
 
 # kind:"在编","编外"
-def connect_database() -> Tuple[sqlite3.Cursor, sqlite3.Connection]:
+def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     """
     用于连接数据库
     :return:
