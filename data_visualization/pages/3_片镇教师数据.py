@@ -105,7 +105,7 @@ with st.container(border=True):
     if year_0 and area_0 and len(year_1) <= 1 and len(area_1) <= 1:
 
         try:
-            r.show_teacher_0(year=year_0, area=area_0)
+            r.show_1_year_teacher_0(year=year_0, area=area_0)
 
         except KeyError as e:
 
@@ -123,7 +123,7 @@ with st.container(border=True):
                 st.error(str(e), icon="😭")
 
         try:
-            r.show_teacher_1(year=year_0, area=area_0)
+            r.show_1_year_teacher_1(year=year_0, area=area_0)
 
         except KeyError as e:
 
@@ -142,15 +142,72 @@ with st.container(border=True):
 
     # 对比不同年份不同片镇的教师信息
     elif len(year_1) > 1 and len(area_1) > 1:
+
         st.info("对比不同年份不同片镇的教师信息")
+
+        try:
+            r.show_multi_years_and_multi_areas_teacher_0(year_list=year_1)
+
+        except KeyError as e:
+
+            if e.args[0] == year_0:
+                st.error(f"缺少{year_0}年的数据", icon="🤣")
+
+            elif e.args[0] == "在编":
+                st.error(f"缺少{year_0}年的在编数据", icon="😆")
+
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
 
     # 对比某一片镇不同年份的教师信息
     elif len(year_1) > 1 and area_0:
+
         st.info("对比某一片镇不同年份的教师信息")
+
+        try:
+            r.show_multi_years_teacher_0(year_list=year_1)
+
+        except KeyError as e:
+
+            if e.args[0] == year_0:
+                st.error(f"缺少{year_0}年的数据", icon="🤣")
+
+            elif e.args[0] == "在编":
+                st.error(f"缺少{year_0}年的在编数据", icon="😆")
+
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
 
     # 对比同一年份不同片镇的教师信息
     elif len(area_1) > 1 and year_0:
+
         st.info("对比同一年份不同片镇的教师信息")
+
+        try:
+            r.show_multi_areas_teacher_0(year_list=year_1)
+
+        except KeyError as e:
+
+            if e.args[0] == year_0:
+                st.error(f"缺少{year_0}年的数据", icon="🤣")
+
+            elif e.args[0] == "在编":
+                st.error(f"缺少{year_0}年的在编数据", icon="😆")
+
+            elif e.args[0] == "学校教师总数":
+                st.error("缺少在编或编外信息", icon="😆")
+
+            else:
+                print(e)
+                st.error(str(e), icon="😭")
 
     else:
         r.show_text_info()

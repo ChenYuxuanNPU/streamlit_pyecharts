@@ -46,7 +46,7 @@ def show_text_info() -> None:
         )
 
 
-def show_teacher_0(year: str, area: str) -> None:
+def show_1_year_teacher_0(year: str, area: str) -> None:
     """
     用于展示某一年在编教师信息
     :param year: 年份
@@ -109,7 +109,7 @@ def show_teacher_0(year: str, area: str) -> None:
                                        title="四名统计")
 
 
-def show_teacher_1(year: str, area: str) -> None:
+def show_1_year_teacher_1(year: str, area: str) -> None:
     """
     用于展示某一年编外教师信息
     :param year: 年份
@@ -149,3 +149,15 @@ def show_teacher_1(year: str, area: str) -> None:
             # 编外幼儿园教师资格统计
             visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["幼儿园"]["教师资格"],
                                        title="幼儿园")
+
+
+def show_multi_years_teacher_0(year_list: list[str]) -> None:
+    pass
+
+
+def show_multi_areas_teacher_0(year_list: list[str]) -> None:
+    pass
+
+def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
+    pass
+
