@@ -2,13 +2,13 @@ import json
 import re
 import sqlite3
 import time
+from pathlib import Path
+from typing import Literal
+
 import numpy as np
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
-
-from pathlib import Path
-from typing import Literal
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
@@ -145,6 +145,22 @@ def del_tuple_in_list(data: list) -> list:
         output.append(single_data[0])
 
     return output
+
+
+def array_to_dataframe(array: list, index_label: str | int = 0) -> pd.DataFrame:
+    """
+    将二维列表转换为dataframe，其中子列表首项为列名，次项为数据
+    :param array: 待转换的二维列表，要求子列表长度为2
+    :param index_label: 希望的dataframe行名
+    :return:
+    """
+
+    columns = [row[0] for row in array]
+    values = [row[1] for row in array]
+
+    data_dict = {columns[i]: [values[i]] for i in range(len(columns))}
+
+    return pd.DataFrame(data_dict, index=[index_label])
 
 
 def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -328,35 +344,60 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
     return None
 
 
-def draw_line_chart(data: pd.DataFrame | dict, title: str, x_axis: list, label_list: list, height=0,
-                    is_symbol_show=True) -> None:
+def draw_line_chart(data: pd.DataFrame | dict, title: str,
+                    x_axis: list = None, label_list: list = None,
+                    mark_line_y: int = None,
+                    height=350, is_symbol_show=True, ) -> None:
     """
     绘制折线图
     :param data: 绘图所用数据
     :param title: 图表标题
     :param x_axis: x轴字段
     :param label_list: 不同折线对应的label
+    :param mark_line_y: 标记线绝对高度
     :param height: 图表高度，默认根据分辨率自适应
     :param is_symbol_show: 是否在数据点上显示数值
     :return:
     """
 
-    if height == 0:
-        height = int(get_monitors()[0].height / 1080) * 350
-
-    if isinstance(data, dict):
-        chart_data = data
-    elif isinstance(data, pd.DataFrame):
-        return None
-    else:
-        return None
+    height = int(get_monitors()[0].height / 1080) * height
 
     chart = Line()
 
-    chart.add_xaxis(x_axis)
+    if isinstance(data, dict) and x_axis is not None and label_list is not None:
 
-    for label in label_list:
-        chart.add_yaxis(label, [item[1] for item in data[label]], is_connect_nones=True, is_symbol_show=is_symbol_show)
+        chart.add_xaxis(x_axis)
+
+        for label in label_list:
+            chart.add_yaxis(series_name=label,
+                            y_axis=[item[1] for item in data[label]],
+                            is_connect_nones=True, is_symbol_show=is_symbol_show,
+                            markline_opts=opts.MarkLineOpts(
+                                data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
+                                label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
+                                                          distance=5),
+                                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed")
+                            ) if mark_line_y is not None else None
+                            )
+
+    elif isinstance(data, pd.DataFrame):
+
+        chart.add_xaxis(data.columns.tolist())
+
+        for label in data.index:
+            chart.add_yaxis(series_name=label,
+                            y_axis=data.loc[label].tolist(),
+                            is_connect_nones=True, is_symbol_show=is_symbol_show,
+                            markline_opts=opts.MarkLineOpts(
+                                data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
+                                label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
+                                                          distance=5),
+                                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed")
+                            ) if mark_line_y is not None else None
+                            )
+
+    else:
+        return None
 
     chart.set_global_opts(title_opts=opts.TitleOpts(title=title))
 
