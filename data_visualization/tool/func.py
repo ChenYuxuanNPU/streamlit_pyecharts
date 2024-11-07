@@ -347,6 +347,7 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
 def draw_line_chart(data: pd.DataFrame | dict, title: str,
                     x_axis: list = None, label_list: list = None,
                     mark_line_y: int = None,
+                    formatter: str = "{value}",
                     height=350, is_symbol_show=True, ) -> None:
     """
     绘制折线图
@@ -355,6 +356,7 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str,
     :param x_axis: x轴字段
     :param label_list: 不同折线对应的label
     :param mark_line_y: 标记线绝对高度
+    :param formatter: 坐标轴单位
     :param height: 图表高度，默认根据分辨率自适应
     :param is_symbol_show: 是否在数据点上显示数值
     :return:
@@ -399,7 +401,9 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str,
     else:
         return None
 
-    chart.set_global_opts(title_opts=opts.TitleOpts(title=title))
+    chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
+                          yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter))
+                          )
 
     st_pyecharts(
         chart=chart,
@@ -443,7 +447,8 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
                             line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
-                            height: int | float = 0, line_label: str | None = None, formatter: str = "{value}") -> None:
+                            height: int | float = 0, line_label: str | None = None,
+                            bar_formatter: str = "{value}", line_formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
     df格式：\n
@@ -471,7 +476,8 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param height: 图表高度
     :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
-    :param formatter: 坐标轴单位
+    :param bar_formatter: 柱状图坐标轴单位
+    :param line_formatter: 折线图坐标轴单位
     :return:
     """
 
@@ -565,7 +571,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                     n=50 if bar_axis_data_kind == "num" else 0.5
                 ) / 10
             ),
-            axislabel_opts=opts.LabelOpts(formatter=formatter),
+            axislabel_opts=opts.LabelOpts(formatter=bar_formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
         ),
@@ -593,7 +599,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                     n=50 if line_axis_data_kind == "num" else 0.5
                 ) / 10
             ),
-            axislabel_opts=opts.LabelOpts(formatter=formatter),
+            axislabel_opts=opts.LabelOpts(formatter=line_formatter),
         )
     )
 
