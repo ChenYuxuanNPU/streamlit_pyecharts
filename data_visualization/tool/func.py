@@ -194,13 +194,27 @@ def max_dict_depth(d: dict, depth=1):
 def convert_dict_to_dataframe(d: dict) -> pd.DataFrame:
     """
     将两层的嵌套字典转换为pd.Dataframe
-    :param d: 输入的字典，其中第一层为行名，第二层为列名
+    :param d: 输入的字典\n
+    两层字典：第一层为行名，第二层为列名\n
     :return:
+    """
+    """
+    df_dict:{
+    "2024":{
+        25:100,
+        26:200
+        },
+    "2023"：{
+        25：50，
+        24：100
+        }
+    }
     """
     if max_dict_depth(d=d) == 2:
         return pd.DataFrame.from_dict(d, orient='index')
 
-    return pd.DataFrame()
+    else:
+        return pd.DataFrame()
 
 
 def smallest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
