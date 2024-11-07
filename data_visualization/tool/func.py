@@ -173,14 +173,34 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
         [col for col in df.columns if col.isdigit()], key=int)]
 
 
-def convert_dict_to_dataframe(input_dict: dict) -> pd.DataFrame:
+def max_dict_depth(d: dict, depth=1):
     """
-    将两层的嵌套字典转换为pd.Dataframe
-    :param input_dict: 输入的字典，其中第一层为行名，第二层为列名
+    统计字典最大深度
+    :param d: 待求字典
+    :param depth: 用于递归的参数，别填
     :return:
     """
+    # 使用列表推导式找到所有嵌套字典的最大深度
+    child_depths = [max_dict_depth(value, depth + 1) for value in d.values() if isinstance(value, dict)]
 
-    return pd.DataFrame.from_dict(input_dict, orient='index')
+    # 如果child_depths为空，说明没有嵌套字典，直接返回当前深度
+    if not child_depths:
+        return depth
+
+    # 否则，返回嵌套字典中的最大深度
+    return max(child_depths)
+
+
+def convert_dict_to_dataframe(d: dict) -> pd.DataFrame:
+    """
+    将两层的嵌套字典转换为pd.Dataframe
+    :param d: 输入的字典，其中第一层为行名，第二层为列名
+    :return:
+    """
+    if max_dict_depth(d=d) == 2:
+        return pd.DataFrame.from_dict(d, orient='index')
+
+    return pd.DataFrame()
 
 
 def smallest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
