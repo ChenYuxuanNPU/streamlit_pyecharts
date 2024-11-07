@@ -1,9 +1,12 @@
+from typing import List, Any
+
 import pandas as pd
 import streamlit as st
 
 from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
-from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list
+from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
+    array_to_dataframe, execute_sql_sentence
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -125,7 +128,18 @@ def get_grad_school_dataframe_columns_list() -> list[str]:
     return ["年份", "院校级别", "人数"]
 
 
-def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
+def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
+
+    teacher_count_list = []
+
+    for year in year_list:
+
+        teacher_count_list.append([year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
+
+    return teacher_count_list
+
+
+def get_1_year_age_and_gender_dataframe(year: str, ) -> pd.DataFrame:
     """
     根据年份生成列为年龄，行为性别的dataframe
     :param year: 查询的年份
@@ -156,7 +170,7 @@ def get_1_year_age_and_gender_list(year: str, ) -> pd.DataFrame:
     return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(input_dict=df_dict))
 
 
-def get_1_year_discipline_and_gender_list(year: str, ) -> pd.DataFrame:
+def get_1_year_discipline_and_gender_dataframe(year: str, ) -> pd.DataFrame:
     """
     根据年份生成列为学科，行为性别的dataframe
     :param year: 查询的年份
@@ -168,7 +182,8 @@ def get_1_year_discipline_and_gender_list(year: str, ) -> pd.DataFrame:
     discipline_list = del_tuple_in_list(
         visual_func.execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
-                                                   year=year, limit=16, order="desc", additional_requirement=['"主教学科" != "无"'])
+                                                   year=year, limit=16, order="desc",
+                                                   additional_requirement=['"主教学科" != "无"'])
         )
     )
 
@@ -184,7 +199,7 @@ def get_1_year_discipline_and_gender_list(year: str, ) -> pd.DataFrame:
     return convert_dict_to_dataframe(input_dict=df_dict)
 
 
-def get_multi_years_age_list(year_list: list[str], ) -> pd.DataFrame:
+def get_multi_years_age_dataframe(year_list: list[str], ) -> pd.DataFrame:
     """
     根据年份列表生成列为年龄，行为年份，末行为增长率的dataframe
     :param year_list: 查询的年份列表
@@ -211,7 +226,8 @@ def get_multi_years_age_list(year_list: list[str], ) -> pd.DataFrame:
 
         id_list = del_tuple_in_list(
             data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["身份证号"], scope="全区", year=year)
+                sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["身份证号"], scope="全区",
+                                                       year=year)
             )
         )
 
@@ -308,8 +324,9 @@ def show_1_year_all_period(year: str):
         # 年龄性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
             visual_func.draw_mixed_bar_and_line(
-                df=get_1_year_age_and_gender_list(year=year),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num", mark_line_type="average"
+                df=get_1_year_age_and_gender_dataframe(year=year),
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
+                mark_line_type="average"
             )
         except Exception as e:
             print_color_text("年龄柱状折线图展示异常")
@@ -345,8 +362,9 @@ def show_1_year_all_period(year: str):
         # 学科性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
             visual_func.draw_mixed_bar_and_line(
-                df=get_1_year_discipline_and_gender_list(year=year),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num", mark_line_type="average"
+                df=get_1_year_discipline_and_gender_dataframe(year=year),
+                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
+                mark_line_type="average"
             )
         except Exception as e:
             print_color_text("学科柱状折线图展示异常")
@@ -520,65 +538,61 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
         show_multi_years_teacher_0_grad_school(year_list=year_list)
 
 
-def show_multi_years_teacher_0_basic(year_list: list[str], json_field: str,
-                                     dataframe_columns_list: list, info_list: list,
-                                     block_left_img: bool = False, block_right_img: bool = False,
-                                     block_bottom_img: bool = False) -> None:
-    """
-    年份对比中基础三张图的生成
-    :param year_list: 对比所用的年份列表
-    :param json_field: json文件对应的子字典对应的字段
-    :param dataframe_columns_list: 生成pd.Dataframe的列名
-    :param info_list: 需要统计的选项列表
-    :param block_left_img: 是否屏蔽左侧图，默认False不屏蔽，True则屏蔽
-    :param block_right_img: 是否屏蔽右侧图，默认False不屏蔽，True则屏蔽
-    :param block_bottom_img: 是否屏蔽底部图，默认False不屏蔽，True则屏蔽
-    :return: 无
-    """
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-
-    left, right = st.columns(spec=2)
-
-    # 展示左侧折线图
-    if not block_left_img:
-        output = {}
-
-        for area in info_list:
-            output[f"{area}"] = [[year, data[year]["在编"]["全区"]["所有学段"][json_field].get(area, None)] for year in
-                                 year_list]
-
-        with left:
-            visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
-                                        is_symbol_show=False)
-
-    if not block_right_img or not block_bottom_img:
-        df = pd.DataFrame(columns=dataframe_columns_list)
-        temp = []
-
-        for year in year_list:
-            for info in info_list:
-                temp.append(
-                    pd.DataFrame(
-                        [[year, info, data[year]["在编"]["全区"]["所有学段"][json_field].get(info, None)]],
-                        columns=dataframe_columns_list
-                    )
-                )
-
-        df = pd.concat(temp, ignore_index=True)
-
-        # 展示右侧分散柱状图
-        if not block_right_img:
-            with right:
-                visual_func.draw_unstack_bar_chart(data=df, x_axis=dataframe_columns_list[0],
-                                                   y_axis=dataframe_columns_list[2],
-                                                   label=dataframe_columns_list[1])
-        # 展示底部水平柱状图
-        if not block_bottom_img:
-            visual_func.draw_horizontal_bar_chart(data=df, x_axis=dataframe_columns_list[0],
-                                                  y_axis=dataframe_columns_list[2],
-                                                  label=dataframe_columns_list[1])
-
-    return None
+# def show_multi_years_teacher_0_basic(df: pd.DataFrame,
+#                                      block_left_img: bool = False, block_right_img: bool = False,
+#                                      block_bottom_img: bool = False) -> None:
+#     """
+#     年份对比中基础三张图的生成
+#     :param df: 作图所用数据
+#     :param block_left_img: 是否屏蔽左侧图，默认False不屏蔽，True则屏蔽
+#     :param block_right_img: 是否屏蔽右侧图，默认False不屏蔽，True则屏蔽
+#     :param block_bottom_img: 是否屏蔽底部图，默认False不屏蔽，True则屏蔽
+#     :return: 无
+#     """
+#     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+#
+#     left, right = st.columns(spec=2)
+#
+#     # 展示左侧折线图
+#     if not block_left_img:
+#         output = {}
+#
+#         for area in info_list:
+#             output[f"{area}"] = [[year, data[year]["在编"]["全区"]["所有学段"][json_field].get(area, None)] for year in
+#                                  year_list]
+#
+#         with left:
+#             visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
+#                                         is_symbol_show=False)
+#
+#     if not block_right_img or not block_bottom_img:
+#         df = pd.DataFrame(columns=dataframe_columns_list)
+#         temp = []
+#
+#         for year in year_list:
+#             for info in info_list:
+#                 temp.append(
+#                     pd.DataFrame(
+#                         [[year, info, data[year]["在编"]["全区"]["所有学段"][json_field].get(info, None)]],
+#                         columns=dataframe_columns_list
+#                     )
+#                 )
+#
+#         df = pd.concat(temp, ignore_index=True)
+#
+#         # 展示右侧分散柱状图
+#         if not block_right_img:
+#             with right:
+#                 visual_func.draw_unstack_bar_chart(data=df, x_axis=dataframe_columns_list[0],
+#                                                    y_axis=dataframe_columns_list[2],
+#                                                    label=dataframe_columns_list[1])
+#         # 展示底部水平柱状图
+#         if not block_bottom_img:
+#             visual_func.draw_horizontal_bar_chart(data=df, x_axis=dataframe_columns_list[0],
+#                                                   y_axis=dataframe_columns_list[2],
+#                                                   label=dataframe_columns_list[1])
+#
+#     return None
 
 
 def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
@@ -587,27 +601,46 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        data = visual_func.load_json_data(folder="result", file_name="teacher_info")
 
-        output = {"教师数": []}
+    df = get_multi_years_age_dataframe(year_list=year_list)
 
-        for year in year_list:
-            output["教师数"].append([f"{year}", data[year]["在编"]["全区"]["所有学段"]["总人数"]])
+    teacher_count_list = get_teacher_count_list(year_list=year_list)
 
-        visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=["教师数"])
+    teacher_count_by_year = array_to_dataframe(
+        array=teacher_count_list,
+        index_label="人数"
+    )
 
-        visual_func.draw_mixed_bar_and_line(
-            df=get_multi_years_age_list(
-                year_list=year_list
-            ),
-            bar_axis_label="人数",
-            line_axis_label="首末年份增长率",
-            line_label="增长率",
-            line_max_=3,
-            line_min_=-6,
-            mark_line_y=0
-        )
+    teacher_growth_rate = array_to_dataframe(
+        array=[[teacher_count_list[i][0],
+                round(
+                    number=100 * (float(teacher_count_list[i][1]) / float(teacher_count_list[i - 1][1]) - 1),
+                    ndigits=2
+                )]
+               for i in range(1, len(teacher_count_list))],
+        index_label="增长率"
+    )
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            visual_func.draw_line_chart(data=teacher_count_by_year, title="", height=400)
+
+    with right:
+        with st.container(border=True):
+            visual_func.draw_line_chart(data=teacher_growth_rate, title="", height=400, mark_line_y=0, formatter="{value} %")
+
+    visual_func.draw_mixed_bar_and_line(
+        df=df,
+        bar_axis_label="人数",
+        line_axis_label="首末年份增长率",
+        line_label="增长率",
+        line_max_=3,
+        line_min_=-6,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
 
 
 def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
@@ -616,10 +649,10 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="片区统计",
-                                         dataframe_columns_list=get_area_dataframe_columns_list(),
-                                         info_list=get_area_list())
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="片区统计",
+    #                                      dataframe_columns_list=get_area_dataframe_columns_list(),
+    #                                      info_list=get_area_list())
 
     return None
 
@@ -630,10 +663,10 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="学段统计",
-                                         dataframe_columns_list=get_period_dataframe_columns_list(),
-                                         info_list=get_period_list())
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="学段统计",
+    #                                      dataframe_columns_list=get_period_dataframe_columns_list(),
+    #                                      info_list=get_period_list())
 
     return None
 
@@ -644,10 +677,10 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高学历",
-                                         dataframe_columns_list=get_edu_bg_dataframe_columns_list(),
-                                         info_list=get_edu_bg_list())
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高学历",
+    #                                      dataframe_columns_list=get_edu_bg_dataframe_columns_list(),
+    #                                      info_list=get_edu_bg_list())
 
     return None
 
@@ -658,16 +691,16 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高职称",
-                                         dataframe_columns_list=get_vocational_level_dataframe_columns_list(),
-                                         info_list=get_vocational_level_list(),
-                                         block_bottom_img=True)
-
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="专业技术岗位",
-                                         dataframe_columns_list=get_vocational_level_detail_dataframe_columns_list(),
-                                         info_list=get_vocational_level_detail_list(),
-                                         block_left_img=True, block_right_img=True)
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="最高职称",
+    #                                      dataframe_columns_list=get_vocational_level_dataframe_columns_list(),
+    #                                      info_list=get_vocational_level_list(),
+    #                                      block_bottom_img=True)
+    #
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="专业技术岗位",
+    #                                      dataframe_columns_list=get_vocational_level_detail_dataframe_columns_list(),
+    #                                      info_list=get_vocational_level_detail_list(),
+    #                                      block_left_img=True, block_right_img=True)
 
     return None
 
@@ -678,10 +711,10 @@ def show_multi_years_teacher_0_discipline(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="主教学科",
-                                         dataframe_columns_list=get_discipline_dataframe_columns_list(),
-                                         info_list=get_discipline_list())
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="主教学科",
+    #                                      dataframe_columns_list=get_discipline_dataframe_columns_list(),
+    #                                      info_list=get_discipline_list())
     return None
 
 
@@ -691,13 +724,12 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    with st.container(border=True):
-        show_multi_years_teacher_0_basic(year_list=year_list, json_field="院校级别",
-                                         dataframe_columns_list=get_grad_school_dataframe_columns_list(),
-                                         info_list=get_grad_school_list())
+    # with st.container(border=True):
+    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="院校级别",
+    #                                      dataframe_columns_list=get_grad_school_dataframe_columns_list(),
+    #                                      info_list=get_grad_school_list())
     return None
 
 
 if __name__ == '__main__':
-    df = get_multi_years_age_list(["2023", "2024"])
-    print(df)
+    print(get_teacher_count_list(year_list=["2023","2024"]))
