@@ -3,7 +3,7 @@ import re
 import sqlite3
 import time
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Iterable
 
 import numpy as np
 import pandas as pd
@@ -171,6 +171,16 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     return df[[col for col in df.columns if re.match(r'[\u4e00-\u9fff]+', col)] + sorted(
         [col for col in df.columns if col.isdigit()], key=int)]
+
+
+def is_sublist(subset: Iterable, superset: Iterable) -> bool:
+    """
+    判断subset是否为superset的子集
+    :param subset: 判断的子集
+    :param superset: 判断的全集
+    :return:
+    """
+    return set(subset).issubset(set(superset))
 
 
 def max_dict_depth(d: dict, depth=1):
@@ -481,7 +491,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                             bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
                             line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
-                            height: int | float = 0, line_label: str | None = None,
+                            height: int | float = 0, line_label_list: list | None = None,
                             bar_formatter: str = "{value}", line_formatter: str = "{value}") -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
@@ -489,9 +499,10 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     index     x1 x2 x3\n
     label1    y1 y2 y3\n
     label2    y4 y5 y6\n
-    如果要对label3做折线图，line_label=label3\n
+    如果要对label3做折线图，line_label_list=[label3,label4]\n
     label3    y7 y8 y9\n
-    line_label不填则自动计算求和汇总行作为折线图\n
+    label4    y10 y11 y12\n
+    line_label_list不填则自动计算求和汇总行作为折线图\n
     图表最大值默认设置：分别以大于等于图表最大值的最小50的公倍数（普通数据）或0.5的公倍数（小数或比率）作为图表最大值，其中factor项用于调整bar和line的相对位置
     :param df: 数据表
     :param bar_axis_label: 左侧柱状图坐标轴名
@@ -509,7 +520,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     :param mark_line_y: 折线图标记线高度（高优先级）
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param height: 图表高度
-    :param line_label: 折线图对应标签，若为空则自动统计对于x的求和，不为空则应在index中出现
+    :param line_label_list: 折线图对应标签列表，若为空则自动统计对于x的求和，不为空则应在index中出现
     :param bar_formatter: 柱状图坐标轴单位
     :param line_formatter: 折线图坐标轴单位
     :return:
@@ -518,7 +529,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     # 处理一下可能存在的空值
     df.fillna(value=0, inplace=True)
 
-    if line_label is not None and line_label not in df.index:
+    if line_label_list is not None and not is_sublist(subset=line_label_list, superset=df.index.tolist()):
         print_color_text(text="未在df.index中找到折线图对应行标签 （draw_mixed_bar_and_line()）")
         return None
 
@@ -529,7 +540,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     bar_chart.add_xaxis(xaxis_data=df.columns)
 
     for label in df.index:
-        if label != line_label:
+        if line_label_list is None or label not in line_label_list:
             bar_chart.add_yaxis(
                 series_name=label,
                 y_axis=df.loc[label].tolist(),
@@ -539,12 +550,26 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
     line_chart = Line()
     line_chart.add_xaxis(xaxis_data=df.columns)
 
-    if mark_line_y is not None:
+    if mark_line_y is not None and line_label_list is not None:
+        for line_label in line_label_list:
+            line_chart.add_yaxis(
+                series_name=line_label,
+                yaxis_index=1,
+                y_axis=df.loc[line_label].tolist(),
+                label_opts=opts.LabelOpts(is_show=False),
+                markline_opts=opts.MarkLineOpts(
+                    data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
+                    label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
+                                              distance=5),
+                    linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
+                # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
+            )
+
+    elif mark_line_y is not None and line_label_list is None:
         line_chart.add_yaxis(
-            series_name=line_label if line_label is not None else "合计",
+            series_name="总计",
             yaxis_index=1,
-            y_axis=df.loc[line_label].tolist() if line_label is not None else
-            df.select_dtypes(include=[np.number]).sum().tolist(),
+            y_axis=df.select_dtypes(include=[np.number]).sum().tolist(),
             label_opts=opts.LabelOpts(is_show=False),
             markline_opts=opts.MarkLineOpts(
                 data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
@@ -554,12 +579,27 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
         )
 
-    elif mark_line_type is not None and mark_line_type in ["min", "max", "average"]:
+    elif mark_line_type is not None and mark_line_type in ["min", "max", "average"] and line_label_list is not None:
+
+        for line_label in line_label_list:
+            line_chart.add_yaxis(
+                series_name=line_label,
+                yaxis_index=1,
+                y_axis=df.loc[line_label].tolist(),
+                label_opts=opts.LabelOpts(is_show=False),
+                markline_opts=opts.MarkLineOpts(
+                    data=[opts.MarkLineItem(type_=mark_line_type, symbol="none")],
+                    symbol="none", label_opts=opts.LabelOpts(is_show=False),
+                    linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
+                # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
+            )
+
+    elif mark_line_type is not None and mark_line_type in ["min", "max", "average"] and line_label_list is None:
+
         line_chart.add_yaxis(
-            series_name=line_label if line_label is not None else "合计",
+            series_name="合计",
             yaxis_index=1,
-            y_axis=df.loc[line_label].tolist() if line_label is not None else
-            df.select_dtypes(include=[np.number]).sum().tolist(),
+            y_axis=df.select_dtypes(include=[np.number]).sum().tolist(),
             label_opts=opts.LabelOpts(is_show=False),
             markline_opts=opts.MarkLineOpts(
                 data=[opts.MarkLineItem(type_=mark_line_type, symbol="none")],
@@ -568,12 +608,21 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
         )
 
+    elif line_label_list is not None:
+        for line_label in line_label_list:
+            line_chart.add_yaxis(
+                series_name=line_label if line_label is not None else "合计",
+                yaxis_index=1,
+                y_axis=df.loc[line_label].tolist() if line_label is not None else
+                df.select_dtypes(include=[np.number]).sum().tolist(),
+                label_opts=opts.LabelOpts(is_show=False),
+            )
+
     else:
         line_chart.add_yaxis(
-            series_name=line_label if line_label is not None else "合计",
+            series_name="合计",
             yaxis_index=1,
-            y_axis=df.loc[line_label].tolist() if line_label is not None else
-            df.select_dtypes(include=[np.number]).sum().tolist(),
+            y_axis=df.select_dtypes(include=[np.number]).sum().tolist(),
             label_opts=opts.LabelOpts(is_show=False),
         )
 
@@ -591,7 +640,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             min_=bar_min_ if bar_min_ is not None else 0,
             max_=bar_max_ if bar_max_ is not None else smallest_multiple_of_n_geq(
                 number=bar_axis_max_factor * (
-                    df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
+                    df.loc[~df.index.isin(line_label_list)].values.max() if line_label_list is not None else df.values.max()
                 ),
                 n=50 if bar_axis_data_kind == "num" else 0.5
             ),
@@ -600,7 +649,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                 (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
                 smallest_multiple_of_n_geq(
                     number=bar_axis_max_factor * (
-                        df.loc[df.index != line_label].values.max() if line_label is not None else df.values.max()
+                        df.loc[~df.index.isin(line_label_list)].values.max() if line_label_list is not None else df.values.max()
                     ),
                     n=50 if bar_axis_data_kind == "num" else 0.5
                 ) / 10
@@ -619,7 +668,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
             max_=line_max_ if line_max_ is not None else
             smallest_multiple_of_n_geq(
                 number=line_axis_max_factor * (
-                    df.loc[line_label].max() if line_label is not None else df.sum().max()
+                    df.loc[~df.index.isin(line_label_list)].max() if line_label_list is not None else df.sum().max()
                 ),
                 n=50 if line_axis_data_kind == "num" else 0.5
             ),
@@ -628,7 +677,7 @@ def draw_mixed_bar_and_line(df: pd.DataFrame,
                 (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
                 smallest_multiple_of_n_geq(
                     number=line_axis_max_factor * (
-                        df.loc[line_label].max() if line_label is not None else df.sum().max()
+                        df.loc[~df.index.isin(line_label_list)].max() if line_label_list is not None else df.sum().max()
                     ),
                     n=50 if line_axis_data_kind == "num" else 0.5
                 ) / 10
@@ -897,4 +946,4 @@ def page1_hide_detail_info() -> None:
 
 
 if __name__ == '__main__':
-    pass
+    print(is_sublist(subset=['增长率'], superset=['2023', '2024', '增长率']))
