@@ -4,7 +4,8 @@ import streamlit as st
 from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
-    array_to_dataframe, execute_sql_sentence, sort_dataframe_columns, get_growth_rate_dataframe
+    array_to_dataframe, execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
+    get_growth_rate_from_multi_rows_dataframe
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -245,11 +246,14 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
 
 def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     """
-    根据年份列表生成多个dataframe\n
-    age_and_year:所有数据，列为年龄，行为年份\n
-    df2：
+    根据年份列表生成多个dataframe，放置在container中\n
+    age_and_year：所有数据，列为年龄，行为年份\n
+    age_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
+    count_by_year：每年的总人数，列为年份，单行\n
+    growth_rate_by_year：原dataframe中每一年相对于上一年的增长率，列为年份，单行\n
     :param year_list: 查询的年份列表
-    :return:
+    :return: DataFrameContainer，包含三个dataframe
+
     """
     container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
@@ -294,14 +298,19 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="age_and_year", df=df1)
 
-    df2 = pd.DataFrame(df1.sum(axis="columns")).T
-    df2.index = "总人数"
-    container.add_dataframe(name="count_by_year", df=df2)
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("age_and_year_growth_rate", df=df2)
 
-    df3 = get_growth_rate_dataframe(df=df2)
-    df3.index = "增长率"
+    df3 = pd.DataFrame(df1.sum(axis="columns")).T
+    df3.index = ["总人数"]
+    container.add_dataframe(name="count_by_year", df=df3)
 
-    container.add_dataframe(name="growth_rate_by_year", df=df3)
+    df4 = get_growth_rate_from_one_row_dataframe(df=df3)
+    df4.index = ["增长率"]
+
+    container.add_dataframe(name="growth_rate_by_year", df=df4)
+
+    return container
 
     # for i in range(1, len(year_list)):
     #
@@ -420,8 +429,8 @@ def show_1_year_all_period(year: str):
             df_container = get_1_year_discipline_and_gender_dataframe(year=year)
 
             visual_func.draw_mixed_bar_and_line(
-                df_bar=df_container.get_dataframe("data"),
-                df_line=df_container.get_dataframe("sum"),
+                df_bar=df_container.get_dataframe(name="data"),
+                df_line=df_container.get_dataframe(name="sum"),
                 bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
                 mark_line_type="average"
             )
@@ -663,38 +672,39 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
     :return:
     """
 
-    df = get_multi_years_age_dataframe(year_list=year_list)
+    df_container = get_multi_years_age_dataframe(year_list=year_list)
 
-    teacher_count_list = get_teacher_count_list(year_list=year_list)
+    # teacher_count_list = get_teacher_count_list(year_list=year_list)
 
-    teacher_count_by_year = array_to_dataframe(
-        array=teacher_count_list,
-        index_label="人数"
-    )
+    # teacher_count_by_year = array_to_dataframe(
+    #     array=teacher_count_list,
+    #     index_label="人数"
+    # )
 
-    teacher_growth_rate = array_to_dataframe(
-        array=[[teacher_count_list[i][0],
-                round(
-                    number=100 * (float(teacher_count_list[i][1]) / float(teacher_count_list[i - 1][1]) - 1),
-                    ndigits=2
-                )]
-               for i in range(1, len(teacher_count_list))],
-        index_label="增长率"
-    )
+    # teacher_growth_rate = array_to_dataframe(
+    #     array=[[teacher_count_list[i][0],
+    #             round(
+    #                 number=100 * (float(teacher_count_list[i][1]) / float(teacher_count_list[i - 1][1]) - 1),
+    #                 ndigits=2
+    #             )]
+    #            for i in range(1, len(teacher_count_list))],
+    #     index_label="增长率"
+    # )
 
     left, right = st.columns(spec=2)
 
     with left:
         with st.container(border=True):
-            visual_func.draw_line_chart(data=teacher_count_by_year, title="", height=400)
+            visual_func.draw_line_chart(data=df_container.get_dataframe(name="count_by_year"), title="", height=400)
 
     with right:
         with st.container(border=True):
-            visual_func.draw_line_chart(data=teacher_growth_rate, title="", height=400, mark_line_y=0,
+            visual_func.draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400, mark_line_y=0,
                                         formatter="{value} %")
 
     visual_func.draw_mixed_bar_and_line(
-        df=df,
+        df_bar=df_container.get_dataframe(name="age_and_year"),
+        df_line=df_container.get_dataframe(name="age_and_year_growth_rate"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         line_max_=3,
