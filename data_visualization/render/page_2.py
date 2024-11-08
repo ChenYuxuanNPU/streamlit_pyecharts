@@ -1,5 +1,3 @@
-from typing import List, Any
-
 import pandas as pd
 import streamlit as st
 
@@ -9,16 +7,37 @@ from data_visualization.tool.func import print_color_text, convert_dict_to_dataf
     array_to_dataframe, execute_sql_sentence
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
-from typing import NamedTuple
 
 
-class DataFrames(NamedTuple):
+class DataFrameContainer:
     """
-    用于在函数中返回多个dataframe
+    用于动态返回多个dataframe
     """
-    df1: pd.DataFrame
-    df2: pd.DataFrame
-    df3: pd.DataFrame
+
+    def __init__(self):
+        # 初始化一个空字典来存储 DataFrame
+        self.dataframes = {}
+
+    def add_dataframe(self, name, df):
+        # 添加一个 DataFrame 到字典中，使用 name 作为键
+        self.dataframes[name] = df
+
+    def get_dataframe(self, name):
+        # 根据名称获取 DataFrame
+        return self.dataframes.get(name, None)
+
+    def remove_dataframe(self, name):
+        # 根据名称移除 DataFrame
+        if name in self.dataframes:
+            del self.dataframes[name]
+
+    def list_dataframes(self):
+        # 列出所有存储的 DataFrame 的名称
+        return list(self.dataframes.keys())
+
+    def all_dataframes(self):
+        # 返回一个包含所有 DataFrame 的字典
+        return self.dataframes.copy()
 
 
 def get_area_list() -> list[str]:
@@ -139,22 +158,23 @@ def get_grad_school_dataframe_columns_list() -> list[str]:
 
 
 def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
-
     teacher_count_list = []
 
     for year in year_list:
-
-        teacher_count_list.append([year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
+        teacher_count_list.append(
+            [year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
 
     return teacher_count_list
 
 
-def get_1_year_age_and_gender_dataframe(year: str, ) -> pd.DataFrame:
+def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     """
     根据年份生成列为年龄，行为性别的dataframe
     :param year: 查询的年份
     :return:
     """
+
+    container = DataFrameContainer()
 
     df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为年龄列
     ages = set()  # 用于检查age_dict中是否有对应的年龄
@@ -177,15 +197,24 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> pd.DataFrame:
 
         ages.add(age)
 
-    return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict))
+    container.add_dataframe(name="data", df=visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)))
+
+    df = pd.DataFrame(visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)).sum()).T
+    df.index = ["合计"]
+
+    container.add_dataframe("sum", df=df)
+
+    return container
 
 
-def get_1_year_discipline_and_gender_dataframe(year: str, ) -> pd.DataFrame:
+def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     """
     根据年份生成列为学科，行为性别的dataframe
     :param year: 查询的年份
     :return:
     """
+
+    container = DataFrameContainer()
 
     df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为学科列
 
@@ -206,10 +235,15 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> pd.DataFrame:
         for item in data:
             df_dict[item[0]][discipline] = item[1]
 
-    return convert_dict_to_dataframe(d=df_dict)
+    container.add_dataframe(name="data", df=convert_dict_to_dataframe(d=df_dict))
+    df = pd.DataFrame(convert_dict_to_dataframe(d=df_dict).sum()).T
+    df.index = ["合计"]
+    container.add_dataframe(name="sum", df=df)
+
+    return container
 
 
-def get_multi_years_age_dataframe(year_list: list[str], ) -> pd.DataFrame:
+def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     """
     根据年份列表生成多个dataframe\n
     df1:所有数据，列为年龄，行为年份\n
@@ -258,7 +292,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> pd.DataFrame:
     df1 = visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
     df1.fillna(value=0, inplace=True)
 
-    print(df1)
+    return df1
 
     # for i in range(1, len(year_list)):
     #
@@ -333,12 +367,11 @@ def show_1_year_all_period(year: str):
 
         # 年龄性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
-            df_bar = get_1_year_age_and_gender_dataframe(year=year)
-            df_line = pd.DataFrame(df_bar.sum()).T
-            df_line.index = ["合计"]
+            df_container = get_1_year_age_and_gender_dataframe(year=year)
+
             visual_func.draw_mixed_bar_and_line(
-                df_bar=df_bar,
-                df_line=df_line,
+                df_bar=df_container.get_dataframe(name="data"),
+                df_line=df_container.get_dataframe(name="sum"),
                 bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
                 mark_line_type="average"
             )
@@ -375,12 +408,11 @@ def show_1_year_all_period(year: str):
 
         # 学科性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
-            df_bar = get_1_year_discipline_and_gender_dataframe(year=year)
-            df_line = pd.DataFrame(df_bar.sum()).T
-            df_line.index = ["合计"]
+            df_container = get_1_year_discipline_and_gender_dataframe(year=year)
+
             visual_func.draw_mixed_bar_and_line(
-                df_bar=df_bar,
-                df_line=df_line,
+                df_bar=df_container.get_dataframe("data"),
+                df_line=df_container.get_dataframe("sum"),
                 bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
                 mark_line_type="average"
             )
@@ -392,9 +424,11 @@ def show_1_year_all_period(year: str):
         c0, c1 = st.columns([2, 1])
 
         with c0:
+            pass
+            # 希望把这里改成四列的每一类学校最多的毕业来源
             # 在编学科统计
-            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
-                                       end=70)
+            # visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
+            #                            end=70)
 
         with c1:
             # 在编毕业院校统计
@@ -647,7 +681,8 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            visual_func.draw_line_chart(data=teacher_growth_rate, title="", height=400, mark_line_y=0, formatter="{value} %")
+            visual_func.draw_line_chart(data=teacher_growth_rate, title="", height=400, mark_line_y=0,
+                                        formatter="{value} %")
 
     visual_func.draw_mixed_bar_and_line(
         df=df,
@@ -751,4 +786,5 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
 
 if __name__ == '__main__':
     # print(get_multi_years_age_dataframe(year_list=["2023","2024"]))
-    print(get_1_year_discipline_and_gender_dataframe(year="2024"))
+    # print(get_1_year_discipline_and_gender_dataframe(year="2024"))
+    print(get_1_year_discipline_and_gender_dataframe(year="2023"))
