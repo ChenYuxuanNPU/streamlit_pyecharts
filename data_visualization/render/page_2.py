@@ -4,7 +4,7 @@ import streamlit as st
 from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
-    array_to_dataframe, execute_sql_sentence
+    array_to_dataframe, execute_sql_sentence, sort_dataframe_columns, get_growth_rate_dataframe
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -197,9 +197,9 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
 
         ages.add(age)
 
-    container.add_dataframe(name="data", df=visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)))
+    container.add_dataframe(name="data", df=sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)))
 
-    df = pd.DataFrame(visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)).sum()).T
+    df = pd.DataFrame(sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)).sum()).T
     df.index = ["合计"]
 
     container.add_dataframe("sum", df=df)
@@ -246,11 +246,12 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
 def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     """
     根据年份列表生成多个dataframe\n
-    df1:所有数据，列为年龄，行为年份\n
+    age_and_year:所有数据，列为年龄，行为年份\n
     df2：
     :param year_list: 查询的年份列表
     :return:
     """
+    container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
 
     for year in year_list:
@@ -289,10 +290,18 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
             else:
                 df1[year][age] = 1
 
-    df1 = visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
+    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
     df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="age_and_year", df=df1)
 
-    return df1
+    df2 = pd.DataFrame(df1.sum(axis="columns")).T
+    df2.index = "总人数"
+    container.add_dataframe(name="count_by_year", df=df2)
+
+    df3 = get_growth_rate_dataframe(df=df2)
+    df3.index = "增长率"
+
+    container.add_dataframe(name="growth_rate_by_year", df=df3)
 
     # for i in range(1, len(year_list)):
     #
@@ -314,7 +323,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     #
     # df_dict["增长率"] = growth_rate_dict
     #
-    # return visual_func.sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict))
+    # return sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict))
 
 
 def show_1_year_given_period(year: str, period: str) -> None:
@@ -687,8 +696,7 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
     visual_func.draw_mixed_bar_and_line(
         df=df,
         bar_axis_label="人数",
-        line_axis_label="首末年份增长率",
-        line_label_list=["增长率"],
+        line_axis_label="增长率",
         line_max_=3,
         line_min_=-6,
         mark_line_y=0,
@@ -785,6 +793,7 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
 
 
 if __name__ == '__main__':
-    # print(get_multi_years_age_dataframe(year_list=["2023","2024"]))
+    print(get_multi_years_age_dataframe(year_list=["2023", "2024"]))
     # print(get_1_year_discipline_and_gender_dataframe(year="2024"))
-    print(get_1_year_discipline_and_gender_dataframe(year="2023"))
+    # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
+
