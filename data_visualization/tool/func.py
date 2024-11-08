@@ -172,6 +172,29 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
         [col for col in df.columns if col.isdigit()], key=int)]
 
 
+def get_growth_rate_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    用于计算年间增长率，示例如下：\n
+    原dataframe：\n
+    index   year1   year2   year3\n
+    index   data1   data2   data3\n
+    结果如下：\n
+    index   year2   year3\n
+    0       rate2   rate3
+    :param df: 用于计算增长率的数据，列名为年份，只有一行且不考虑index取值
+    :return: 返回增长率dataframe（不包含首年）
+    """
+    df = sort_dataframe_columns(df=df)
+    df.reset_index(drop=True, inplace=True)
+    df_dict = df.to_dict()
+
+    output = {}
+    for i in range(1, len(df_dict.keys())):
+        output[list(df_dict.keys())[i]] = {0: round(100 * (df_dict[list(df_dict.keys())[i]][0] / df_dict[list(df_dict.keys())[i-1]][0] - 1), 2)}
+
+    return pd.DataFrame(output)
+
+
 def is_sublist(subset: Iterable, superset: Iterable) -> bool:
     """
     判断subset是否为superset的子集
