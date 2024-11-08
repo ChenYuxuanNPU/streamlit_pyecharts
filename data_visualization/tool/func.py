@@ -172,7 +172,7 @@ def sort_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
         [col for col in df.columns if col.isdigit()], key=int)]
 
 
-def get_growth_rate_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def get_growth_rate_from_one_row_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
     用于计算年间增长率，示例如下：\n
     原dataframe：\n
@@ -180,9 +180,15 @@ def get_growth_rate_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     index   data1   data2   data3\n
     结果如下：\n
     index   year2   year3\n
-    0       rate2   rate3
+    0       rate2   rate3\n
     :param df: 用于计算增长率的数据，列名为年份，只有一行且不考虑index取值
     :return: 返回增长率dataframe（不包含首年）
+    """
+    """
+    df_dict:{
+    "2024": 200,
+    "2023": 100
+    }
     """
     df = sort_dataframe_columns(df=df)
     df.reset_index(drop=True, inplace=True)
@@ -190,9 +196,63 @@ def get_growth_rate_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     output = {}
     for i in range(1, len(df_dict.keys())):
-        output[list(df_dict.keys())[i]] = {0: round(100 * (df_dict[list(df_dict.keys())[i]][0] / df_dict[list(df_dict.keys())[i-1]][0] - 1), 2)}
+
+        this_year = list(df_dict.keys())[i]
+        last_year = list(df_dict.keys())[i-1]
+
+        output[this_year] = {0: round(100 * (df_dict[this_year][0] / df_dict[last_year][0] - 1), 2)}
 
     return pd.DataFrame(output)
+
+
+def get_growth_rate_from_multi_rows_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    用于计算年间增长率，示例如下：\n
+    原dataframe：\n
+    index   label1   label2   label3\n
+    year1   data1   data2   data3\n
+    year2   data4   data5   data6\n
+    结果如下：\n
+    index   label1   label2 label3\n
+    year1   rate1   rate2    rate3\n
+    year2   rate4   rate5    rate6\n
+    :param df: 用于计算增长率的数据，列名为年份，只有一行且不考虑index取值
+    :return: 返回增长率dataframe（不包含首年）
+    """
+    """
+    df_dict:{
+    "2024":{
+        25:100,
+        26:200
+        },
+    "2023"：{
+        25：50，
+        24：100
+        }
+    }
+    """
+
+    df_dict = df.to_dict()
+    print(df_dict)
+    print(df.index.tolist())
+    output = {}
+
+    for i in range(1, len(df.index.tolist())):
+        this_year = df.index.tolist()[i]
+        last_year = df.index.tolist()[i-1]
+
+        print(f"this_year:{this_year}")
+
+        output[this_year] = {}
+        print(output)
+
+        for column in df.columns:
+            if df_dict[column][this_year] != 0 and df_dict[column][last_year] != 0:
+                output[this_year][column] = round(100 * (df_dict[column][this_year] / df_dict[column][last_year] - 1), 2)
+            else:
+                output[this_year][column] = 0.00
+
+    return pd.DataFrame(output).T
 
 
 def is_sublist(subset: Iterable, superset: Iterable) -> bool:
