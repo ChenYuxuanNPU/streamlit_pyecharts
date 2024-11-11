@@ -4,8 +4,8 @@ import streamlit as st
 from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool import func as visual_func
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
-    array_to_dataframe, execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
-    get_growth_rate_from_multi_rows_dataframe
+    execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
+    get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -387,10 +387,10 @@ def show_1_year_all_period(year: str):
         try:
             df_container = get_1_year_age_and_gender_dataframe(year=year)
 
-            visual_func.draw_mixed_bar_and_line(
+            draw_mixed_bar_and_line(
                 df_bar=df_container.get_dataframe(name="data"),
                 df_line=df_container.get_dataframe(name="sum"),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
+                bar_axis_label="人数", line_axis_label="合计人数",
                 mark_line_type="average"
             )
         except Exception as e:
@@ -428,10 +428,10 @@ def show_1_year_all_period(year: str):
         try:
             df_container = get_1_year_discipline_and_gender_dataframe(year=year)
 
-            visual_func.draw_mixed_bar_and_line(
+            draw_mixed_bar_and_line(
                 df_bar=df_container.get_dataframe(name="data"),
                 df_line=df_container.get_dataframe(name="sum"),
-                bar_axis_label="人数", bar_axis_data_kind="num", line_axis_label="合计人数", line_axis_data_kind="num",
+                bar_axis_label="人数", line_axis_label="合计人数",
                 mark_line_type="average"
             )
         except Exception as e:
@@ -632,7 +632,7 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
 #                                  year_list]
 #
 #         with left:
-#             visual_func.draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
+#             draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
 #                                         is_symbol_show=False)
 #
 #     if not block_right_img or not block_bottom_img:
@@ -695,20 +695,20 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            visual_func.draw_line_chart(data=df_container.get_dataframe(name="count_by_year"), title="", height=400)
+            draw_line_chart(data=df_container.get_dataframe(name="count_by_year"), title="", height=400)
 
     with right:
         with st.container(border=True):
-            visual_func.draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400, mark_line_y=0,
-                                        formatter="{value} %")
+            draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
 
-    visual_func.draw_mixed_bar_and_line(
+    draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="age_and_year"),
         df_line=df_container.get_dataframe(name="age_and_year_growth_rate"),
         bar_axis_label="人数",
         line_axis_label="增长率",
-        line_max_=3,
-        line_min_=-6,
+        line_max_=300,
+        # line_min_=-400,
         mark_line_y=0,
         line_formatter="{value} %"
     )
@@ -806,4 +806,3 @@ if __name__ == '__main__':
     print(get_multi_years_age_dataframe(year_list=["2023", "2024"]))
     # print(get_1_year_discipline_and_gender_dataframe(year="2024"))
     # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
-
