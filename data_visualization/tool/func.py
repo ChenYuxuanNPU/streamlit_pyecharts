@@ -196,9 +196,8 @@ def get_growth_rate_from_one_row_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     output = {}
     for i in range(1, len(df_dict.keys())):
-
         this_year = list(df_dict.keys())[i]
-        last_year = list(df_dict.keys())[i-1]
+        last_year = list(df_dict.keys())[i - 1]
 
         output[this_year] = {0: round(100 * (df_dict[this_year][0] / df_dict[last_year][0] - 1), 2)}
 
@@ -239,18 +238,19 @@ def get_growth_rate_from_multi_rows_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     for i in range(1, len(df.index.tolist())):
         this_year = df.index.tolist()[i]
-        last_year = df.index.tolist()[i-1]
+        last_year = df.index.tolist()[i - 1]
 
         print(f"this_year:{this_year}")
 
-        output[this_year] = {}
+        output[f"{this_year}增长率"] = {}
         print(output)
 
         for column in df.columns:
             if df_dict[column][this_year] != 0 and df_dict[column][last_year] != 0:
-                output[this_year][column] = round(100 * (df_dict[column][this_year] / df_dict[column][last_year] - 1), 2)
+                output[f"{this_year}增长率"][column] = round(
+                    100 * (df_dict[column][this_year] / df_dict[column][last_year] - 1), 2)
             else:
-                output[this_year][column] = 0.00
+                output[f"{this_year}增长率"][column] = 0.00
 
     return pd.DataFrame(output).T
 
@@ -522,9 +522,10 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             bar_interval_: int | float = None,
                             line_max_: int | float = None, line_min_: int | float = None,
                             line_interval_: int | float = None,
-                            bar_axis_max_factor: int | float = 2, bar_axis_data_kind: Literal["num", "frac"] = "num",
-                            line_axis_max_factor: int | float = 1, line_axis_data_kind: Literal["num", "frac"] = "num",
+                            bar_axis_max_factor: int | float = 2,
+                            line_axis_max_factor: int | float = 1,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
+                            mark_line_label_is_show: bool = False,
                             height: int | float = 0,
                             bar_formatter: str = "{value}", line_formatter: str = "{value}") -> None:
     """
@@ -550,10 +551,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param line_interval_: 折线图强制间隔
     :param bar_axis_max_factor: 柱状图坐标轴最高值系数
     :param line_axis_max_factor: 折线图坐标轴最高值系数
-    :param line_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
-    :param bar_axis_data_kind: 输入num或frac，表示该轴中的数据是数据还是分数或比率
     :param mark_line_y: 折线图标记线高度（高优先级）
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
+    :param mark_line_label_is_show: 是否展示markline的label
     :param height: 图表高度
     :param bar_formatter: 柱状图坐标轴单位
     :param line_formatter: 折线图坐标轴单位
@@ -596,8 +596,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                 label_opts=opts.LabelOpts(is_show=False),
                 markline_opts=opts.MarkLineOpts(
                     data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
-                    label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
-                                              distance=5),
+                    label_opts=opts.LabelOpts(is_show=mark_line_label_is_show, distance=5),
                     linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
                 # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
             )
@@ -612,7 +611,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                 label_opts=opts.LabelOpts(is_show=False),
                 markline_opts=opts.MarkLineOpts(
                     data=[opts.MarkLineItem(type_=mark_line_type, symbol="none")],
-                    symbol="none", label_opts=opts.LabelOpts(is_show=False),
+                    symbol="none", label_opts=opts.LabelOpts(is_show=mark_line_label_is_show),
                     linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed"))
                 # MarkLineItem中的symbol代表标记线开始侧标记，MarkLineOpts中的symbol代表标记线结束侧标记
             )
@@ -637,13 +636,13 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
         yaxis_opts=opts.AxisOpts(
             name=bar_axis_label,
             type_="value",
-            min_=bar_min_ if bar_min_ is not None else 0,
             max_=bar_max_ if bar_max_ is not None else smallest_multiple_of_n_geq(
                 number=bar_axis_max_factor * (
                     df_bar.values.max()
                 ),
-                n=50 if bar_axis_data_kind == "num" else 0.5
+                n=50
             ),
+            min_=bar_min_ if bar_min_ is not None else 0,
             interval=bar_interval_ if bar_interval_ is not None else
             (
                 (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
@@ -651,7 +650,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                     number=bar_axis_max_factor * (
                         df_bar.values.max()
                     ),
-                    n=50 if bar_axis_data_kind == "num" else 0.5
+                    n=50
                 ) / 10
             ),
             axislabel_opts=opts.LabelOpts(formatter=bar_formatter),
@@ -660,27 +659,37 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
         ),
     )
 
-    bar_chart.extend_axis(
+    bar_chart.extend_axis(  # todo:有个大bug，当只设定max_而不设min_时，max根据max_设置，min根据数据设置，那么interval只会根据数据设置，会导致不是十层
         yaxis=opts.AxisOpts(
             name=line_axis_label,
             type_="value",
-            min_=line_min_ if line_min_ is not None else 0,
             max_=line_max_ if line_max_ is not None else
             smallest_multiple_of_n_geq(
                 number=line_axis_max_factor * (
                     df_line.values.max()
                 ),
-                n=50 if line_axis_data_kind == "num" else 0.5
+                n=50
+            ),
+            min_=line_min_ if line_min_ is not None else smallest_multiple_of_n_geq(
+                number=line_axis_max_factor * (
+                        2 * df_line.values.min() - df_line.values.max()
+                ),
+                n=50
             ),
             interval=line_interval_ if line_interval_ is not None else
             (
                 (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
-                smallest_multiple_of_n_geq(
+                abs(smallest_multiple_of_n_geq(
                     number=line_axis_max_factor * (
                         df_line.values.max()
                     ),
-                    n=50 if line_axis_data_kind == "num" else 0.5
-                ) / 10
+                    n=50
+                ) - smallest_multiple_of_n_geq(
+                    number=line_axis_max_factor * (
+                            2 * df_line.values.min() - df_line.values.max()
+                    ),
+                    n=50
+                )) / 10
             ),
             axislabel_opts=opts.LabelOpts(formatter=line_formatter),
         )
