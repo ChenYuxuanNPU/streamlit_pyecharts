@@ -322,6 +322,26 @@ def smallest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
         return float((number // n + 1) * n)
 
 
+def calculate_figure_border(number: int | float, n: int | float) -> float:
+    """
+    根据输入的图表极值设定大于等于该正值或小于等于该负值的最小/大的图表边界\n
+    示例（n=10）：\n
+    25 -> 30, 30 -> 30, -5 -> -10, -10 -> -10
+    :param number: 输入值
+    :param n: 倍数因子
+    :return:
+    """
+
+    if number == 0:
+        return 0
+
+    if number > 0:
+        return smallest_multiple_of_n_geq(number=number, n=n)
+
+    if number < 0:
+        return -1 * smallest_multiple_of_n_geq(number=abs(number), n=n)
+
+
 def set_page_configuration(title: str, icon: str) -> None:
     """
     设置页面全局属性
@@ -516,6 +536,31 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
+def get_mixed_bar_and_line_interval(
+        interval_: int | float | None, n: int, factor: int,
+        max_: int | float | None, min_: int | float | None,
+        data_max: int | float, data_min: int | float, ) -> int | float:
+    """
+    用于计算柱状-折线图实际间隔
+    :param interval_: 强制间隔
+    :param n: 期望图表数轴分层层数
+    :param factor: 高度因子，用于设置图像位置
+    :param max_: 强制最大值
+    :param min_: 强制最小值
+    :param data_max: 图表实际最大值
+    :param data_min: 图标实际最小值
+    :return: 返回图表数轴
+    """
+    if interval_ is not None:
+        return interval_
+
+    if max_ is not None and min_ is not None:
+        return (max_ - min_) / 10
+
+    elif max_ is not None and min_ is None:
+        return (max_ - smallest_multiple_of_n_geq(number=data_min, n=50)) / 10
+
+
 def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
                             bar_max_: int | float = None, bar_min_: int | float = None,
@@ -636,7 +681,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
         yaxis_opts=opts.AxisOpts(
             name=bar_axis_label,
             type_="value",
-            max_=bar_max_ if bar_max_ is not None else smallest_multiple_of_n_geq(
+            max_=bar_max_ if bar_max_ is not None else calculate_figure_border(
                 number=bar_axis_max_factor * (
                     df_bar.values.max()
                 ),
@@ -646,7 +691,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
             interval=bar_interval_ if bar_interval_ is not None else
             (
                 (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
-                smallest_multiple_of_n_geq(
+                calculate_figure_border(
                     number=bar_axis_max_factor * (
                         df_bar.values.max()
                     ),
@@ -664,13 +709,13 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
             name=line_axis_label,
             type_="value",
             max_=line_max_ if line_max_ is not None else
-            smallest_multiple_of_n_geq(
+            calculate_figure_border(
                 number=line_axis_max_factor * (
                     df_line.values.max()
                 ),
                 n=50
             ),
-            min_=line_min_ if line_min_ is not None else smallest_multiple_of_n_geq(
+            min_=line_min_ if line_min_ is not None else calculate_figure_border(
                 number=line_axis_max_factor * (
                         2 * df_line.values.min() - df_line.values.max()
                 ),
