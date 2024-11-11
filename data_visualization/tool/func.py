@@ -558,7 +558,13 @@ def get_mixed_bar_and_line_interval(
         return (max_ - min_) / 10
 
     elif max_ is not None and min_ is None:
-        return (max_ - smallest_multiple_of_n_geq(number=data_min, n=50)) / 10
+        return (max_ - smallest_multiple_of_n_geq(number=factor * data_min, n=n)) / 10
+
+    elif min_ is not None and max_ is None:
+        return (smallest_multiple_of_n_geq(number=factor * data_max, n=n) - min_) / 10
+
+    else:
+        return (smallest_multiple_of_n_geq(number=factor * data_max, n=n) - smallest_multiple_of_n_geq(number=factor * data_min, n=n)) / 10
 
 
 def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
