@@ -2,6 +2,7 @@ import json
 import re
 import sqlite3
 import time
+from multiprocessing.managers import Value
 from pathlib import Path
 from typing import Literal, Iterable
 
@@ -232,18 +233,18 @@ def get_growth_rate_from_multi_rows_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     df_dict = df.to_dict()
-    print(df_dict)
-    print(df.index.tolist())
+    # print(df_dict)
+    # print(df.index.tolist())
     output = {}
 
     for i in range(1, len(df.index.tolist())):
         this_year = df.index.tolist()[i]
         last_year = df.index.tolist()[i - 1]
 
-        print(f"this_year:{this_year}")
+        # print(f"this_year:{this_year}")
 
         output[f"{this_year}增长率"] = {}
-        print(output)
+        # print(output)
 
         for column in df.columns:
             if df_dict[column][this_year] != 0 and df_dict[column][last_year] != 0:
@@ -536,35 +537,75 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
+def get_mixed_bar_and_line_max_and_min(max_: int | float | None,  data_max: int | float | None, min_: int | float | None, data_min: int | float | None, location: Literal["top", "bottom"],):
+    if max_ is not None and min_ is not None:
+        return max_, min_
+
+    match location:
+        case "top":
+            axis_max = calculate_figure_border(number=data_max, n=50)
+            axis_min = 2 * calculate_figure_border(number=data_min, n=50) - calculate_figure_border(number=data_max, n=50)
+        case "bottom":
+            axis_max = 2 * calculate_figure_border(number=data_max, n=50)
+            axis_min = 0 if data_min > 0 else data_min
+
+        case _:
+            raise ValueError('location not in ["top", "bottom"]')
+
+
+def get_mixed_bar_and_line_min(min_: int | float | None,  data_min: int | float | None, location: Literal["top", "bottom"],):
+    if min_ is not None:
+        return min_
+
+    match location:
+        case "top":
+            return
+        case "bottom":
+            return
+
+        case _:
+            raise ValueError('location not in ["top", "bottom"]')
+
+
 def get_mixed_bar_and_line_interval(
-        interval_: int | float | None, n: int, factor: int,
+        interval_: int | float | None, n: int, location: Literal["top", "bottom"],
         max_: int | float | None, min_: int | float | None,
         data_max: int | float, data_min: int | float, ) -> int | float:
     """
     用于计算柱状-折线图实际间隔
     :param interval_: 强制间隔
     :param n: 期望图表数轴分层层数
-    :param factor: 高度因子，用于设置图像位置
+    :param location: 图像位置
     :param max_: 强制最大值
     :param min_: 强制最小值
     :param data_max: 图表实际最大值
     :param data_min: 图标实际最小值
     :return: 返回图表数轴
     """
+    print("")
+    print(f"interval_:{interval_}\n"
+          f"location:{location}\n"
+          f"max_:{max_}\n"
+          f"min_:{min_}\n"
+          f"data_max:{data_max}\n"
+          f"data_min:{data_min}\n")
     if interval_ is not None:
+        print(f"interval:{interval_}\n")
         return interval_
 
-    if max_ is not None and min_ is not None:
-        return (max_ - min_) / 10
+    match location:
+        case "top":
+            axis_max = max_ if max_ is not None else calculate_figure_border(number=data_max, n=50)
+            axis_min = min_ if min_ is not None else 2 * calculate_figure_border(number=data_min, n=50) - calculate_figure_border(number=data_max, n=50)
+        case "bottom":
+            axis_max = max_ if max_ is not None else 2 * calculate_figure_border(number=data_max, n=50)
+            axis_min = min_ if min_ is not None else 0
 
-    elif max_ is not None and min_ is None:
-        return (max_ - smallest_multiple_of_n_geq(number=factor * data_min, n=n)) / 10
+        case _:
+            raise ValueError('location not in ["top", "bottom"]')
 
-    elif min_ is not None and max_ is None:
-        return (smallest_multiple_of_n_geq(number=factor * data_max, n=n) - min_) / 10
-
-    else:
-        return (smallest_multiple_of_n_geq(number=factor * data_max, n=n) - smallest_multiple_of_n_geq(number=factor * data_min, n=n)) / 10
+    print(f"interval:{(axis_max - axis_min) / n}")
+    return (axis_max - axis_min) / n
 
 
 def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
@@ -694,16 +735,19 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                 n=50
             ),
             min_=bar_min_ if bar_min_ is not None else 0,
-            interval=bar_interval_ if bar_interval_ is not None else
-            (
-                (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
-                calculate_figure_border(
-                    number=bar_axis_max_factor * (
-                        df_bar.values.max()
-                    ),
-                    n=50
-                ) / 10
-            ),
+            interval=get_mixed_bar_and_line_interval(interval_=bar_interval_, n=10, location="bottom",
+                                                     max_=bar_max_, min_=bar_min_, data_max=df_bar.values.max(),
+                                                     data_min=df_bar.values.min(), ),
+            # interval=bar_interval_ if bar_interval_ is not None else
+            # (
+            #     (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
+            #     calculate_figure_border(
+            #         number=bar_axis_max_factor * (
+            #             df_bar.values.max()
+            #         ),
+            #         n=50
+            #     ) / 10
+            # ),
             axislabel_opts=opts.LabelOpts(formatter=bar_formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
@@ -727,21 +771,24 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                 ),
                 n=50
             ),
-            interval=line_interval_ if line_interval_ is not None else
-            (
-                (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
-                abs(smallest_multiple_of_n_geq(
-                    number=line_axis_max_factor * (
-                        df_line.values.max()
-                    ),
-                    n=50
-                ) - smallest_multiple_of_n_geq(
-                    number=line_axis_max_factor * (
-                            2 * df_line.values.min() - df_line.values.max()
-                    ),
-                    n=50
-                )) / 10
-            ),
+            interval=get_mixed_bar_and_line_interval(interval_=line_interval_, n=10, location="top",
+                                                     max_=line_max_, min_=line_min_, data_max=df_line.values.max(),
+                                                     data_min=df_line.values.min(), ),
+            # interval=line_interval_ if line_interval_ is not None else
+            # (
+            #     (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
+            #     abs(smallest_multiple_of_n_geq(
+            #         number=line_axis_max_factor * (
+            #             df_line.values.max()
+            #         ),
+            #         n=50
+            #     ) - smallest_multiple_of_n_geq(
+            #         number=line_axis_max_factor * (
+            #                 2 * df_line.values.min() - df_line.values.max()
+            #         ),
+            #         n=50
+            #     )) / 10
+            # ),
             axislabel_opts=opts.LabelOpts(formatter=line_formatter),
         )
     )
