@@ -246,14 +246,13 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
 
 def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     """
-    根据年份列表生成多个dataframe，放置在container中\n
+    根据年份列表生成多个年龄统计dataframe，放置在container中\n
     age_and_year：所有数据，列为年龄，行为年份\n
     age_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
     count_by_year：每年的总人数，列为年份，单行\n
     growth_rate_by_year：原dataframe中每一年相对于上一年的增长率，列为年份，单行\n
     :param year_list: 查询的年份列表
-    :return: DataFrameContainer，包含三个dataframe
-
+    :return: DataFrameContainer，包含若干个dataframe
     """
     container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
@@ -309,6 +308,60 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     df4.index = ["增长率"]
 
     container.add_dataframe(name="growth_rate_by_year", df=df4)
+
+    print(df1)
+    print(df2)
+    print(df3)
+    print(df4)
+
+    return container
+
+
+def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
+    """
+    根据年份列表生成多个片镇统计dataframe，放置在container中\n
+    area_and_year：所有数据，列为年龄，行为年份\n
+    area_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
+    # count_by_year：每年的总人数，列为年份，单行\n
+    # growth_rate_by_year：原dataframe中每一年相对于上一年的增长率，列为年份，单行\n
+    :param year_list: 查询的年份列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "永平":100,
+            "江高":200
+            },
+        "2023"：{
+            "永平"：50，
+            "江高"：100
+            }
+        }
+        """
+        area_count_list = data=visual_func.execute_sql_sentence(
+                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
+                                                       year=year, additional_requirement=['"区域" != "直管"'])
+            )
+
+        for item in area_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="area_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("area_and_year_growth_rate", df=df2)
+
+    print(df1)
+    print(df2)
 
     return container
 
@@ -674,6 +727,8 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
         line_formatter="{value} %"
     )
 
+    return None
+
 
 def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
     """
@@ -681,12 +736,33 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    # with st.container(border=True):
-    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="片区统计",
-    #                                      dataframe_columns_list=get_area_dataframe_columns_list(),
-    #                                      info_list=get_area_list())
+
+    df_container = get_multi_years_area_dataframe(year_list=year_list)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400, is_symbol_show=False)
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="area_and_year_growth_rate").T, title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    # draw_mixed_bar_and_line(
+    #     df_bar=df_container.get_dataframe(name="area_and_year"),
+    #     df_line=df_container.get_dataframe(name="area_and_year_growth_rate"),
+    #     bar_axis_label="人数",
+    #     line_axis_label="增长率",
+    #     # line_max_=300,
+    #     # line_min_=-400,
+    #     mark_line_y=0,
+    #     line_formatter="{value} %"
+    # )
 
     return None
+
 
 
 def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
@@ -767,3 +843,4 @@ if __name__ == '__main__':
     print(get_multi_years_age_dataframe(year_list=["2023", "2024"]))
     # print(get_1_year_discipline_and_gender_dataframe(year="2024"))
     # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
+    get_multi_years_area_dataframe(["2023","2024"])
