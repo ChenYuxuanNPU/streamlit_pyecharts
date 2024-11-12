@@ -242,15 +242,15 @@ def get_growth_rate_from_multi_rows_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
         # print(f"this_year:{this_year}")
 
-        output[f"{this_year}增长率"] = {}
+        output[f"{last_year[-2:]}-{this_year[-2:]}年增长率"] = {}
         # print(output)
 
         for column in df.columns:
             if df_dict[column][this_year] != 0 and df_dict[column][last_year] != 0:
-                output[f"{this_year}增长率"][column] = round(
+                output[f"{last_year[-2:]}-{this_year[-2:]}年增长率"][column] = round(
                     100 * (df_dict[column][this_year] / df_dict[column][last_year] - 1), 2)
             else:
-                output[f"{this_year}增长率"][column] = 0.00
+                output[f"{last_year[-2:]}-{this_year[-2:]}年增长率"][column] = 0.00
 
     return pd.DataFrame(output).T
 
