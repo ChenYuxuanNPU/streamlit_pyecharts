@@ -2,7 +2,6 @@ import json
 import re
 import sqlite3
 import time
-from multiprocessing.managers import Value
 from pathlib import Path
 from typing import Literal, Iterable
 
@@ -537,85 +536,37 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
 
 
-def get_mixed_bar_and_line_max_and_min(max_: int | float | None,  data_max: int | float | None, min_: int | float | None, data_min: int | float | None, location: Literal["top", "bottom"],):
-    if max_ is not None and min_ is not None:
-        return max_, min_
-
-    match location:
-        case "top":
-            axis_max = calculate_figure_border(number=data_max, n=50)
-            axis_min = 2 * calculate_figure_border(number=data_min, n=50) - calculate_figure_border(number=data_max, n=50)
-        case "bottom":
-            axis_max = 2 * calculate_figure_border(number=data_max, n=50)
-            axis_min = 0 if data_min > 0 else data_min
-
-        case _:
-            raise ValueError('location not in ["top", "bottom"]')
-
-
-def get_mixed_bar_and_line_min(min_: int | float | None,  data_min: int | float | None, location: Literal["top", "bottom"],):
-    if min_ is not None:
-        return min_
-
-    match location:
-        case "top":
-            return
-        case "bottom":
-            return
-
-        case _:
-            raise ValueError('location not in ["top", "bottom"]')
-
-
-def get_mixed_bar_and_line_interval(
-        interval_: int | float | None, n: int, location: Literal["top", "bottom"],
-        max_: int | float | None, min_: int | float | None,
-        data_max: int | float, data_min: int | float, ) -> int | float:
+def get_mixed_bar_and_yaxis_opts(max_: int | float | None, data_max: int | float | None, min_: int | float | None,
+                                 data_min: int | float | None, kind: Literal["bar", "line"], n: int)\
+                                 -> tuple[int | float, int | float, int | float,]:
     """
-    用于计算柱状-折线图实际间隔
-    :param interval_: 强制间隔
-    :param n: 期望图表数轴分层层数
-    :param location: 图像位置
-    :param max_: 强制最大值
-    :param min_: 强制最小值
-    :param data_max: 图表实际最大值
-    :param data_min: 图标实际最小值
-    :return: 返回图表数轴
+    返回柱状-折线图坐标轴所需数据
+    :param max_: 强制坐标轴最大值
+    :param data_max: 坐标轴对应数据最大值
+    :param min_: 强制坐标轴最小值
+    :param data_min: 坐标轴对应数据最小值
+    :param kind: 图表类型（柱状或折线）
+    :param n: 坐标轴分段数
+    :return: [坐标轴最大值， 坐标轴最小值， 坐标轴间隔（）]
     """
-    print("")
-    print(f"interval_:{interval_}\n"
-          f"location:{location}\n"
-          f"max_:{max_}\n"
-          f"min_:{min_}\n"
-          f"data_max:{data_max}\n"
-          f"data_min:{data_min}\n")
-    if interval_ is not None:
-        print(f"interval:{interval_}\n")
-        return interval_
-
-    match location:
-        case "top":
+    match kind:
+        case "line":
             axis_max = max_ if max_ is not None else calculate_figure_border(number=data_max, n=50)
-            axis_min = min_ if min_ is not None else 2 * calculate_figure_border(number=data_min, n=50) - calculate_figure_border(number=data_max, n=50)
-        case "bottom":
+            axis_min = min_ if min_ is not None else 2 * calculate_figure_border(number=data_min, n=50) - axis_max
+        case "bar":
             axis_max = max_ if max_ is not None else 2 * calculate_figure_border(number=data_max, n=50)
             axis_min = min_ if min_ is not None else 0
 
         case _:
-            raise ValueError('location not in ["top", "bottom"]')
+            raise ValueError('kind not in ["bar", "line"]')
 
-    print(f"interval:{(axis_max - axis_min) / n}")
-    return (axis_max - axis_min) / n
+    return axis_max, axis_min, (axis_max - axis_min) / n
 
 
 def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
                             bar_max_: int | float = None, bar_min_: int | float = None,
-                            bar_interval_: int | float = None,
                             line_max_: int | float = None, line_min_: int | float = None,
-                            line_interval_: int | float = None,
-                            bar_axis_max_factor: int | float = 2,
-                            line_axis_max_factor: int | float = 1,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             mark_line_label_is_show: bool = False,
                             height: int | float = 0,
@@ -637,12 +588,8 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param line_axis_label: 右侧柱状图坐标轴名
     :param bar_max_: 柱状图强制最大值
     :param bar_min_: 柱状图强制最小值
-    :param bar_interval_: 柱状图强制间隔
     :param line_max_: 折线图强制最大值
     :param line_min_: 折线图强制最小值
-    :param line_interval_: 折线图强制间隔
-    :param bar_axis_max_factor: 柱状图坐标轴最高值系数
-    :param line_axis_max_factor: 折线图坐标轴最高值系数
     :param mark_line_y: 折线图标记线高度（高优先级）
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param mark_line_label_is_show: 是否展示markline的label
@@ -667,6 +614,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
 
     bar_chart = Bar()
     bar_chart.add_xaxis(xaxis_data=df_bar.columns)
+    bar_max, bar_min, bar_interval = get_mixed_bar_and_yaxis_opts(max_=bar_max_, data_max=df_bar.values.max(),
+                                                                  min_=bar_min_, data_min=df_bar.values.min(),
+                                                                  kind="bar", n=10)
 
     for label in df_bar.index:
         bar_chart.add_yaxis(
@@ -677,6 +627,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
 
     line_chart = Line()
     line_chart.add_xaxis(xaxis_data=df_line.columns)
+    line_max, line_min, line_interval = get_mixed_bar_and_yaxis_opts(max_=line_max_, data_max=df_line.values.max(),
+                                                                     min_=line_min_, data_min=df_line.values.min(),
+                                                                     kind="line", n=10)
 
     if mark_line_y is not None:
 
@@ -728,67 +681,22 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
         yaxis_opts=opts.AxisOpts(
             name=bar_axis_label,
             type_="value",
-            max_=bar_max_ if bar_max_ is not None else calculate_figure_border(
-                number=bar_axis_max_factor * (
-                    df_bar.values.max()
-                ),
-                n=50
-            ),
-            min_=bar_min_ if bar_min_ is not None else 0,
-            interval=get_mixed_bar_and_line_interval(interval_=bar_interval_, n=10, location="bottom",
-                                                     max_=bar_max_, min_=bar_min_, data_max=df_bar.values.max(),
-                                                     data_min=df_bar.values.min(), ),
-            # interval=bar_interval_ if bar_interval_ is not None else
-            # (
-            #     (bar_max_ - bar_min_) / 10 if bar_max_ is not None and bar_min_ is not None else
-            #     calculate_figure_border(
-            #         number=bar_axis_max_factor * (
-            #             df_bar.values.max()
-            #         ),
-            #         n=50
-            #     ) / 10
-            # ),
+            max_=bar_max,
+            min_=bar_min,
+            interval=bar_interval,
             axislabel_opts=opts.LabelOpts(formatter=bar_formatter),
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
         ),
     )
 
-    bar_chart.extend_axis(  # todo:有个大bug，当只设定max_而不设min_时，max根据max_设置，min根据数据设置，那么interval只会根据数据设置，会导致不是十层
+    bar_chart.extend_axis(
         yaxis=opts.AxisOpts(
             name=line_axis_label,
             type_="value",
-            max_=line_max_ if line_max_ is not None else
-            calculate_figure_border(
-                number=line_axis_max_factor * (
-                    df_line.values.max()
-                ),
-                n=50
-            ),
-            min_=line_min_ if line_min_ is not None else calculate_figure_border(
-                number=line_axis_max_factor * (
-                        2 * df_line.values.min() - df_line.values.max()
-                ),
-                n=50
-            ),
-            interval=get_mixed_bar_and_line_interval(interval_=line_interval_, n=10, location="top",
-                                                     max_=line_max_, min_=line_min_, data_max=df_line.values.max(),
-                                                     data_min=df_line.values.min(), ),
-            # interval=line_interval_ if line_interval_ is not None else
-            # (
-            #     (line_max_ - line_min_) / 10 if line_max_ is not None and line_min_ is not None else
-            #     abs(smallest_multiple_of_n_geq(
-            #         number=line_axis_max_factor * (
-            #             df_line.values.max()
-            #         ),
-            #         n=50
-            #     ) - smallest_multiple_of_n_geq(
-            #         number=line_axis_max_factor * (
-            #                 2 * df_line.values.min() - df_line.values.max()
-            #         ),
-            #         n=50
-            #     )) / 10
-            # ),
+            max_=line_max,
+            min_=line_min,
+            interval=line_interval,
             axislabel_opts=opts.LabelOpts(formatter=line_formatter),
         )
     )
