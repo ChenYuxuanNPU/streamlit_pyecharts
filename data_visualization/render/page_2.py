@@ -750,16 +750,16 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
             draw_line_chart(data=df_container.get_dataframe(name="area_and_year_growth_rate").T, title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
-    # draw_mixed_bar_and_line(
-    #     df_bar=df_container.get_dataframe(name="area_and_year"),
-    #     df_line=df_container.get_dataframe(name="area_and_year_growth_rate"),
-    #     bar_axis_label="人数",
-    #     line_axis_label="增长率",
-    #     # line_max_=300,
-    #     # line_min_=-400,
-    #     mark_line_y=0,
-    #     line_formatter="{value} %"
-    # )
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="area_and_year"),
+        df_line=df_container.get_dataframe(name="area_and_year_growth_rate"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        # line_max_=300,
+        # line_min_=-400,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
 
     return None
 
