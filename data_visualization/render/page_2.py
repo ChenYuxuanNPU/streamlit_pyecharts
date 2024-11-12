@@ -312,28 +312,6 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 
     return container
 
-    # for i in range(1, len(year_list)):
-    #
-    #     this_year = year_list[i]
-    #     last_year = year_list[i-1]
-    #
-    #
-    # growth_rate_dict = {}
-    # growth_rate_age_list = set(df_dict[start_year].keys()).union(set(df_dict[end_year].keys()))
-    # growth_rate_age_check_list = set(df_dict[start_year].keys()).intersection(set(df_dict[end_year].keys()))
-    #
-    # for age in growth_rate_age_list:
-    #
-    #     if age in growth_rate_age_check_list:
-    #         growth_rate_dict[age] = round((df_dict[end_year][age] / df_dict[start_year][age]) - 1, 2)
-    #
-    #     else:
-    #         growth_rate_dict[age] = None
-    #
-    # df_dict["增长率"] = growth_rate_dict
-    #
-    # return sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict))
-
 
 def show_1_year_given_period(year: str, period: str) -> None:
     """
@@ -674,23 +652,6 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
 
     df_container = get_multi_years_age_dataframe(year_list=year_list)
 
-    # teacher_count_list = get_teacher_count_list(year_list=year_list)
-
-    # teacher_count_by_year = array_to_dataframe(
-    #     array=teacher_count_list,
-    #     index_label="人数"
-    # )
-
-    # teacher_growth_rate = array_to_dataframe(
-    #     array=[[teacher_count_list[i][0],
-    #             round(
-    #                 number=100 * (float(teacher_count_list[i][1]) / float(teacher_count_list[i - 1][1]) - 1),
-    #                 ndigits=2
-    #             )]
-    #            for i in range(1, len(teacher_count_list))],
-    #     index_label="增长率"
-    # )
-
     left, right = st.columns(spec=2)
 
     with left:
@@ -707,7 +668,7 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
         df_line=df_container.get_dataframe(name="age_and_year_growth_rate"),
         bar_axis_label="人数",
         line_axis_label="增长率",
-        line_max_=300,
+        # line_max_=300,
         # line_min_=-400,
         mark_line_y=0,
         line_formatter="{value} %"
