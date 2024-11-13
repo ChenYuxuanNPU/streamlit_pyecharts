@@ -47,7 +47,7 @@ def get_area_list() -> list[str]:
     :return:
     """
 
-    return ["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
+    return ["直管", "永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
 
 
 def get_area_dataframe_columns_list() -> list[str]:
@@ -309,10 +309,17 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 
     container.add_dataframe(name="growth_rate_by_year", df=df4)
 
-    print(df1)
-    print(df2)
-    print(df3)
-    print(df4)
+    print("")
+    print("总人数的dataframe：")
+    print("")
+    print(f"df1:{df1}")
+    print("")
+    print(f"df2:{df2}")
+    print("")
+    print(f"df3:{df3}")
+    print("")
+    print(f"df4:{df4}")
+    print("")
 
     return container
 
@@ -347,21 +354,18 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
         """
         area_count_list = data=visual_func.execute_sql_sentence(
                 sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
-                                                       year=year, additional_requirement=['"区域" != "直管"'])
+                                                       year=year, additional_requirement=[f'"区域" in {str(tuple(get_area_list()))}'])
             )
 
         for item in area_count_list:
             df1[year][item[0]] = item[1]
 
-    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_area_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="area_and_year", df=df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("area_and_year_growth_rate", df=df2)
-
-    print(df1)
-    print(df2)
 
     return container
 
@@ -637,63 +641,6 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
 
         st.info("教师毕业院校水平随年份变化情况")
         show_multi_years_teacher_0_grad_school(year_list=year_list)
-
-
-# def show_multi_years_teacher_0_basic(df: pd.DataFrame,
-#                                      block_left_img: bool = False, block_right_img: bool = False,
-#                                      block_bottom_img: bool = False) -> None:
-#     """
-#     年份对比中基础三张图的生成
-#     :param df: 作图所用数据
-#     :param block_left_img: 是否屏蔽左侧图，默认False不屏蔽，True则屏蔽
-#     :param block_right_img: 是否屏蔽右侧图，默认False不屏蔽，True则屏蔽
-#     :param block_bottom_img: 是否屏蔽底部图，默认False不屏蔽，True则屏蔽
-#     :return: 无
-#     """
-#     data = visual_func.load_json_data(folder="result", file_name="teacher_info")
-#
-#     left, right = st.columns(spec=2)
-#
-#     # 展示左侧折线图
-#     if not block_left_img:
-#         output = {}
-#
-#         for area in info_list:
-#             output[f"{area}"] = [[year, data[year]["在编"]["全区"]["所有学段"][json_field].get(area, None)] for year in
-#                                  year_list]
-#
-#         with left:
-#             draw_line_chart(data=output, title="", x_axis=year_list, label_list=info_list,
-#                                         is_symbol_show=False)
-#
-#     if not block_right_img or not block_bottom_img:
-#         df = pd.DataFrame(columns=dataframe_columns_list)
-#         temp = []
-#
-#         for year in year_list:
-#             for info in info_list:
-#                 temp.append(
-#                     pd.DataFrame(
-#                         [[year, info, data[year]["在编"]["全区"]["所有学段"][json_field].get(info, None)]],
-#                         columns=dataframe_columns_list
-#                     )
-#                 )
-#
-#         df = pd.concat(temp, ignore_index=True)
-#
-#         # 展示右侧分散柱状图
-#         if not block_right_img:
-#             with right:
-#                 visual_func.draw_unstack_bar_chart(data=df, x_axis=dataframe_columns_list[0],
-#                                                    y_axis=dataframe_columns_list[2],
-#                                                    label=dataframe_columns_list[1])
-#         # 展示底部水平柱状图
-#         if not block_bottom_img:
-#             visual_func.draw_horizontal_bar_chart(data=df, x_axis=dataframe_columns_list[0],
-#                                                   y_axis=dataframe_columns_list[2],
-#                                                   label=dataframe_columns_list[1])
-#
-#     return None
 
 
 def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
