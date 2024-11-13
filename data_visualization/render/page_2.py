@@ -192,7 +192,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     """
     根据年份列表生成多个年龄统计dataframe，放置在container中\n
     age_and_year：所有数据，列为年龄，行为年份\n
-    age_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
+    age_growth_rate_and_year：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
     count_by_year：每年的总人数，列为年份，单行\n
     growth_rate_by_year：原dataframe中每一年相对于上一年的总增长率（年份总人数增长率，不考虑年龄），列为年份，单行\n
     :param year_list: 查询的年份列表
@@ -242,7 +242,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     container.add_dataframe(name="age_and_year", df=df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("age_and_year_growth_rate", df=df2)
+    container.add_dataframe("age_growth_rate_and_year", df=df2)
 
     df3 = pd.DataFrame(df1.sum(axis="columns")).T
     df3.index = ["总人数"]
@@ -272,7 +272,7 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     """
     根据年份列表生成多个片镇统计dataframe，放置在container中\n
     area_and_year：所有数据，列为片镇，行为年份\n
-    area_and_year_growth_rate：所有数据对片镇求增长率，行为增长率对应年份，列为片镇名，单行\n
+    area_growth_rate_and_year：所有数据对片镇求增长率，行为增长率对应年份，列为片镇名，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -308,7 +308,7 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("area_and_year_growth_rate", df=df2)
+    container.add_dataframe("area_growth_rate_and_year", df=df2)
     print(df2)
 
     return container
@@ -318,7 +318,7 @@ def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer
     """
     根据年份列表生成多个学段统计dataframe，放置在container中\n
     period_and_year：所有数据，列为学段，行为年份\n
-    period_and_year_growth_rate：所有数据对学段求增长率，行为增长率对应年份，列为学段，单行\n
+    period_growth_rate_and_year：所有数据对学段求增长率，行为增长率对应年份，列为学段，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -353,7 +353,7 @@ def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer
     container.add_dataframe(name="period_and_year", df=df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("period_and_year_growth_rate", df=df2)
+    container.add_dataframe(name="period_growth_rate_and_year", df=df2)
 
     return container
 
@@ -362,7 +362,7 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
     """
     根据年份列表生成多个学历统计dataframe，放置在container中\n
     edu_bg_and_year：所有数据，列为学历，行为年份\n
-    edu_bg_and_year_growth_rate：所有数据对学历求增长率，行为增长率对应年份，列为学历，单行\n
+    edu_bg_growth_rate_and_year：所有数据对学历求增长率，行为增长率对应年份，列为学历，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -397,7 +397,7 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
     container.add_dataframe(name="edu_bg_and_year", df=df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("edu_bg_and_year_growth_rate", df=df2)
+    container.add_dataframe("edu_bg_growth_rate_and_year", df=df2)
 
     return container
 
@@ -406,9 +406,9 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
     """
     根据年份列表生成多个教师级别、专业技术级别统计dataframe，放置在container中\n
     vocational_level_and_year：所有数据，列为教师级别，行为年份\n
-    vocational_level_and_year_growth_rate：所有数据对教师级别求增长率，行为增长率对应年份，列为教师级别，单行\n
+    vocational_level_growth_rate_and_year：所有数据对教师级别求增长率，行为增长率对应年份，列为教师级别，单行\n
     vocational_level_detail_and_year：所有数据，列为专技级别，行为年份\n
-    vocational_level_detail_and_year_growth_rate：所有数据对专技级别求增长率，行为增长率对应年份，列为专技级别，单行\n
+    vocational_level_detail_growth_rate_and_year：所有数据对专技级别求增长率，行为增长率对应年份，列为专技级别，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -448,15 +448,13 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
         for item in vocational_level_detail_count_list:
             df3[year][item[0]] = item[1]
 
-
-
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_vocational_level_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="vocational_level_and_year", df=df1)
     print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("vocational_level_and_year_growth_rate", df=df2)
+    container.add_dataframe("vocational_level_growth_rate_and_year", df=df2)
     print(df2)
 
     df3 = convert_dict_to_dataframe(d=df3).reindex(columns=get_vocational_level_detail_list())
@@ -465,8 +463,52 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
     print(df3)
 
     df4 = get_growth_rate_from_multi_rows_dataframe(df=df3)
-    container.add_dataframe("vocational_level_detail_and_year_growth_rate", df=df4)
+    container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df4)
     print(df4)
+
+    return container
+
+
+def get_multi_years_discipline_dataframe(year_list: list[str]) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学科统计dataframe，放置在container中\n
+    discipline_and_year：所有数据，列为学科，行为年份\n
+    discipline_growth_rate_and_year：所有数据对学科求增长率，行为增长率对应年份，列为学科，单行\n
+    :param year_list: 查询的年份列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "语文":100,
+            "数学":200
+            },
+        "2023"：{
+            "语文"：50，
+            "数学"：100
+            }
+        }
+        """
+        discipline_count_list = data=visual_func.execute_sql_sentence(
+                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
+                                                       year=year, additional_requirement=[f'"主教学科" in {str(tuple(get_discipline_list()))}'])
+            )
+
+        for item in discipline_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_discipline_list())
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="discipline_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("discipline_growth_rate_and_year", df=df2)
 
     return container
 
@@ -766,7 +808,7 @@ def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
 
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="age_and_year"),
-        df_line=df_container.get_dataframe(name="age_and_year_growth_rate"),
+        df_line=df_container.get_dataframe(name="age_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         # line_max_=300,
@@ -795,12 +837,12 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="area_and_year_growth_rate").T, title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="area_growth_rate_and_year").T, title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="area_and_year"),
-        df_line=df_container.get_dataframe(name="area_and_year_growth_rate"),
+        df_line=df_container.get_dataframe(name="area_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         line_max_=20,
@@ -829,12 +871,12 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="period_and_year_growth_rate").T, title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="period_growth_rate_and_year").T, title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="period_and_year"),
-        df_line=df_container.get_dataframe(name="period_and_year_growth_rate"),
+        df_line=df_container.get_dataframe(name="period_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         line_max_=20,
@@ -862,12 +904,12 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year_growth_rate").T, title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").T, title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="edu_bg_and_year"),
-        df_line=df_container.get_dataframe(name="edu_bg_and_year_growth_rate"),
+        df_line=df_container.get_dataframe(name="edu_bg_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         line_max_=60,
@@ -895,12 +937,12 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year_growth_rate").T, title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_growth_rate_and_year").T, title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="vocational_level_detail_and_year"),
-        df_line=df_container.get_dataframe(name="vocational_level_detail_and_year_growth_rate"),
+        df_line=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
         line_max_=60,
@@ -944,5 +986,5 @@ if __name__ == '__main__':
     # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
     # get_multi_years_area_dataframe(["2023","2024"])
 
-    get_multi_years_vocational_level_dataframe(["2023","2024"])
+    get_multi_years_discipline_dataframe(["2023","2024"])
 
