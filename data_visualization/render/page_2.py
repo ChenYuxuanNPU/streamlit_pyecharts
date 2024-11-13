@@ -755,8 +755,8 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
         df_line=df_container.get_dataframe(name="area_and_year_growth_rate"),
         bar_axis_label="人数",
         line_axis_label="增长率",
-        # line_max_=300,
-        # line_min_=-400,
+        line_max_=20,
+        line_min_=-20,
         mark_line_y=0,
         line_formatter="{value} %"
     )
