@@ -395,11 +395,9 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="edu_bg_and_year", df=df1)
-    print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("edu_bg_and_year_growth_rate", df=df2)
-    print(df2)
 
     return container
 
@@ -805,8 +803,8 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
         df_line=df_container.get_dataframe(name="edu_bg_and_year_growth_rate"),
         bar_axis_label="人数",
         line_axis_label="增长率",
-        line_max_=20,
-        line_min_=-20,
+        line_max_=60,
+        line_min_=-100,
         mark_line_y=0,
         line_formatter="{value} %"
     )
