@@ -50,12 +50,12 @@ def get_area_list() -> list[str]:
     return ["直管", "永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
 
 
-def get_area_dataframe_columns_list() -> list[str]:
-    """
-    片镇表头列表：["年份", "片镇", "人数"]
-    :return:
-    """
-    return ["年份", "片镇", "人数"]
+# def get_area_dataframe_columns_list() -> list[str]:
+#     """
+#     片镇表头列表：["年份", "片镇", "人数"]
+#     :return:
+#     """
+#     return ["年份", "片镇", "人数"]
 
 
 def get_period_list() -> list[str]:
@@ -66,12 +66,12 @@ def get_period_list() -> list[str]:
     return ["高中", "初中", "小学", "幼儿园"]
 
 
-def get_period_dataframe_columns_list() -> list[str]:
-    """
-    学段表头列表：["年份", "学段", "人数"]
-    :return:
-    """
-    return ["年份", "学段", "人数"]
+# def get_period_dataframe_columns_list() -> list[str]:
+#     """
+#     学段表头列表：["年份", "学段", "人数"]
+#     :return:
+#     """
+#     return ["年份", "学段", "人数"]
 
 
 def get_edu_bg_list() -> list[str]:
@@ -82,12 +82,12 @@ def get_edu_bg_list() -> list[str]:
     return ["博士研究生", "硕士研究生", "本科", "专科"]
 
 
-def get_edu_bg_dataframe_columns_list() -> list[str]:
-    """
-    学历表头列表：["年份", "最高学历", "人数"]
-    :return:
-    """
-    return ["年份", "最高学历", "人数"]
+# def get_edu_bg_dataframe_columns_list() -> list[str]:
+#     """
+#     学历表头列表：["年份", "最高学历", "人数"]
+#     :return:
+#     """
+#     return ["年份", "最高学历", "人数"]
 
 
 def get_vocational_level_list() -> list[str]:
@@ -98,12 +98,12 @@ def get_vocational_level_list() -> list[str]:
     return ["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师"]
 
 
-def get_vocational_level_dataframe_columns_list() -> list[str]:
-    """
-    职称表头列表：["年份", "聘用职称", "人数"]
-    :return:
-    """
-    return ["年份", "聘用职称", "人数"]
+# def get_vocational_level_dataframe_columns_list() -> list[str]:
+#     """
+#     职称表头列表：["年份", "聘用职称", "人数"]
+#     :return:
+#     """
+#     return ["年份", "聘用职称", "人数"]
 
 
 def get_vocational_level_detail_list() -> list[str]:
@@ -115,12 +115,12 @@ def get_vocational_level_detail_list() -> list[str]:
             "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
 
 
-def get_vocational_level_detail_dataframe_columns_list() -> list[str]:
-    """
-    专业技术等级表头列表：["年份", "专业技术等级", "人数"]
-    :return:
-    """
-    return ["年份", "专业技术等级", "人数"]
+# def get_vocational_level_detail_dataframe_columns_list() -> list[str]:
+#     """
+#     专业技术等级表头列表：["年份", "专业技术等级", "人数"]
+#     :return:
+#     """
+#     return ["年份", "专业技术等级", "人数"]
 
 
 def get_discipline_list() -> list[str]:
@@ -134,12 +134,12 @@ def get_discipline_list() -> list[str]:
     ]
 
 
-def get_discipline_dataframe_columns_list() -> list[str]:
-    """
-    学科表头列表：["年份", "学科", "人数"]
-    :return:
-    """
-    return ["年份", "学科", "人数"]
+# def get_discipline_dataframe_columns_list() -> list[str]:
+#     """
+#     学科表头列表：["年份", "学科", "人数"]
+#     :return:
+#     """
+#     return ["年份", "学科", "人数"]
 
 
 def get_grad_school_list() -> list[str]:
@@ -150,12 +150,12 @@ def get_grad_school_list() -> list[str]:
     return ["985院校", "部属师范院校", "211院校"]
 
 
-def get_grad_school_dataframe_columns_list() -> list[str]:
-    """
-    毕业院校类型表头列表：["年份", "院校级别", "人数"]
-    :return:
-    """
-    return ["年份", "院校级别", "人数"]
+# def get_grad_school_dataframe_columns_list() -> list[str]:
+#     """
+#     毕业院校类型表头列表：["年份", "院校级别", "人数"]
+#     :return:
+#     """
+#     return ["年份", "院校级别", "人数"]
 
 
 def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
@@ -250,7 +250,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     age_and_year：所有数据，列为年龄，行为年份\n
     age_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
     count_by_year：每年的总人数，列为年份，单行\n
-    growth_rate_by_year：原dataframe中每一年相对于上一年的增长率，列为年份，单行\n
+    growth_rate_by_year：原dataframe中每一年相对于上一年的总增长率（年份总人数增长率，不考虑年龄），列为年份，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -327,10 +327,8 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     """
     根据年份列表生成多个片镇统计dataframe，放置在container中\n
-    area_and_year：所有数据，列为年龄，行为年份\n
-    area_and_year_growth_rate：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
-    # count_by_year：每年的总人数，列为年份，单行\n
-    # growth_rate_by_year：原dataframe中每一年相对于上一年的增长率，列为年份，单行\n
+    area_and_year：所有数据，列为片镇，行为年份\n
+    area_and_year_growth_rate：所有数据对片镇求增长率，行为增长率对应年份，列为片镇名，单行\n
     :param year_list: 查询的年份列表
     :return: DataFrameContainer，包含若干个dataframe
     """
@@ -363,9 +361,55 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_area_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="area_and_year", df=df1)
+    print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("area_and_year_growth_rate", df=df2)
+    print(df2)
+
+    return container
+
+
+def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学段统计dataframe，放置在container中\n
+    period_and_year：所有数据，列为学段，行为年份\n
+    period_and_year_growth_rate：所有数据对学段求增长率，行为增长率对应年份，列为学段，单行\n
+    :param year_list: 查询的年份列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "高中":100,
+            "初中":200
+            },
+        "2023"：{
+            "高中"：50，
+            "初中"：100
+            }
+        }
+        """
+        area_count_list = data=visual_func.execute_sql_sentence(
+                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["任教学段"], scope="全区",
+                                                       year=year, additional_requirement=[f'"任教学段" in {str(tuple(get_period_list()))}'])
+            )
+
+        for item in area_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_period_list())
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="period_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("period_and_year_growth_rate", df=df2)
 
     return container
 
@@ -718,10 +762,30 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    # with st.container(border=True):
-    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="学段统计",
-    #                                      dataframe_columns_list=get_period_dataframe_columns_list(),
-    #                                      info_list=get_period_list())
+
+    df_container = get_multi_years_period_dataframe(year_list=year_list)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400, is_symbol_show=False)
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year_growth_rate").T, title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="period_and_year"),
+        df_line=df_container.get_dataframe(name="period_and_year_growth_rate"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        line_max_=20,
+        line_min_=-20,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
 
     return None
 
