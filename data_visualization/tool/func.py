@@ -211,10 +211,11 @@ def get_growth_rate_from_multi_rows_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     index   label1   label2   label3\n
     year1   data1   data2   data3\n
     year2   data4   data5   data6\n
+    year3   data7   data8   data9\n
     结果如下：\n
     index   label1   label2 label3\n
-    year1   rate1   rate2    rate3\n
-    year2   rate4   rate5    rate6\n
+    year2   rate1   rate2    rate3\n
+    year3   rate4   rate5    rate6\n
     :param df: 用于计算增长率的数据，列名为年份，只有一行且不考虑index取值
     :return: 返回增长率dataframe（不包含首年）
     """
