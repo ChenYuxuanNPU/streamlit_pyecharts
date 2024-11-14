@@ -2,18 +2,19 @@ import json
 import re
 import sqlite3
 import time
-from pathlib import Path
-from typing import Literal, Iterable
-
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
+
+from pathlib import Path
+from typing import Literal, Iterable
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
+from collections import Counter
 
 
 def get_kind_list() -> list[str]:
@@ -63,6 +64,33 @@ def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_cod
     print(f"{color_code} {str(text)} {reset_code}")
 
     return None
+
+
+def top_n_second_items_with_transformation(two_d_list: list[list[str]], first_item_value: str, n: int, transformation_dict: dict) -> list[list[str]]:
+    """
+    统计二维列表中子列表首项为first_item_value的次项出现频率前n的数据
+    :param two_d_list: 二维列表，子列表首项为first_item_value对应项，子列表第二项为需要统计数量的数据
+    :param first_item_value: 规定要查询二位列表中首项为x的值
+    :param n: 输出的是频率最高的前n项
+    :param transformation_dict: 待转换的字典，key对应的是二维列表的第二项数据（即统计结果的首项数据项），value是对应key需要转换的目标值
+    :return: 二维列表，子列表中首项为数据（two_d_list中第二项，第一项省略），次项为频数，且按照次项大小排序
+    """
+    # 统计满足条件的第二项的出现次数
+    counter = Counter()
+    for sublist in two_d_list:
+        if sublist[0] == first_item_value:
+            counter[sublist[1]] += 1
+
+    # 获取出现次数最多的前n项及其数量
+    most_common_items = counter.most_common(n)
+
+    # 根据转换字典对结果进行转换
+    transformed_list = []
+    for item, count in most_common_items:
+        transformed_item = transformation_dict.get(item, item)  # 如果item在字典中，则获取对应的value，否则不变
+        transformed_list.append([transformed_item, count])
+
+    return transformed_list
 
 
 def get_database_name() -> str:
@@ -548,7 +576,7 @@ def get_mixed_bar_and_yaxis_opts(max_: int | float | None, data_max: int | float
     :param data_min: 坐标轴对应数据最小值
     :param kind: 图表类型（柱状或折线）
     :param n: 坐标轴分段数
-    :return: [坐标轴最大值， 坐标轴最小值， 坐标轴间隔（）]
+    :return: [坐标轴最大值， 坐标轴最小值， 坐标轴间隔]
     """
     match kind:
         case "line":
