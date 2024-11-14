@@ -2,10 +2,10 @@ import pandas as pd
 import streamlit as st
 
 from calculation.retirement import get_age_from_citizen_id
-from data_visualization.tool import func as visual_func
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
     execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
-    get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart
+    get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart, draw_pie_chart, draw_bar_chart, \
+    load_json_data, get_end_dict
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -60,26 +60,26 @@ def get_period_list() -> list[str]:
 
 def get_edu_bg_list() -> list[str]:
     """
-    学历列表：["博士研究生", "硕士研究生", "本科", "专科"]
+    学历列表：["专科", "本科", "硕士研究生", "博士研究生"]
     :return:
     """
-    return ["博士研究生", "硕士研究生", "本科", "专科"]
+    return ["专科", "本科", "硕士研究生", "博士研究生"]
 
 
 def get_vocational_level_list() -> list[str]:
     """
-    职称列表：["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师"]
+    职称列表：["三级教师", "二级教师", "一级教师", "高级教师", "正高级教师"]
     :return:
     """
-    return ["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师"]
+    return ["三级教师", "二级教师", "一级教师", "高级教师", "正高级教师"]
 
 
 def get_vocational_level_detail_list() -> list[str]:
     """
-    专业技术等级列表：["试用期（未定级）", "专业技术十三级", "专业技术十二级", "专业技术十一级", "专业技术十级", "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
+    专业技术等级列表：["专业技术十三级", "试用期（未定级）", "专业技术十二级", "专业技术十一级", "专业技术十级", "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
     :return:
     """
-    return ["试用期（未定级）", "专业技术十三级", "专业技术十二级", "专业技术十一级", "专业技术十级",
+    return ["专业技术十三级", "试用期（未定级）", "专业技术十二级", "专业技术十一级", "专业技术十级",
             "专业技术九级", "专业技术八级", "专业技术七级", "专业技术六级", "专业技术五级", "专业技术四级", ]
 
 
@@ -102,14 +102,14 @@ def get_grad_school_list() -> list[str]:
     return ["985院校", "部属师范院校", "211院校"]
 
 
-def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
-    teacher_count_list = []
-
-    for year in year_list:
-        teacher_count_list.append(
-            [year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
-
-    return teacher_count_list
+# def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
+#     teacher_count_list = []
+#
+#     for year in year_list:
+#         teacher_count_list.append(
+#             [year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
+#
+#     return teacher_count_list
 
 
 def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
@@ -124,7 +124,7 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为年龄列
     ages = set()  # 用于检查age_dict中是否有对应的年龄
 
-    id_list = visual_func.execute_sql_sentence(
+    id_list = execute_sql_sentence(
         sentence=generate_sql_sentence_teacher(kind="在编", info_num=2, info=["身份证号", "性别"], scope="全区",
                                                year=year)
     )
@@ -164,7 +164,7 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
     df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为学科列
 
     discipline_list = del_tuple_in_list(
-        visual_func.execute_sql_sentence(
+        execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
                                                    year=year, limit=16, order="desc",
                                                    additional_requirement=['"主教学科" != "无"'])
@@ -172,7 +172,7 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
     )
 
     for discipline in discipline_list:
-        data = visual_func.execute_sql_sentence(
+        data = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["性别"], scope="全区",
                                                    year=year, additional_requirement=[f'"主教学科" = "{discipline}"'])
         )
@@ -218,7 +218,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
         """
 
         id_list = del_tuple_in_list(
-            data=visual_func.execute_sql_sentence(
+            data=execute_sql_sentence(
                 sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["身份证号"], scope="全区",
                                                        year=year)
             )
@@ -294,10 +294,11 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
             }
         }
         """
-        area_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
-                                                       year=year, additional_requirement=[f'"区域" in {str(tuple(get_area_list()))}'])
-            )
+        area_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
+                                                   year=year,
+                                                   additional_requirement=[f'"区域" in {str(tuple(get_area_list()))}'])
+        )
 
         for item in area_count_list:
             df1[year][item[0]] = item[1]
@@ -340,10 +341,11 @@ def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer
             }
         }
         """
-        period_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["任教学段"], scope="全区",
-                                                       year=year, additional_requirement=[f'"任教学段" in {str(tuple(get_period_list()))}'])
-            )
+        period_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["任教学段"], scope="全区",
+                                                   year=year, additional_requirement=[
+                    f'"任教学段" in {str(tuple(get_period_list()))}'])
+        )
 
         for item in period_count_list:
             df1[year][item[0]] = item[1]
@@ -384,10 +386,11 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
             }
         }
         """
-        edu_bg_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高学历"], scope="全区",
-                                                       year=year, additional_requirement=[f'"最高学历" in {str(tuple(get_edu_bg_list()))}'])
-            )
+        edu_bg_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高学历"], scope="全区",
+                                                   year=year, additional_requirement=[
+                    f'"最高学历" in {str(tuple(get_edu_bg_list()))}'])
+        )
 
         for item in edu_bg_count_list:
             df1[year][item[0]] = item[1]
@@ -432,18 +435,20 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
             }
         }
         """
-        vocational_level_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高职称"], scope="全区",
-                                                       year=year, additional_requirement=[f'"最高职称" in {str(tuple(get_vocational_level_list()))}'])
-            )
+        vocational_level_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高职称"], scope="全区",
+                                                   year=year, additional_requirement=[
+                    f'"最高职称" in {str(tuple(get_vocational_level_list()))}'])
+        )
 
         for item in vocational_level_count_list:
             df1[year][item[0]] = item[1]
 
-        vocational_level_detail_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["专业技术岗位"], scope="全区",
-                                                       year=year, additional_requirement=[f'"专业技术岗位" in {str(tuple(get_vocational_level_detail_list()))}'])
-            )
+        vocational_level_detail_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["专业技术岗位"], scope="全区",
+                                                   year=year, additional_requirement=[
+                    f'"专业技术岗位" in {str(tuple(get_vocational_level_detail_list()))}'])
+        )
 
         for item in vocational_level_detail_count_list:
             df3[year][item[0]] = item[1]
@@ -495,10 +500,11 @@ def get_multi_years_discipline_dataframe(year_list: list[str]) -> DataFrameConta
             }
         }
         """
-        discipline_count_list = data=visual_func.execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
-                                                       year=year, additional_requirement=[f'"主教学科" in {str(tuple(get_discipline_list()))}'])
-            )
+        discipline_count_list = data = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
+                                                   year=year, additional_requirement=[
+                    f'"主教学科" in {str(tuple(get_discipline_list()))}'])
+        )
 
         for item in discipline_count_list:
             df1[year][item[0]] = item[1]
@@ -521,7 +527,7 @@ def show_1_year_given_period(year: str, period: str) -> None:
     :return:
     """
 
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+    data = load_json_data(folder="result", file_name="teacher_info")
 
     st.info(f"在编{period}信息", icon="😋")
 
@@ -529,24 +535,24 @@ def show_1_year_given_period(year: str, period: str) -> None:
         c0, c1 = st.columns([2, 1])
 
         with c0:
-            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
-                                       end=visual_func.get_end_dict()[period])
+            draw_bar_chart(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
+                           end=get_end_dict()[period])
 
         with c1:
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
-                                       center_to_bottom="64%")
+            draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
+                           center_to_bottom="64%")
 
         c0, c1, c2 = st.columns(spec=3)
 
         with c0:
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高学历"], title="最高学历")
+            draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高学历"], title="最高学历")
 
         with c1:
-            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校",
-                                       is_show_visual_map=False)
+            draw_bar_chart(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校",
+                           is_show_visual_map=False)
 
         with c2:
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
+            draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
 
 
 def show_1_year_all_period(year: str):
@@ -555,7 +561,7 @@ def show_1_year_all_period(year: str):
     :param year: 年份
     :return:
     """
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+    data = load_json_data(folder="result", file_name="teacher_info")
 
     st.success(f"在编教职工总人数：{data[year]['在编']['全区']['所有学段']['总人数']}")
 
@@ -580,27 +586,27 @@ def show_1_year_all_period(year: str):
 
         with c0:
             # 在编片区统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["片区统计"], title="片区统计")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["片区统计"], title="片区统计")
 
             # 在编学历统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高学历"], title="最高学历")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高学历"], title="最高学历")
 
         with c1:
             # 在编学段统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["学段统计"], title="学段统计")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["学段统计"], title="学段统计")
 
             # 在编职称统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高职称"], title="职称")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["最高职称"], title="职称")
 
         with c2:
             # 在编年龄统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄",
-                                       pos_left="15%",
-                                       center_to_bottom="64%")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["年龄"], title="年龄",
+                           pos_left="15%",
+                           center_to_bottom="64%")
 
             # 在编行政职务统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务",
-                                       center_to_bottom="68%")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["行政职务"], title="行政职务",
+                           center_to_bottom="68%")
 
         # 学科性别柱状折线图，生成时要查询数据库，所以做个错误处理
         try:
@@ -623,35 +629,35 @@ def show_1_year_all_period(year: str):
             pass
             # 希望把这里改成四列的每一类学校最多的毕业来源
             # 在编学科统计
-            # visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
+            # draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
             #                            end=70)
 
         with c1:
             # 在编毕业院校统计
-            visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
-                                       is_show_visual_map=False)
+            draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
+                           is_show_visual_map=False)
 
         c0, c1, c2 = st.columns(spec=3)
 
         with c0:
             # 在编骨干教师统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
 
         with c1:
             # 在编教师支教统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["支教地域"], title="支教地域")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["支教地域"], title="支教地域")
 
         with c2:
             # 在编四名教师统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
+            draw_pie_chart(data=data[year]["在编"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
         # 教师分布前三十统计
-        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                                   end=100)
+        draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
+                       end=100)
 
         # 在编教师数后三十的学校统计
-        visual_func.draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
-                                   end=100)
+        draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
+                       end=100)
 
 
 def show_1_year_teacher_0(year: str, ):
@@ -660,7 +666,7 @@ def show_1_year_teacher_0(year: str, ):
     :param year: 年份
     :return:
     """
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+    data = load_json_data(folder="result", file_name="teacher_info")
 
     # 小标题
     st.markdown(
@@ -696,7 +702,7 @@ def show_1_year_teacher_1(year: str):
     :param year: 年份
     :return:
     """
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+    data = load_json_data(folder="result", file_name="teacher_info")
 
     # 小标题
     st.markdown(
@@ -710,42 +716,42 @@ def show_1_year_teacher_1(year: str):
 
     with c0:
         # 编外片区统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["片区统计"], title="片区统计")
 
         # 编外学段统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["学段统计"], title="学段统计")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["学段统计"], title="学段统计")
 
     with c1:
         # 编外学历统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高学历"], title="最高学历")
 
         # 编外职称统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["最高职称"], title="职称")
 
     with c2:
         # 编外骨干教师统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["骨干教师"], title="骨干教师")
 
         # 编外四名教师统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["四名工作室"], title="四名统计")
 
     # 教师分布统计
-    visual_func.draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                               end=100)
+    draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
+                   end=100)
 
     c0, c1, c2 = st.columns(spec=3)
 
     with c0:
         # 编外教师资格统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师资格"], title="教师资格")
 
     with c1:
         # 编外中小学教师资格统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["中小学"]["教师资格"], title="中小学")
 
     with c2:
         # 编外幼儿园教师资格统计
-        visual_func.draw_pie_chart(data=data[year]["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
+        draw_pie_chart(data=data[year]["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
 
 
 def show_multi_years_teacher_0(year_list: list[str]) -> None:
@@ -754,7 +760,7 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    data = visual_func.load_json_data(folder="result", file_name="teacher_info")
+    data = load_json_data(folder="result", file_name="teacher_info")
 
     with st.container(border=True):
         # 小标题
@@ -833,7 +839,8 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400, is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400,
+                            is_symbol_show=False)
 
     with right:
         with st.container(border=True):
@@ -854,7 +861,6 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
     return None
 
 
-
 def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
     """
     展示多年份不同学段教师数对比
@@ -867,7 +873,8 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400, is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400,
+                            is_symbol_show=False)
 
     with right:
         with st.container(border=True):
@@ -900,7 +907,8 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400, is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400,
+                            is_symbol_show=False)
 
     with right:
         with st.container(border=True):
@@ -933,11 +941,13 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400, is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400,
+                            is_symbol_show=False)
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_growth_rate_and_year").T, title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_growth_rate_and_year").T, title="",
+                            height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
@@ -948,7 +958,8 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
         line_max_=60,
         line_min_=-100,
         mark_line_y=0,
-        line_formatter="{value} %"
+        line_formatter="{value} %",
+        x_axis_font_size=9
     )
 
     return None
@@ -986,5 +997,4 @@ if __name__ == '__main__':
     # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
     # get_multi_years_area_dataframe(["2023","2024"])
 
-    get_multi_years_discipline_dataframe(["2023","2024"])
-
+    get_multi_years_discipline_dataframe(["2023", "2024"])

@@ -599,7 +599,8 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             mark_line_label_is_show: bool = False,
                             height: int | float = 0,
-                            bar_formatter: str = "{value}", line_formatter: str = "{value}") -> None:
+                            bar_formatter: str = "{value}", line_formatter: str = "{value}",
+                            x_axis_font_size: int = 12) -> None:
     """
     根据dataframe的数据生成一个柱状图和折线图并存的图表\n
     df_bar格式：\n
@@ -625,6 +626,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param height: 图表高度
     :param bar_formatter: 柱状图坐标轴单位
     :param line_formatter: 折线图坐标轴单位
+    :param x_axis_font_size: x轴字体大小
     :return:
     """
 
@@ -706,6 +708,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
         xaxis_opts=opts.AxisOpts(
             type_="category",
             axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
+            axislabel_opts=opts.LabelOpts(font_size=x_axis_font_size)
         ),
         yaxis_opts=opts.AxisOpts(
             name=bar_axis_label,
