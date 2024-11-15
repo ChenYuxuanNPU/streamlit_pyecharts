@@ -2,19 +2,19 @@ import json
 import re
 import sqlite3
 import time
+from collections import Counter
+from pathlib import Path
+from typing import Literal, Iterable
+
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
-
-from pathlib import Path
-from typing import Literal, Iterable
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
 from streamlit_echarts import st_pyecharts
-from collections import Counter
 
 
 def get_kind_list() -> list[str]:
@@ -27,7 +27,7 @@ def get_kind_list() -> list[str]:
 
 def get_end_dict() -> dict:
     """
-
+    用于设置柱状图不同学段展示的数量（因为不同学段简略校名后长度差别较大）
     :return: {"高中": 70,"初中": 70,"小学": 70,"幼儿园": 95}
     """
     return {
@@ -66,7 +66,8 @@ def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_cod
     return None
 
 
-def top_n_second_items_with_transformation(two_d_list: list[list[str]], first_item_value: str, n: int, transformation_dict: dict) -> list[list[str]]:
+def top_n_second_items_with_transformation(two_d_list: list[list[str]], first_item_value: str, n: int,
+                                           transformation_dict: dict) -> list[list[str]]:
     """
     统计二维列表中子列表首项为first_item_value的次项出现频率前n的数据
     :param two_d_list: 二维列表，子列表首项为first_item_value对应项，子列表第二项为需要统计数量的数据
@@ -471,11 +472,11 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
     return None
 
 
-def draw_line_chart(data: pd.DataFrame | dict, title: str,
+def draw_line_chart(data: pd.DataFrame, title: str,
                     x_axis: list = None, label_list: list = None,
                     mark_line_y: int = None,
                     formatter: str = "{value}",
-                    height=350, is_symbol_show=True, ) -> None:
+                    height=350, is_symbol_show: bool = True, is_label_show: bool = False) -> None:
     """
     绘制折线图
     :param data: 绘图所用数据
@@ -485,7 +486,8 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str,
     :param mark_line_y: 标记线绝对高度
     :param formatter: 坐标轴单位
     :param height: 图表高度，默认根据分辨率自适应
-    :param is_symbol_show: 是否在数据点上显示数值
+    :param is_symbol_show: 是否在鼠标悬停数据点时显示信息，数据点是否扩大为圈圈
+    :param is_label_show: 是否在数据点上显示数值
     :return:
     """
 
@@ -493,44 +495,24 @@ def draw_line_chart(data: pd.DataFrame | dict, title: str,
 
     chart = Line()
 
-    if isinstance(data, dict) and x_axis is not None and label_list is not None:
+    chart.add_xaxis(data.columns.tolist())
 
-        chart.add_xaxis(x_axis)
+    for label in data.index:
+        chart.add_yaxis(series_name=label,
+                        y_axis=data.loc[label].tolist(),
+                        is_connect_nones=True, is_symbol_show=is_symbol_show,
+                        label_opts=opts.LabelOpts(is_show=False),
+                        markline_opts=opts.MarkLineOpts(
+                            data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
+                            label_opts=opts.LabelOpts(is_show=is_label_show, distance=5),
+                            linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed")
+                        ) if mark_line_y is not None else None,
+                        )
 
-        for label in label_list:
-            chart.add_yaxis(series_name=label,
-                            y_axis=[item[1] for item in data[label]],
-                            is_connect_nones=True, is_symbol_show=is_symbol_show,
-                            markline_opts=opts.MarkLineOpts(
-                                data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
-                                label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
-                                                          distance=5),
-                                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed")
-                            ) if mark_line_y is not None else None
-                            )
-
-    elif isinstance(data, pd.DataFrame):
-
-        chart.add_xaxis(data.columns.tolist())
-
-        for label in data.index:
-            chart.add_yaxis(series_name=label,
-                            y_axis=data.loc[label].tolist(),
-                            is_connect_nones=True, is_symbol_show=is_symbol_show,
-                            markline_opts=opts.MarkLineOpts(
-                                data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
-                                label_opts=opts.LabelOpts(is_show=True if mark_line_y == 0 else False,
-                                                          distance=5),
-                                linestyle_opts=opts.LineStyleOpts(color="grey", type_="dashed")
-                            ) if mark_line_y is not None else None
-                            )
-
-    else:
-        return None
-
-    chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
-                          yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter))
-                          )
+    chart.set_global_opts(
+        title_opts=opts.TitleOpts(title=title),
+        yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter))
+    )
 
     st_pyecharts(
         chart=chart,
@@ -566,8 +548,8 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 
 def get_mixed_bar_and_yaxis_opts(max_: int | float | None, data_max: int | float | None, min_: int | float | None,
-                                 data_min: int | float | None, kind: Literal["bar", "line"], n: int)\
-                                 -> tuple[int | float, int | float, int | float,]:
+                                 data_min: int | float | None, kind: Literal["bar", "line"], n: int) \
+        -> tuple[int | float, int | float, int | float,]:
     """
     返回柱状-折线图坐标轴所需数据
     :param max_: 强制坐标轴最大值
