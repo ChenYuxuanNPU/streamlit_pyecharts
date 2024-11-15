@@ -839,8 +839,7 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400,
-                            is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400,)
 
     with right:
         with st.container(border=True):
@@ -873,8 +872,7 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400,
-                            is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400,)
 
     with right:
         with st.container(border=True):
@@ -907,8 +905,7 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400,
-                            is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400,)
 
     with right:
         with st.container(border=True):
@@ -941,8 +938,7 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400,
-                            is_symbol_show=False)
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400,)
 
     with right:
         with st.container(border=True):
