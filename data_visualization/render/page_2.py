@@ -5,7 +5,7 @@ from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
     execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
     get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart, draw_pie_chart, draw_bar_chart, \
-    load_json_data, get_end_dict
+    load_json_data, get_end_dict, distinguish_school_id
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -456,20 +456,16 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_vocational_level_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="vocational_level_and_year", df=df1)
-    print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("vocational_level_growth_rate_and_year", df=df2)
-    print(df2)
 
     df3 = convert_dict_to_dataframe(d=df3).reindex(columns=get_vocational_level_detail_list())
     df3.fillna(value=0, inplace=True)
     container.add_dataframe(name="vocational_level_detail_and_year", df=df3)
-    print(df3)
 
     df4 = get_growth_rate_from_multi_rows_dataframe(df=df3)
     container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df4)
-    print(df4)
 
     return container
 
@@ -529,6 +525,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
     """
     container = DataFrameContainer()
     df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+    grad_school_id_list = []
 
     for year in year_list:
 
@@ -545,28 +542,45 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
             }
         }
         """
-        grad_school_id_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
-                                                   scope="全区", year=year,
-                                                   additional_requirement=['("参加工作前学历" = "本科" '
-                                                                           'or "参加工作前学历" = "硕士研究生" '
-                                                                           'or "参加工作前学历" = "博士研究生")'])
-        )
 
-        for item in grad_school_id_list:
-            if item[0] not in df1[year].keys():
-                df1[year][item[0]] = 1
-            else:
-                df1[year][item[0]] += 1
+        grad_school_id_list.extend(item for item in execute_sql_sentence(
+                # todo:以后改了sql生成函数记得改这里
+                # sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
+                #                                        scope="全区", year=year,
+                #                                        additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
+                sentence=f'select  "{year}","参加工作前毕业院校代码"  from teacher_data_0_{year}  where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
+            ))
 
-    df0 = convert_dict_to_dataframe(d=df1)
-    df0.fillna(value=0, inplace=True)
-    container.add_dataframe(name="grad_school_id_and_year", df=df0)
-    print(df0)
+    for item in grad_school_id_list:
+        if item[1] not in df0[item[0]].keys():
+            df0[item[0]][item[1]] = 1
+        else:
+            df0[item[0]][item[1]] += 1
 
-    # df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    # container.add_dataframe("grad_school_growth_rate_and_year", df=df2)
-    # print(df2)
+    df1 = convert_dict_to_dataframe(d=df0)
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="grad_school_id_and_year", df=df1)
+
+    # 检查过了
+    # print_color_text(df1.loc["2023"].values.sum())
+    # print_color_text(df1.loc["2024"].values.sum())
+
+    df2 = {}
+    for year in year_list:
+        df2[year] = {item: 0 for item in ["985院校", "211院校", "部属师范院校", "其他院校"]}
+
+    for item in grad_school_id_list:
+        for kind in distinguish_school_id(item[1]):
+            df2[item[0]][kind] += 1
+
+    df2 = convert_dict_to_dataframe(d=df2)
+    df2.fillna(value=0, inplace=True)
+    container.add_dataframe(name="school_kind_and_year", df=df2)
+    print(df2)
+
+    df3 = get_growth_rate_from_multi_rows_dataframe(df=df2)
+    container.add_dataframe("school_kind_growth_rate_and_year", df=df3)
+    print(df3)
 
     return container
 
@@ -1065,3 +1079,7 @@ if __name__ == '__main__':
     # get_multi_years_area_dataframe(["2023","2024"])
 
     get_multi_years_grad_school_dataframe(["2023", "2024"])
+
+    # print(generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
+    #                                                scope="全区", year="2023",
+    #                                                additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))']))

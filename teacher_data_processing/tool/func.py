@@ -461,7 +461,7 @@ def del_tuple_in_list(data: list) -> list:
     return output
 
 
-def distinguish_school_id(school_id: str) -> list:
+def distinguish_school_id(school_id: str | int) -> list:
     """
     根据院校代码生成学校所属类型的列表（由于985要统计到211里）
     :param school_id: 给定的院校代码
@@ -470,16 +470,16 @@ def distinguish_school_id(school_id: str) -> list:
 
     output = []
 
-    if school_id in get_code_of_985():
+    if str(school_id) in get_code_of_985():
         output.append("985院校")
 
-    if school_id in get_code_of_211():
+    if str(school_id) in get_code_of_211():
         output.append("211院校")
 
-    if school_id in get_code_of_affiliate():
+    if str(school_id) in get_code_of_affiliate():
         output.append("部属师范院校")
 
-    if school_id not in get_code_of_985() + get_code_of_211() + get_code_of_affiliate():
+    if str(school_id) not in get_code_of_985() + get_code_of_211() + get_code_of_affiliate():
         output.append("其他院校")
 
     return output
