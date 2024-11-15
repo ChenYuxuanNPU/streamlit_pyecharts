@@ -551,9 +551,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     ###
     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
                                             year=year,
-                                            additional_requirement=['("参加工作前学历" = "本科" '
-                                                                    'or "参加工作前学历" = "硕士研究生" '
-                                                                    'or "参加工作前学历" = "博士研究生")'])
+                                            additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
 
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
@@ -814,9 +812,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
                                                 period=period,
                                                 year=year,
-                                                additional_requirement=['("参加工作前学历" = "本科" '
-                                                                        'or "参加工作前学历" = "硕士研究生" '
-                                                                        'or "参加工作前学历" = "博士研究生")'])
+                                                additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
 
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
