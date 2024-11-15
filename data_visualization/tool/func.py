@@ -169,8 +169,7 @@ def del_tuple_in_list(data: list) -> list:
 
     output = []
 
-    for single_data in data:
-        output.append(single_data[0])
+    output.extend(single_data[0] for single_data in data)
 
     return output
 
