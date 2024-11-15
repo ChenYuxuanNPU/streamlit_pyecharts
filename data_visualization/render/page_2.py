@@ -294,7 +294,7 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
             }
         }
         """
-        area_count_list = data = execute_sql_sentence(
+        area_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
                                                    year=year,
                                                    additional_requirement=[f'"区域" in {str(tuple(get_area_list()))}'])
@@ -341,7 +341,7 @@ def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer
             }
         }
         """
-        period_count_list = data = execute_sql_sentence(
+        period_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["任教学段"], scope="全区",
                                                    year=year, additional_requirement=[
                     f'"任教学段" in {str(tuple(get_period_list()))}'])
@@ -386,7 +386,7 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
             }
         }
         """
-        edu_bg_count_list = data = execute_sql_sentence(
+        edu_bg_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高学历"], scope="全区",
                                                    year=year, additional_requirement=[
                     f'"最高学历" in {str(tuple(get_edu_bg_list()))}'])
@@ -435,7 +435,7 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
             }
         }
         """
-        vocational_level_count_list = data = execute_sql_sentence(
+        vocational_level_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高职称"], scope="全区",
                                                    year=year, additional_requirement=[
                     f'"最高职称" in {str(tuple(get_vocational_level_list()))}'])
@@ -444,7 +444,7 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
         for item in vocational_level_count_list:
             df1[year][item[0]] = item[1]
 
-        vocational_level_detail_count_list = data = execute_sql_sentence(
+        vocational_level_detail_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["专业技术岗位"], scope="全区",
                                                    year=year, additional_requirement=[
                     f'"专业技术岗位" in {str(tuple(get_vocational_level_detail_list()))}'])
@@ -500,7 +500,7 @@ def get_multi_years_discipline_dataframe(year_list: list[str]) -> DataFrameConta
             }
         }
         """
-        discipline_count_list = data = execute_sql_sentence(
+        discipline_count_list = execute_sql_sentence(
             sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
                                                    year=year, additional_requirement=[
                     f'"主教学科" in {str(tuple(get_discipline_list()))}'])
@@ -515,6 +515,58 @@ def get_multi_years_discipline_dataframe(year_list: list[str]) -> DataFrameConta
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("discipline_growth_rate_and_year", df=df2)
+
+    return container
+
+
+def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学科统计dataframe，放置在container中\n
+    grad_school_and_year：所有数据，列为学科，行为年份\n
+    grad_school_growth_rate_and_year：所有数据对学科求增长率，行为增长率对应年份，列为学科，单行\n
+    :param year_list: 查询的年份列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+
+    for year in year_list:
+
+        df0[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "10699":100,
+            "10558":200
+            },
+        "2023"：{
+            "10699"：50，
+            "10558"：100
+            }
+        }
+        """
+        grad_school_id_list = execute_sql_sentence(
+            sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
+                                                   scope="全区", year=year,
+                                                   additional_requirement=['("参加工作前学历" = "本科" '
+                                                                           'or "参加工作前学历" = "硕士研究生" '
+                                                                           'or "参加工作前学历" = "博士研究生")'])
+        )
+
+        for item in grad_school_id_list:
+            if item[0] not in df1[year].keys():
+                df1[year][item[0]] = 1
+            else:
+                df1[year][item[0]] += 1
+
+    df0 = convert_dict_to_dataframe(d=df1)
+    df0.fillna(value=0, inplace=True)
+    container.add_dataframe(name="grad_school_id_and_year", df=df0)
+    print(df0)
+
+    # df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    # container.add_dataframe("grad_school_growth_rate_and_year", df=df2)
+    # print(df2)
 
     return container
 
@@ -839,7 +891,7 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400,)
+            draw_line_chart(data=df_container.get_dataframe(name="area_and_year").T, title="", height=400, )
 
     with right:
         with st.container(border=True):
@@ -872,7 +924,7 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400,)
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400, )
 
     with right:
         with st.container(border=True):
@@ -905,7 +957,7 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400,)
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400, )
 
     with right:
         with st.container(border=True):
@@ -938,7 +990,7 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
 
     with left:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400,)
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400, )
 
     with right:
         with st.container(border=True):
@@ -967,10 +1019,29 @@ def show_multi_years_teacher_0_discipline(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
-    # with st.container(border=True):
-    #     show_multi_years_teacher_0_basic(year_list=year_list, json_field="主教学科",
-    #                                      dataframe_columns_list=get_discipline_dataframe_columns_list(),
-    #                                      info_list=get_discipline_list())
+    df_container = get_multi_years_discipline_dataframe(year_list=year_list)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="discipline_and_year"),
+        df_line=df_container.get_dataframe(name="discipline_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
     return None
 
 
@@ -993,4 +1064,4 @@ if __name__ == '__main__':
     # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
     # get_multi_years_area_dataframe(["2023","2024"])
 
-    get_multi_years_discipline_dataframe(["2023", "2024"])
+    get_multi_years_grad_school_dataframe(["2023", "2024"])
