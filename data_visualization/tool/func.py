@@ -408,27 +408,47 @@ def smallest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
     if number % n == 0:
         return float(number)
     else:
-        return float((number // n + 1) * n)
+        return float(n * (number // n + 1))
 
 
-def calculate_figure_border(number: int | float, n: int | float) -> float:
+def biggest_multiple_of_n_geq(number: int | float, n: int | float) -> float:
     """
-    根据输入的图表极值设定大于等于该正值或小于等于该负值的最小/大的图表边界\n
-    示例（n=10）：\n
-    25 -> 30, 30 -> 30, -5 -> -10, -10 -> -10
+    返回小于等于等于输入值的最大的n的倍数,返回值被强制类型转换为float以应对n为小数的情况
     :param number: 输入值
     :param n: 倍数因子
     :return:
     """
+    if number % n == 0:
+        return float(number)
+    else:
+        return float(n * (number // n))
 
+
+def calculate_figure_border(number: int | float, direction: Literal["up", "down"],
+                            multiple_for_border: int | float = 50, ) -> float:
+    """
+    根据输入的图表极值设定大于等于该正值或小于等于该负值的最小/大的图表边界\n
+    示例（n=10）：\n
+    25(up) -> 30, 30(up/down) -> 30, -5(down) -> -10, -10(up/down) -> -10
+    :param number: 输入值
+    :param direction: 取值方向，up代表在number远离0侧，down代表在number接近0侧
+    :param multiple_for_border: 倍数因子
+    :return:
+    """
     if number == 0:
         return 0
 
-    if number > 0:
-        return smallest_multiple_of_n_geq(number=number, n=n)
+    if number > 0 and direction == "down":
+        return biggest_multiple_of_n_geq(number=number, n=multiple_for_border)
 
-    if number < 0:
-        return -1 * smallest_multiple_of_n_geq(number=abs(number), n=n)
+    if number > 0 and direction == "up":
+        return smallest_multiple_of_n_geq(number=number, n=multiple_for_border)
+
+    if number < 0 and direction == "down":
+        return -1 * smallest_multiple_of_n_geq(number=abs(number), n=multiple_for_border)
+
+    if number < 0 and direction == "up":
+        return -1 * biggest_multiple_of_n_geq(number=abs(number), n=multiple_for_border)
 
 
 def set_page_configuration(title: str, icon: str) -> None:
@@ -532,7 +552,6 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
 
 
 def draw_line_chart(data: pd.DataFrame, title: str,
-                    x_axis: list = None, label_list: list = None,
                     mark_line_y: int = None,
                     formatter: str = "{value}",
                     height=350, is_symbol_show: bool = True, is_label_show: bool = False) -> None:
@@ -540,8 +559,6 @@ def draw_line_chart(data: pd.DataFrame, title: str,
     绘制折线图
     :param data: 绘图所用数据
     :param title: 图表标题
-    :param x_axis: x轴字段
-    :param label_list: 不同折线对应的label
     :param mark_line_y: 标记线绝对高度
     :param formatter: 坐标轴单位
     :param height: 图表高度，默认根据分辨率自适应
@@ -607,36 +624,45 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
 
 
 def get_mixed_bar_and_yaxis_opts(max_: int | float | None, data_max: int | float | None, min_: int | float | None,
-                                 data_min: int | float | None, kind: Literal["bar", "line"], n: int) \
+                                 data_min: int | float | None, kind: Literal["bar", "line"], num_divisions: int,
+                                 multiple_for_border: int = 50) \
         -> tuple[int | float, int | float, int | float,]:
     """
     返回柱状-折线图坐标轴所需数据
+    :param multiple_for_border: 将数据极值往上或往下取multiple_for_border的最接近的倍数作为坐标轴高的参数之一
     :param max_: 强制坐标轴最大值
     :param data_max: 坐标轴对应数据最大值
     :param min_: 强制坐标轴最小值
     :param data_min: 坐标轴对应数据最小值
     :param kind: 图表类型（柱状或折线）
-    :param n: 坐标轴分段数
+    :param num_divisions: 坐标轴分段数
     :return: [坐标轴最大值， 坐标轴最小值， 坐标轴间隔]
     """
     match kind:
         case "line":
-            axis_max = max_ if max_ is not None else calculate_figure_border(number=data_max, n=50)
-            axis_min = min_ if min_ is not None else 2 * calculate_figure_border(number=data_min, n=50) - axis_max
+            axis_max = max_ if max_ is not None else calculate_figure_border(number=data_max,
+                                                                             multiple_for_border=multiple_for_border,
+                                                                             direction="up")
+            axis_min = min_ if min_ is not None else 2 * calculate_figure_border(number=data_min,
+                                                                                 multiple_for_border=multiple_for_border,
+                                                                                 direction="down") - axis_max
         case "bar":
-            axis_max = max_ if max_ is not None else 2 * calculate_figure_border(number=data_max, n=50)
+            axis_max = max_ if max_ is not None else 2 * calculate_figure_border(number=data_max,
+                                                                                 multiple_for_border=multiple_for_border,
+                                                                                 direction="up")
             axis_min = min_ if min_ is not None else 0
 
         case _:
             raise ValueError('kind not in ["bar", "line"]')
 
-    return axis_max, axis_min, (axis_max - axis_min) / n
+    return axis_max, axis_min, (axis_max - axis_min) / num_divisions
 
 
 def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             bar_axis_label: str, line_axis_label: str,
                             bar_max_: int | float = None, bar_min_: int | float = None,
                             line_max_: int | float = None, line_min_: int | float = None,
+                            multiple_for_border: int = 50,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             mark_line_label_is_show: bool = False,
                             height: int | float = 0,
@@ -661,6 +687,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param bar_min_: 柱状图强制最小值
     :param line_max_: 折线图强制最大值
     :param line_min_: 折线图强制最小值
+    :param multiple_for_border: 将数据极值往上或往下取multiple_for_border的最接近的倍数作为坐标轴高的参数之一
     :param mark_line_y: 折线图标记线高度（高优先级）
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param mark_line_label_is_show: 是否展示markline的label
@@ -688,7 +715,8 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     bar_chart.add_xaxis(xaxis_data=df_bar.columns)
     bar_max, bar_min, bar_interval = get_mixed_bar_and_yaxis_opts(max_=bar_max_, data_max=df_bar.values.max(),
                                                                   min_=bar_min_, data_min=df_bar.values.min(),
-                                                                  kind="bar", n=10)
+                                                                  kind="bar", num_divisions=10,
+                                                                  multiple_for_border=multiple_for_border)
 
     for label in df_bar.index:
         bar_chart.add_yaxis(
@@ -701,7 +729,8 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     line_chart.add_xaxis(xaxis_data=df_line.columns)
     line_max, line_min, line_interval = get_mixed_bar_and_yaxis_opts(max_=line_max_, data_max=df_line.values.max(),
                                                                      min_=line_min_, data_min=df_line.values.min(),
-                                                                     kind="line", n=10)
+                                                                     kind="line", num_divisions=10,
+                                                                     multiple_for_border=multiple_for_border)
 
     if mark_line_y is not None:
 
@@ -1034,4 +1063,4 @@ def page1_hide_detail_info() -> None:
 
 
 if __name__ == '__main__':
-    print(is_sublist(subset=['增长率'], superset=['2023', '2024', '增长率']))
+    print(calculate_figure_border(number=-20, direction="up"))
