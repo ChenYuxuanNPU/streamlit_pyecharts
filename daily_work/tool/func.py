@@ -1,5 +1,5 @@
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
 
 
@@ -66,3 +66,41 @@ def execute_sql_sentence(sentence: str,) -> list:
 
     return result
 
+
+def load_json_data(folder: str, file_name: str) -> dict:
+    """
+    根据文件夹名和json文件名读取json文件中的数据
+    :param folder: json_file下的文件夹名
+    :param file_name: 文件夹内的json文件名（不带json后缀）
+    :return: dict型数据
+    """
+
+    json_data = {}
+
+    try:
+        with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\{folder}\{file_name}.json",
+                  "r", encoding="UTF-8") as f:
+            json_data = json.load(f)
+
+    except Exception as e:
+        print(f"{e}")
+
+    finally:
+        return json_data
+
+
+def del_tuple_in_list(data: list) -> list:
+    """
+    将形如[('1',), ('2',), ('3',),]的数据转化为[1, 2, 3,]
+    :param data:带有元组的列表
+    :return: 清洗后的列表
+    """
+
+    if not isinstance(data[0], tuple):
+        return data
+
+    output = []
+
+    output.extend(single_data[0] for single_data in data)
+
+    return output
