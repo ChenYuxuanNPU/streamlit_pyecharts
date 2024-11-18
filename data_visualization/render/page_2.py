@@ -5,7 +5,8 @@ from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
     execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
     get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart, draw_pie_chart, draw_bar_chart, \
-    load_json_data, get_end_dict, distinguish_school_id
+    load_json_data, get_end_dict, distinguish_school_id, get_code_of_985, get_code_of_nettp, get_code_of_affiliate, \
+    get_code_of_211
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -102,14 +103,67 @@ def get_grad_school_list() -> list[str]:
     return ["985院校", "部属师范院校", "211院校"]
 
 
-# def get_teacher_count_list(year_list: list[str]) -> list[list[str | int]]:
-#     teacher_count_list = []
-#
-#     for year in year_list:
-#         teacher_count_list.append(
-#             [year, int(execute_sql_sentence(sentence=f"select count(*) from teacher_data_0_{year}")[0][0])])
-#
-#     return teacher_count_list
+def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
+    """
+    根据年份多个包含院校名及其频率的dataframe\n
+    df_985:985院校名及其数量\n
+    df_nettp:国优计划院校名及其数量\n
+    df_affiliate:部属师范院校名及其数量\n
+    df_211:211院校名及其数量\n
+    :param year: 查询的年份
+    :return:
+    """
+    container = DataFrameContainer()
+
+    container.add_dataframe(
+        name="df_985",
+        df=pd.Series(
+            dict(
+                execute_sql_sentence(
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_985())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                )
+            )
+        ).nlargest(10).to_frame().T.rename(
+            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+    )
+
+    container.add_dataframe(
+        name="df_nettp",
+        df=pd.Series(
+            dict(
+                execute_sql_sentence(
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_nettp())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                )
+            )
+        ).nlargest(10).to_frame().T.rename(
+            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+    )
+
+    container.add_dataframe(
+        name="df_affiliate",
+        df=pd.Series(
+            dict(
+                execute_sql_sentence(
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_affiliate())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                )
+            )
+        ).nlargest(10).to_frame().T.rename(
+            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+    )
+
+    container.add_dataframe(
+        name="df_211",
+        df=pd.Series(
+            dict(
+                execute_sql_sentence(
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_211())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                )
+            )
+        ).nlargest(10).to_frame().T.rename(
+            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+    )
+
+    return container
 
 
 def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
@@ -253,17 +307,17 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 
     container.add_dataframe(name="growth_rate_by_year", df=df4)
 
-    print("")
-    print("总人数的dataframe：")
-    print("")
-    print(f"df1:{df1}")
-    print("")
-    print(f"df2:{df2}")
-    print("")
-    print(f"df3:{df3}")
-    print("")
-    print(f"df4:{df4}")
-    print("")
+    # print("")
+    # print("总人数的dataframe：")
+    # print("")
+    # print(f"df1:{df1}")
+    # print("")
+    # print(f"df2:{df2}")
+    # print("")
+    # print(f"df3:{df3}")
+    # print("")
+    # print(f"df4:{df4}")
+    # print("")
 
     return container
 
@@ -306,11 +360,11 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_area_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="area_and_year", df=df1)
-    print(df1)
+    # print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("area_growth_rate_and_year", df=df2)
-    print(df2)
+    # print(df2)
 
     return container
 
@@ -529,7 +583,6 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
     grad_school_id_list = []
 
     for year in year_list:
-
         df0[year] = {}  # 初始化该年份的子字典
         """
         df_dict:{
@@ -545,12 +598,12 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
         """
 
         grad_school_id_list.extend(item for item in execute_sql_sentence(
-                # todo:以后改了sql生成函数记得改这里
-                # sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
-                #                                        scope="全区", year=year,
-                #                                        additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
-                sentence=f'select  "{year}","参加工作前毕业院校代码"  from teacher_data_0_{year}  where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
-            ))
+            # todo:以后改了sql生成函数记得改这里
+            # sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
+            #                                        scope="全区", year=year,
+            #                                        additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
+            sentence=f'select  "{year}","参加工作前毕业院校代码"  from teacher_data_0_{year}  where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
+        ))
 
     for item in grad_school_id_list:
         if item[1] not in df0[item[0]].keys():
@@ -568,7 +621,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
 
     df2 = {}
     for year in year_list:
-        df2[year] = {item: 0 for item in ["985院校", "211院校", "部属师范院校", "其他院校"]}
+        df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
 
     for item in grad_school_id_list:
         for kind in distinguish_school_id(item[1]):
@@ -577,11 +630,11 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
     df2 = convert_dict_to_dataframe(d=df2)
     df2.fillna(value=0, inplace=True)
     container.add_dataframe(name="grad_school_kind_and_year", df=df2)
-    print(df2)
+    # print(df2)
 
     df3 = get_growth_rate_from_multi_rows_dataframe(df=df2)
     container.add_dataframe("grad_school_kind_growth_rate_and_year", df=df3)
-    print(df3)
+    # print(df3)
 
     return container
 
@@ -690,19 +743,20 @@ def show_1_year_all_period(year: str):
             st.toast("学科柱状折线图展示异常", icon="😕")
 
         # 学科统计占两列
-        c0, c1 = st.columns([2, 1])
+        c0, c1 = st.columns([1, 2])
 
         with c0:
-            pass
+            # 在编毕业院校统计
+            draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
+                           is_show_visual_map=False, height=800)
+
+        with c1:
+            with st.container(border=True):
+                pass
             # 希望把这里改成四列的每一类学校最多的毕业来源
             # 在编学科统计
             # draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
             #                            end=70)
-
-        with c1:
-            # 在编毕业院校统计
-            draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
-                           is_show_visual_map=False)
 
         c0, c1, c2 = st.columns(spec=3)
 
@@ -1053,6 +1107,8 @@ def show_multi_years_teacher_0_discipline(year_list: list[str]) -> None:
         df_line=df_container.get_dataframe(name="discipline_growth_rate_and_year"),
         bar_axis_label="人数",
         line_axis_label="增长率",
+        line_max_=50,
+        line_min_=-100,
         mark_line_y=0,
         line_formatter="{value} %"
     )
@@ -1095,13 +1151,4 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
 
 
 if __name__ == '__main__':
-    # print(get_multi_years_age_dataframe(year_list=["2023", "2024"]))
-    # print(get_1_year_discipline_and_gender_dataframe(year="2024"))
-    # print(get_1_year_discipline_and_gender_dataframe(year="2023"))
-    # get_multi_years_area_dataframe(["2023","2024"])
-
-    get_multi_years_grad_school_dataframe(["2023", "2024"])
-
-    # print(generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
-    #                                                scope="全区", year="2023",
-    #                                                additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))']))
+    get_1_year_grad_school_dataframe(year="2024")
