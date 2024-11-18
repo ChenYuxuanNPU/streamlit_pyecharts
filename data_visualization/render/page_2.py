@@ -123,8 +123,14 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                     sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_985())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
-        ).nlargest(10).to_frame().T.rename(
-            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+        )
+        .nlargest(10).to_frame().T
+        .rename(
+            columns={
+                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+            }
+        )
+        .T.rename_axis(["985院校"])
     )
 
     container.add_dataframe(
@@ -135,8 +141,14 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                     sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_nettp())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
-        ).nlargest(10).to_frame().T.rename(
-            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+        )
+        .nlargest(10).to_frame().T
+        .rename(
+            columns={
+                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+            }
+        )
+        .T.rename_axis(["国优计划院校"])
     )
 
     container.add_dataframe(
@@ -147,8 +159,14 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                     sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_affiliate())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
-        ).nlargest(10).to_frame().T.rename(
-            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+        )
+        .nlargest(10).to_frame().T
+        .rename(
+            columns={
+                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+            }
+        )
+        .T.rename_axis(["部属师范院校"])
     )
 
     container.add_dataframe(
@@ -159,8 +177,14 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                     sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_211())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
-        ).nlargest(10).to_frame().T.rename(
-            columns={key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()})
+        )
+        .nlargest(10).to_frame().T
+        .rename(
+            columns={
+                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+            }
+        )
+        .T.rename_axis(["211院校"])
     )
 
     return container
@@ -748,15 +772,20 @@ def show_1_year_all_period(year: str):
         with c0:
             # 在编毕业院校统计
             draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["院校级别"], title="毕业院校",
-                           is_show_visual_map=False, height=800)
+                           is_show_visual_map=False, height=400)
 
         with c1:
             with st.container(border=True):
-                pass
-            # 希望把这里改成四列的每一类学校最多的毕业来源
-            # 在编学科统计
-            # draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["主教学科"], title="主教学科",
-            #                            end=70)
+                df_container = get_1_year_grad_school_dataframe(year=year)
+                a0, a1, a2, a3 = st.columns(spec=4)
+                with a0:
+                    st.dataframe(df_container.get_dataframe("df_985"), height=400)
+                with a1:
+                    st.dataframe(df_container.get_dataframe("df_nettp"), height=400)
+                with a2:
+                    st.dataframe(df_container.get_dataframe("df_affiliate"), height=400)
+                with a3:
+                    st.dataframe(df_container.get_dataframe("df_211"), height=400)
 
         c0, c1, c2 = st.columns(spec=3)
 
