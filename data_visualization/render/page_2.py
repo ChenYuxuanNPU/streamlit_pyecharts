@@ -5,8 +5,7 @@ from calculation.retirement import get_age_from_citizen_id
 from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
     execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
     get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart, draw_pie_chart, draw_bar_chart, \
-    load_json_data, get_end_dict, distinguish_school_id, get_code_of_985, get_code_of_nettp, get_code_of_affiliate, \
-    get_code_of_211
+    load_json_data, get_end_dict, distinguish_school_id, get_school_codes
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
@@ -120,7 +119,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_985())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["985"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -138,7 +137,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_nettp())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["国优计划"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -156,7 +155,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_affiliate())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["部属师范"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -174,7 +173,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_code_of_211())} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["211"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
