@@ -124,13 +124,13 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                 )
             )
         )
-        .nlargest(10).to_frame().T
+        .nlargest(10).to_frame()
         .rename(
-            columns={
+            index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
             }
         )
-        .T.rename_axis(["985院校"])
+        .rename_axis(["985院校"])
     )
 
     container.add_dataframe(
@@ -142,13 +142,13 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                 )
             )
         )
-        .nlargest(10).to_frame().T
+        .nlargest(10).to_frame()
         .rename(
-            columns={
+            index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
             }
         )
-        .T.rename_axis(["国优计划院校"])
+        .rename_axis(["国优计划院校"])
     )
 
     container.add_dataframe(
@@ -160,13 +160,13 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                 )
             )
         )
-        .nlargest(10).to_frame().T
+        .nlargest(10).to_frame()
         .rename(
-            columns={
+            index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
             }
         )
-        .T.rename_axis(["部属师范院校"])
+        .rename_axis(["部属师范院校"])
     )
 
     container.add_dataframe(
@@ -178,13 +178,13 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
                 )
             )
         )
-        .nlargest(10).to_frame().T
+        .nlargest(10).to_frame()
         .rename(
-            columns={
+            index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
             }
         )
-        .T.rename_axis(["211院校"])
+        .rename_axis(["211院校"])
     )
 
     return container
