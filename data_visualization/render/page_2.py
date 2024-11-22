@@ -127,7 +127,8 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         .rename(
             index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            }
+            },
+            columns={0: "人数"}
         )
         .rename_axis(["985院校"])
     )
@@ -145,7 +146,8 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         .rename(
             index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            }
+            },
+            columns={0: "人数"}
         )
         .rename_axis(["国优计划院校"])
     )
@@ -163,7 +165,8 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         .rename(
             index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            }
+            },
+            columns={0: "人数"}
         )
         .rename_axis(["部属师范院校"])
     )
@@ -181,7 +184,8 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         .rename(
             index={
                 key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            }
+            },
+            columns={0: "人数"}
         )
         .rename_axis(["211院校"])
     )
@@ -776,7 +780,7 @@ def show_1_year_all_period(year: str):
         with c1:
             with st.container(border=True):
                 df_container = get_1_year_grad_school_dataframe(year=year)
-                a0, a1, a2, a3 = st.columns(spec=4)
+                a, a0, a1, a2, a3 = st.columns([1, 5, 5, 5, 5])
                 with a0:
                     st.dataframe(df_container.get_dataframe("df_985"), height=400)
                 with a1:
@@ -1179,4 +1183,5 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
 
 
 if __name__ == '__main__':
-    get_1_year_grad_school_dataframe(year="2024")
+    container = get_1_year_grad_school_dataframe(year="2024")
+    print(container.get_dataframe("df_985"))
