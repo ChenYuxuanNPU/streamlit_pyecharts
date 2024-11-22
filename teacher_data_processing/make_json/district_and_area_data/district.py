@@ -1,6 +1,5 @@
 import sqlite3
 
-from calculation.retirement import get_age_from_citizen_id
 from teacher_data_processing.read_database import get_database_data as gd
 from teacher_data_processing.tool import func as tch_proc_func
 
@@ -29,6 +28,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -57,6 +57,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -82,6 +83,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -110,6 +112,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -137,6 +140,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -166,6 +170,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -191,6 +196,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -211,6 +217,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -235,6 +242,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -255,6 +263,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -278,6 +287,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -297,6 +307,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -324,6 +335,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -348,6 +360,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -367,6 +380,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -393,6 +407,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -420,6 +435,7 @@ def update(year: str, kind: str) -> dict:
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -483,6 +499,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -510,6 +527,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -536,6 +554,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -562,6 +581,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -595,6 +615,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -622,6 +643,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
     except Exception as e:
         print('\033[1;91m' + f"{e}" + '\033[0m')
+        print(sql_sentence)
 
     finally:
         conn.commit()
@@ -685,6 +707,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -711,6 +734,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -738,6 +762,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -766,6 +791,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -795,6 +821,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -823,6 +850,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
 
         except Exception as e:
             print('\033[1;91m' + f"{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()

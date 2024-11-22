@@ -59,6 +59,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -85,6 +86,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -115,6 +117,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -143,6 +146,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -173,6 +177,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -197,6 +202,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -217,6 +223,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -240,6 +247,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -260,6 +268,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -284,6 +293,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -305,6 +315,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -331,6 +342,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -352,6 +364,7 @@ def update(kind: str, year: str, ) -> dict:
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -465,6 +478,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -493,6 +507,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -552,6 +567,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -579,6 +595,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
@@ -607,6 +624,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         except Exception as e:
             print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+            print(sql_sentence)
 
         finally:
             conn.commit()
