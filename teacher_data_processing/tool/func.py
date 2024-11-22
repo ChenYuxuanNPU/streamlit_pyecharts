@@ -491,20 +491,14 @@ def distinguish_school_id(school_id: str | int) -> list:
     """
 
     output = []
+    flag = 0
 
-    if str(school_id) in get_school_codes()["985"]:
-        output.append("985院校")
+    for key, value in get_school_codes().items():
+        if str(school_id) in value:
+            flag = 1
+            output.append(f"{key}院校")
 
-    if str(school_id) in get_school_codes()["211"]:
-        output.append("211院校")
-
-    if str(school_id) in get_school_codes()["部属师范"]:
-        output.append("部属师范院校")
-
-    if str(school_id) in get_school_codes()["国优计划"]:
-        output.append("国优计划院校")
-
-    if str(school_id) not in get_school_codes().values():
+    if flag == 0:
         output.append("其他院校")
 
     return output
