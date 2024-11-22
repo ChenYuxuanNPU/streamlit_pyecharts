@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 import streamlit as st
 
@@ -608,7 +610,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
     container = DataFrameContainer()
     df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
     grad_school_id_list = []
-
+    print(f"教师毕业院校水平随年份变化情况001:{datetime.now()}")
     for year in year_list:
         df0[year] = {}  # 初始化该年份的子字典
         """
@@ -631,7 +633,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
             #                                        additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
             sentence=f'select  "{year}","参加工作前毕业院校代码"  from teacher_data_0_{year}  where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
         ))
-
+    print(f"教师毕业院校水平随年份变化情况002:{datetime.now()}")
     for item in grad_school_id_list:
         if item[1] not in df0[item[0]].keys():
             df0[item[0]][item[1]] = 1
@@ -641,27 +643,26 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
     df1 = convert_dict_to_dataframe(d=df0)
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="grad_school_id_and_year", df=df1)
-
-    # 检查过了
-    # print_color_text(df1.loc["2023"].values.sum())
-    # print_color_text(df1.loc["2024"].values.sum())
+    print(f"教师毕业院校水平随年份变化情况003:{datetime.now()}")
 
     df2 = {}
     for year in year_list:
         df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
-
+    print(f"教师毕业院校水平随年份变化情况0031:{datetime.now()}")
     for item in grad_school_id_list:
         for kind in distinguish_school_id(item[1]):
             df2[item[0]][kind] += 1
-
+    print(f"教师毕业院校水平随年份变化情况0032:{datetime.now()}")
     df2 = convert_dict_to_dataframe(d=df2)
     df2.fillna(value=0, inplace=True)
     container.add_dataframe(name="grad_school_kind_and_year", df=df2)
-    # print(df2)
+    print(df2)
+    print(f"教师毕业院校水平随年份变化情况004:{datetime.now()}")
 
     df3 = get_growth_rate_from_multi_rows_dataframe(df=df2)
     container.add_dataframe("grad_school_kind_growth_rate_and_year", df=df3)
     # print(df3)
+    print(f"教师毕业院校水平随年份变化情况005:{datetime.now()}")
 
     return container
 
@@ -830,23 +831,15 @@ def show_1_year_teacher_0(year: str, ):
     period_list = st.multiselect(
         label="请选择需要查询的学段",
         options=["所有学段"] + get_period_list(),
-        default=["所有学段", get_period_list()[0]]
+        default=["所有学段", get_period_list()[0]]  # 所有学段、高中
     )
 
     if "所有学段" in period_list:
         show_1_year_all_period(year=year)
 
-    if "高中" in period_list:
-        show_1_year_given_period(year=year, period="高中")
-
-    if "初中" in period_list:
-        show_1_year_given_period(year=year, period="初中")
-
-    if "小学" in period_list:
-        show_1_year_given_period(year=year, period="小学")
-
-    if "幼儿园" in period_list:
-        show_1_year_given_period(year=year, period="幼儿园")
+    for item in get_period_list():
+        if item in period_list:
+            show_1_year_given_period(year=year, period=item)
 
 
 def show_1_year_teacher_1(year: str):
@@ -940,9 +933,10 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
 
         st.info("学科教师数随年份变化情况")
         show_multi_years_teacher_0_discipline(year_list=year_list)
-
+        print(f"教师毕业院校水平随年份变化情况0:{datetime.now()}")
         st.info("教师毕业院校水平随年份变化情况")
         show_multi_years_teacher_0_grad_school(year_list=year_list)
+        print(f"教师毕业院校水平随年份变化情况1:{datetime.now()}")
 
 
 def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
@@ -1154,7 +1148,9 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
     :param year_list: 年份列表
     :return:
     """
+    print(f"教师毕业院校水平随年份变化情况01:{datetime.now()}")
     df_container = get_multi_years_grad_school_dataframe(year_list=year_list)
+    print(f"教师毕业院校水平随年份变化情况02:{datetime.now()}")
 
     left, right = st.columns(spec=2)
 
