@@ -1,7 +1,4 @@
-import pandas as pd
-import streamlit as st
-
-from data_visualization.tool import func as visual_func
+from data_visualization.tool.func import *
 
 
 def get_base_data() -> dict:
@@ -9,7 +6,7 @@ def get_base_data() -> dict:
     获取全区教师数据
     :return:
     """
-    return visual_func.load_json_data(folder="result", file_name="teacher_info")
+    return load_json_data(folder="result", file_name="teacher_info")
 
 
 def show_text_info() -> None:
@@ -26,7 +23,7 @@ def show_text_info() -> None:
             unsafe_allow_html=True
         )
 
-        visual_func.draw_dataframe(
+        draw_dataframe(
             data=pd.DataFrame(
                 [
                     ["永平教育指导中心", "白云大道北1689号（岭南新世界花园内）",
@@ -62,51 +59,51 @@ def show_1_year_teacher_0(year: str, area: str) -> None:
 
         with c0:
             # 在编年龄统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["年龄"],
-                                       title="年龄", pos_left="15%", center_to_bottom="64%")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["年龄"],
+                           title="年龄", pos_left="15%", center_to_bottom="64%")
 
             # 在编学段统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["学段统计"],
-                                       title="学段统计")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["学段统计"],
+                           title="学段统计")
 
         with c1:
             # 在编学历统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高学历"],
-                                       title="最高学历")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高学历"],
+                           title="最高学历")
 
             # 在编毕业院校统计
-            visual_func.draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
-                                       title="毕业院校", is_show_visual_map=False)
+            draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
+                           title="毕业院校", is_show_visual_map=False)
 
         with c2:
             # 在编职称统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高职称"],
-                                       title="职称")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高职称"],
+                           title="职称")
 
             # 在编行政职务统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["行政职务"],
-                                       title="行政职务")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["行政职务"],
+                           title="行政职务")
 
         # 在编学科统计
-        visual_func.draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
-                                   title="主教学科", is_show_visual_map=False)
+        draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
+                       title="主教学科", is_show_visual_map=False)
 
         c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
 
         with c0:
             # 在编骨干教师统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["骨干教师"],
-                                       title="骨干教师")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["骨干教师"],
+                           title="骨干教师")
 
         with c1:
             # 在编教师支教统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["支教地域"],
-                                       title="支教地域")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["支教地域"],
+                           title="支教地域")
 
         with c2:
             # 在编四名教师统计
-            visual_func.draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["四名工作室"],
-                                       title="四名统计")
+            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["四名工作室"],
+                           title="四名统计")
 
 
 def show_1_year_teacher_1(year: str, area: str) -> None:
@@ -125,30 +122,30 @@ def show_1_year_teacher_1(year: str, area: str) -> None:
 
         with c0:
             # 编外学段统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["学段统计"],
-                                       title="学段统计")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["学段统计"],
+                           title="学段统计")
 
             # 编外教师资格统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["教师资格"],
-                                       title="教师资格")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["教师资格"],
+                           title="教师资格")
 
         with c1:
             # 编外学历统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高学历"],
-                                       title="最高学历")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高学历"],
+                           title="最高学历")
 
             # 编外中小学教师资格统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["中小学"]["教师资格"],
-                                       title="中小学")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["中小学"]["教师资格"],
+                           title="中小学")
 
         with c2:
             # 编外职称统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高职称"],
-                                       title="职称")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高职称"],
+                           title="职称")
 
             # 编外幼儿园教师资格统计
-            visual_func.draw_pie_chart(data=data[year]["编外"]["片区"][area]["幼儿园"]["教师资格"],
-                                       title="幼儿园")
+            draw_pie_chart(data=data[year]["编外"]["片区"][area]["幼儿园"]["教师资格"],
+                           title="幼儿园")
 
 
 def show_multi_years_teacher_0(year_list: list[str]) -> None:
@@ -158,6 +155,6 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
 def show_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
 
+
 def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
-

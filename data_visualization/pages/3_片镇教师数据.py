@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-import streamlit as st
-
 # 加入项目路径
 sys.path.append(
     str(
@@ -10,14 +8,13 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool import func as visual_func
-from data_visualization.render import page_3 as r
+from data_visualization.render.page_3 import *
 
 # 清空其他页暂用变量
-visual_func.session_state_reset(page=3)
+session_state_reset(page=3)
 
 # 设置页面格式
-visual_func.set_page_configuration(title="片镇教师数据", icon=":office:")
+set_page_configuration(title="片镇教师数据", icon=":office:")
 
 
 def get_year_list() -> list:
@@ -29,7 +26,7 @@ def get_year_list() -> list:
     return sorted(
         list(
             set(
-                [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+                [data[0] for data in load_json_data(folder="database", file_name="database_basic_info")[
                     "list_for_update_teacher_info"]]
             )
         ),
@@ -105,7 +102,7 @@ with st.container(border=True):
     if year_0 and area_0 and len(year_1) <= 1 and len(area_1) <= 1:
 
         try:
-            r.show_1_year_teacher_0(year=year_0, area=area_0)
+            show_1_year_teacher_0(year=year_0, area=area_0)
 
         except KeyError as e:
 
@@ -123,7 +120,7 @@ with st.container(border=True):
                 st.error(str(e), icon="😭")
 
         try:
-            r.show_1_year_teacher_1(year=year_0, area=area_0)
+            show_1_year_teacher_1(year=year_0, area=area_0)
 
         except KeyError as e:
 
@@ -146,7 +143,7 @@ with st.container(border=True):
         st.info("对比不同年份不同片镇的教师信息")
 
         try:
-            r.show_multi_years_and_multi_areas_teacher_0(year_list=year_1)
+            show_multi_years_and_multi_areas_teacher_0(year_list=year_1)
 
         except KeyError as e:
 
@@ -169,7 +166,7 @@ with st.container(border=True):
         st.info("对比某一片镇不同年份的教师信息")
 
         try:
-            r.show_multi_years_teacher_0(year_list=year_1)
+            show_multi_years_teacher_0(year_list=year_1)
 
         except KeyError as e:
 
@@ -192,7 +189,7 @@ with st.container(border=True):
         st.info("对比同一年份不同片镇的教师信息")
 
         try:
-            r.show_multi_areas_teacher_0(year_list=year_1)
+            show_multi_areas_teacher_0(year_list=year_1)
 
         except KeyError as e:
 
@@ -210,10 +207,10 @@ with st.container(border=True):
                 st.error(str(e), icon="😭")
 
     else:
-        r.show_text_info()
+        show_text_info()
 
-# if (visual_func.count_empty_values(lst=[year_0, year_1, area_0, area_1]) >= 2 and not (
+# if (count_empty_values(lst=[year_0, year_1, area_0, area_1]) >= 2 and not (
 #         year_0 is not None and area_0 is not None)
-#         or visual_func.count_empty_values(lst=[year_0, year_1, area_0, area_1]) == 1 and not (
+#         or count_empty_values(lst=[year_0, year_1, area_0, area_1]) == 1 and not (
 #                 year_1 is None or area_1 is None)):
-#     r.show_text_info()
+#     show_text_info()
