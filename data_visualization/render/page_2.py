@@ -192,9 +192,10 @@ def show_1_year_all_period(year: str):
             st.toast("学科柱状折线图展示异常", icon="😕")
 
         # 在编毕业院校统计
-        draw_line_chart(data=pd.DataFrame([data["2023"]["在编"]["全区"]["所有学段"]["院校级别"]],
-                                          columns=data["2023"]["在编"]["全区"]["所有学段"]["院校级别"].keys(),
-                                          index=["人数"]), title="毕业院校", height=400)
+        with st.container(border=True):
+            draw_line_chart(data=pd.DataFrame([data["2023"]["在编"]["全区"]["所有学段"]["院校级别"]],
+                                              columns=data["2023"]["在编"]["全区"]["所有学段"]["院校级别"].keys(),
+                                              index=["人数"]), title="毕业院校", height=400)
 
         with st.container(border=True):
             df_container = get_1_year_grad_school_dataframe(year=year)
