@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-import streamlit as st
-
 # 加入项目路径
 sys.path.append(
     str(
@@ -10,14 +8,13 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool import func as visual_func
-from data_visualization.render import page_2 as r
+from data_visualization.render.page_2 import *
 
 # 清空其他页暂用变量
-visual_func.session_state_reset(page=2)
+session_state_reset(page=2)
 
 # 设置全局属性
-visual_func.set_page_configuration(title="区级教师数据", icon=":classical_building:")
+set_page_configuration(title="区级教师数据", icon=":classical_building:")
 
 
 def get_year_list() -> list:
@@ -29,7 +26,7 @@ def get_year_list() -> list:
     return sorted(
         list(
             set(
-                [data[0] for data in visual_func.load_json_data(folder="database", file_name="database_basic_info")[
+                [data[0] for data in load_json_data(folder="database", file_name="database_basic_info")[
                     "list_for_update_teacher_info"]]
             )
         ),
@@ -70,7 +67,7 @@ if year_0 is not None and len(year_1) < 2:
     with st.container(border=True):
 
         try:
-            r.show_1_year_teacher_0(year=year_0)
+            show_1_year_teacher_0(year=year_0)
 
         except KeyError as e:
 
@@ -93,7 +90,7 @@ if year_0 is not None and len(year_1) < 2:
     with st.container(border=True):
 
         try:
-            r.show_1_year_teacher_1(year=year_0)
+            show_1_year_teacher_1(year=year_0)
 
         except KeyError as e:
 
@@ -113,7 +110,7 @@ if year_0 is not None and len(year_1) < 2:
 # 展示对比数据
 elif year_0 is not None and len(year_1) >= 2:
 
-    r.show_multi_years_teacher_0(year_list=year_1)
+    show_multi_years_teacher_0(year_list=year_1)
 
 else:
     st.toast("?")

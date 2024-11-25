@@ -1,11 +1,5 @@
-import pandas as pd
-import streamlit as st
-
-from calculation.retirement import get_age_from_citizen_id
-from data_visualization.tool.func import print_color_text, convert_dict_to_dataframe, del_tuple_in_list, \
-    execute_sql_sentence, sort_dataframe_columns, get_growth_rate_from_one_row_dataframe, \
-    get_growth_rate_from_multi_rows_dataframe, draw_mixed_bar_and_line, draw_line_chart, draw_pie_chart, draw_bar_chart, \
-    load_json_data, get_end_dict, distinguish_school_id, get_school_codes
+from calculation.retirement import *
+from data_visualization.tool.func import *
 from teacher_data_processing.read_database.get_database_data import \
     generate_sql_sentence as generate_sql_sentence_teacher
 
