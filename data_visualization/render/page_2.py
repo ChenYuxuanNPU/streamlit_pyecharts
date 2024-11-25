@@ -1,7 +1,5 @@
 from calculation.retirement import *
 from data_visualization.tool.func import *
-from teacher_data_processing.read_database.get_database_data import \
-    generate_sql_sentence as generate_sql_sentence_teacher
 
 
 class DataFrameContainer:
@@ -247,8 +245,7 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     ages = set()  # 用于检查age_dict中是否有对应的年龄
 
     id_list = execute_sql_sentence(
-        sentence=generate_sql_sentence_teacher(kind="在编", info_num=2, info=["身份证号", "性别"], scope="全区",
-                                               year=year)
+        sentence=f'select "身份证号", "性别" from teacher_data_0_{year}'
     )
 
     for item in id_list:
@@ -287,16 +284,13 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
 
     discipline_list = del_tuple_in_list(
         execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
-                                                   year=year, limit=16, order="desc",
-                                                   additional_requirement=['"主教学科" != "无"'])
+            sentence=f'select "主教学科", count(*) from teacher_data_0_{year} where "主教学科" != "无" group by "主教学科" order by count(*) desc limit 16'
         )
     )
 
     for discipline in discipline_list:
         data = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["性别"], scope="全区",
-                                                   year=year, additional_requirement=[f'"主教学科" = "{discipline}"'])
+            sentence=f'select "性别", count(*) from teacher_data_0_{year} where "主教学科" = "{discipline}" group by "性别"'
         )
 
         for item in data:
@@ -327,7 +321,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["985"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -346,7 +340,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["国优计划"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -365,7 +359,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["部属师范"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -384,7 +378,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in {tuple(get_school_codes()["211"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -403,7 +397,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" not in {tuple(["无", "51161", "51315"])} and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" not in ({', '.join([f'"{code}"' for code in ["无", "51161", "51315"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -616,8 +610,7 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 
         id_list = del_tuple_in_list(
             data=execute_sql_sentence(
-                sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["身份证号"], scope="全区",
-                                                       year=year)
+                sentence=f'select "身份证号" from teacher_data_0_{year}'
             )
         )
 
@@ -726,9 +719,7 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
         }
         """
         area_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["区域"], scope="全区",
-                                                   year=year,
-                                                   additional_requirement=[f'"区域" in {str(tuple(get_area_list()))}'])
+            sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({", ".join([f'"{area}"' for area in get_area_list()])}) group by "区域"'
         )
 
         for item in area_count_list:
@@ -737,11 +728,9 @@ def get_multi_years_area_dataframe(year_list: list[str]) -> DataFrameContainer:
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_area_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="area_and_year", df=df1)
-    # print(df1)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("area_growth_rate_and_year", df=df2)
-    # print(df2)
 
     return container
 
@@ -806,9 +795,7 @@ def get_multi_years_period_dataframe(year_list: list[str]) -> DataFrameContainer
         }
         """
         period_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["任教学段"], scope="全区",
-                                                   year=year, additional_requirement=[
-                    f'"任教学段" in {str(tuple(get_period_list()))}'])
+            sentence=f'select "任教学段", count(*) from teacher_data_0_{year} where "任教学段" in ({', '.join([f'"{period}"' for period in get_period_list()])}) group by "任教学段"'
         )
 
         for item in period_count_list:
@@ -884,9 +871,7 @@ def get_multi_years_edu_bg_dataframe(year_list: list[str]) -> DataFrameContainer
         }
         """
         edu_bg_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高学历"], scope="全区",
-                                                   year=year, additional_requirement=[
-                    f'"最高学历" in {str(tuple(get_edu_bg_list()))}'])
+            sentence=f'select "最高学历", count(*) from teacher_data_0_{year} where "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}) group by "最高学历"'
         )
 
         for item in edu_bg_count_list:
@@ -968,18 +953,14 @@ def get_multi_years_vocational_level_dataframe(year_list: list[str]) -> DataFram
         }
         """
         vocational_level_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["最高职称"], scope="全区",
-                                                   year=year, additional_requirement=[
-                    f'"最高职称" in {str(tuple(get_vocational_level_list()))}'])
+            sentence=f'select "最高职称", count(*) from teacher_data_0_{year} where "最高职称" in ({', '.join([f'"{level}"' for level in get_vocational_level_list()])}) group by "最高职称"'
         )
 
         for item in vocational_level_count_list:
             df1[year][item[0]] = item[1]
 
         vocational_level_detail_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["专业技术岗位"], scope="全区",
-                                                   year=year, additional_requirement=[
-                    f'"专业技术岗位" in {str(tuple(get_vocational_level_detail_list()))}'])
+            sentence=f'select "专业技术岗位", count(*) from teacher_data_0_{year} where "专业技术岗位" in ({', '.join([f'"{level}"' for level in get_vocational_level_detail_list()])}) group by "专业技术岗位"'
         )
 
         for item in vocational_level_detail_count_list:
@@ -1063,9 +1044,7 @@ def get_multi_years_discipline_dataframe(year_list: list[str]) -> DataFrameConta
         }
         """
         discipline_count_list = execute_sql_sentence(
-            sentence=generate_sql_sentence_teacher(kind="在编", info_num=1, info=["主教学科"], scope="全区",
-                                                   year=year, additional_requirement=[
-                    f'"主教学科" in {str(tuple(get_discipline_list()))}'])
+            sentence=f'select "主教学科", count(*) from teacher_data_0_{year} where "主教学科" in ({', '.join([f'"{discipline}"' for discipline in get_discipline_list()])}) group by "主教学科"'
         )
 
         for item in discipline_count_list:
@@ -1145,11 +1124,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
         """
 
         grad_school_id_list.extend(item for item in execute_sql_sentence(
-            # todo:以后改了sql生成函数记得改这里
-            # sentence=generate_sql_sentence_teacher(kind="在编", info_num=0, info=["参加工作前毕业院校代码"],
-            #                                        scope="全区", year=year,
-            #                                        additional_requirement=['("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
-            sentence=f'select  "{year}","参加工作前毕业院校代码"  from teacher_data_0_{year}  where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
+            sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
         ))
 
     for item in grad_school_id_list:
