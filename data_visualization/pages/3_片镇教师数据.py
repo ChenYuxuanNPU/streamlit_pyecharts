@@ -163,10 +163,8 @@ with st.container(border=True):
     # 对比某一片镇不同年份的教师信息
     elif len(year_1) > 1 and area_0:
 
-        st.info("对比某一片镇不同年份的教师信息")
-
         try:
-            show_multi_years_teacher_0(year_list=year_1)
+            show_multi_years_and_1_area_teacher_0(year_list=year_1, area=area_0)
 
         except KeyError as e:
 
@@ -189,7 +187,7 @@ with st.container(border=True):
         st.info("对比同一年份不同片镇的教师信息")
 
         try:
-            show_multi_areas_teacher_0(year_list=year_1)
+            show_1_year_and_multi_areas_teacher_0(year_list=year_1)
 
         except KeyError as e:
 
@@ -209,8 +207,3 @@ with st.container(border=True):
     else:
         show_text_info()
 
-# if (count_empty_values(lst=[year_0, year_1, area_0, area_1]) >= 2 and not (
-#         year_0 is not None and area_0 is not None)
-#         or count_empty_values(lst=[year_0, year_1, area_0, area_1]) == 1 and not (
-#                 year_1 is None or area_1 is None)):
-#     show_text_info()

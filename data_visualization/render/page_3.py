@@ -1,4 +1,36 @@
+from calculation.retirement import *
 from data_visualization.tool.func import *
+
+
+class DataFrameContainer:
+    """
+    用于动态返回多个dataframe
+    """
+
+    def __init__(self):
+        # 初始化一个空字典来存储 DataFrame
+        self.dataframes = {}
+
+    def add_dataframe(self, name, df):
+        # 添加一个 DataFrame 到字典中，使用 name 作为键
+        self.dataframes[name] = df
+
+    def get_dataframe(self, name):
+        # 根据名称获取 DataFrame
+        return self.dataframes.get(name, None)
+
+    def remove_dataframe(self, name):
+        # 根据名称移除 DataFrame
+        if name in self.dataframes:
+            del self.dataframes[name]
+
+    def list_dataframes(self):
+        # 列出所有存储的 DataFrame 的名称
+        return list(self.dataframes.keys())
+
+    def all_dataframes(self):
+        # 返回一个包含所有 DataFrame 的字典
+        return self.dataframes.copy()
 
 
 def get_base_data() -> dict:
@@ -148,13 +180,148 @@ def show_1_year_teacher_1(year: str, area: str) -> None:
                            title="幼儿园")
 
 
-def show_multi_years_teacher_0(year_list: list[str]) -> None:
-    pass
+def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> None:
+    """
+    用于展示同一片镇多年的在编教师数据对比信息
+    :param year_list: 年份列表
+    :param area: 查询的片镇名
+    :return:
+    """
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>年份对比</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        st.info("在编教师数随年份变化情况")
+        show_multi_years_and_1_area_teacher_0_count(year_list=year_list, area=area)
 
 
-def show_multi_areas_teacher_0(year_list: list[str]) -> None:
+def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
+    """
+    展示多年份教师数对比
+    :param year_list: 年份列表
+    :param area: 查询的单个片镇名
+    :return:
+    """
+
+    df_container = get_multi_years_age_dataframe(year_list=year_list, area=area)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="count_by_year"), title="", height=400)
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="age_and_year"),
+        df_line=df_container.get_dataframe(name="age_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        # line_max_=300,
+        # line_min_=-400,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    return None
+
+
+def get_multi_years_age_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+    """
+    根据年份列表生成多个年龄统计dataframe，放置在container中\n
+    age_and_year：所有数据，列为年龄，行为年份\n
+    age_growth_rate_and_year：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
+    count_by_year：每年的总人数，列为年份，单行\n
+    growth_rate_by_year：原dataframe中每一年相对于上一年的总增长率（年份总人数增长率，不考虑年龄），列为年份，单行\n
+    :param year_list: 查询的年份列表
+    :param area: 查询的片镇名
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            25:100,
+            26:200
+            },
+        "2023"：{
+            25：50，
+            24：100
+            }
+        }
+        """
+
+        id_list = del_tuple_in_list(
+            data=execute_sql_sentence(
+                sentence=f'select "身份证号" from teacher_data_0_{year} where "区域" = "{area}"'
+            )
+        )
+
+        for item in id_list:
+
+            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
+
+            if age == "0":
+                print_color_text(item)
+                print_color_text(year)
+
+            if age in df1[year].keys():
+                df1[year][age] += 1
+            else:
+                df1[year][age] = 1
+
+    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="age_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("age_growth_rate_and_year", df=df2)
+
+    df3 = pd.DataFrame(df1.sum(axis="columns")).T
+    df3.index = ["总人数"]
+    container.add_dataframe(name="count_by_year", df=df3)
+
+    df4 = get_growth_rate_from_one_row_dataframe(df=df3)
+    df4.index = ["增长率"]
+
+    container.add_dataframe(name="growth_rate_by_year", df=df4)
+
+    # print("")
+    # print("总人数的dataframe：")
+    # print("")
+    # print(f"df1:{df1}")
+    # print("")
+    # print(f"df2:{df2}")
+    # print("")
+    # print(f"df3:{df3}")
+    # print("")
+    # print(f"df4:{df4}")
+    # print("")
+
+    return container
+
+
+def show_1_year_and_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
 
 
 def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
+
+
+if __name__ == '__main__':
+    df_container1 = get_multi_years_age_dataframe(year_list=["2023", "2024"], area="永平")
