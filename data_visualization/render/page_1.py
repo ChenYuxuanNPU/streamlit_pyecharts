@@ -1,7 +1,4 @@
-import pandas as pd
-import streamlit as st
-
-from data_visualization.tool import func as visual_func
+from data_visualization.tool.func import *
 
 
 def get_base_data() -> dict:
@@ -9,7 +6,7 @@ def get_base_data() -> dict:
     获取全区学校数据
     :return:
     """
-    return visual_func.load_json_data(folder="result", file_name="school_info")
+    return load_json_data(folder="result", file_name="school_info")
 
 
 def show_pie_chart_info(year: str) -> None:
@@ -30,7 +27,7 @@ def show_pie_chart_info(year: str) -> None:
         with col0:
             # 合计学校数对比
             st.info(f"合计学校数：{get_base_data()[year]["合计"]["合计学校数"]}")
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period]["合计学校数"]] for period in get_base_data()["学段列表"]
                 ]),
@@ -45,7 +42,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period][school_kind]] for period in get_base_data()["学段列表"]
                 ]),
@@ -58,7 +55,7 @@ def show_pie_chart_info(year: str) -> None:
 
             # 合计教职工数对比
             st.info(f"合计教职工数：{get_base_data()[year]["合计"]["合计教职工数"]}")
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period]["合计教职工数"]] for period in get_base_data()["学段列表"]
                 ]),
@@ -73,7 +70,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period][school_kind]] for period in get_base_data()["学段列表"]
                 ]),
@@ -86,7 +83,7 @@ def show_pie_chart_info(year: str) -> None:
             # 合计学生数对比
             st.info(
                 f"合计学生数：{get_base_data()[year]["合计"]["合计学生数"]} / 合计班额数：{get_base_data()[year]["合计"]["合计班额数"]}")
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period]["合计学生数"]] for period in get_base_data()["学段列表"]
                 ]),
@@ -105,7 +102,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period][school_kind]] for period in get_base_data()["学段列表"]
                 ]),
@@ -118,7 +115,7 @@ def show_pie_chart_info(year: str) -> None:
 
             # 合计专任教师数对比
             st.info(f"合计专任教师数：{get_base_data()[year]["合计"]["合计专任教师数"]}")
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period]["合计专任教师数"]] for period in get_base_data()["学段列表"]
                 ]),
@@ -133,7 +130,7 @@ def show_pie_chart_info(year: str) -> None:
                 label_visibility="collapsed"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     [period, get_base_data()[year][period][school_kind]] for period in get_base_data()["学段列表"]
                 ]),
@@ -161,7 +158,7 @@ def show_summarized_info(year: str, ) -> None:
         col0, col1, col2 = st.columns(spec=3)
 
         with col0:
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     ["公办学校数", get_base_data()[year]["合计"]["公办学校数"]],
                     ["民办学校数", get_base_data()[year]["合计"]["民办学校数"]]
@@ -170,7 +167,7 @@ def show_summarized_info(year: str, ) -> None:
                 formatter="{c}--占比{d}%"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     ["白云区", get_base_data()[year]["合计"]["公办学校白云区户籍学生数"]],
                     ["市内外区",
@@ -184,7 +181,7 @@ def show_summarized_info(year: str, ) -> None:
             )
 
         with col1:
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     ["公办学校教职工数", get_base_data()[year]["合计"]["公办学校教职工数"]],
                     ["民办学校教职工数", get_base_data()[year]["合计"]["民办学校教职工数"]]
@@ -195,7 +192,7 @@ def show_summarized_info(year: str, ) -> None:
 
             # st.dataframe(height=385, width=int(1920/3), hide_index=True)
 
-            visual_func.draw_dataframe(
+            draw_dataframe(
                 data=pd.DataFrame(
                     [
                         ["学校数", "合计", get_base_data()[year]["合计"]["合计学校数"]],
@@ -229,7 +226,7 @@ def show_summarized_info(year: str, ) -> None:
             )
 
         with col2:
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     ["公办学校专任教师数", get_base_data()[year]["合计"]["公办学校专任教师数"]],
                     ["民办学校专任教师数", get_base_data()[year]["合计"]["民办学校专任教师数"]]
@@ -238,7 +235,7 @@ def show_summarized_info(year: str, ) -> None:
                 formatter="{c}--占比{d}%"
             )
 
-            visual_func.draw_pie_chart(
+            draw_pie_chart(
                 data=dict([
                     ["白云区", get_base_data()[year]["合计"]["民办学校白云区户籍学生数"]],
                     ["市内外区",
@@ -289,7 +286,7 @@ def show_period_detail_info(year: str) -> None:
                 col0, col1, col2 = st.columns(spec=3)
 
                 with col0:
-                    visual_func.draw_pie_chart(
+                    draw_pie_chart(
                         data=dict([
                             ["公办学校数", get_base_data()[year][period]["公办学校数"]],
                             ["民办学校数", get_base_data()[year][period]["民办学校数"]]
@@ -298,7 +295,7 @@ def show_period_detail_info(year: str) -> None:
                         formatter="{c}--占比{d}%"
                     )
 
-                    visual_func.draw_pie_chart(
+                    draw_pie_chart(
                         data=dict([
                             ["白云区", get_base_data()[year][period]["公办学校白云区户籍学生数"]],
                             ["市内外区",
@@ -312,7 +309,7 @@ def show_period_detail_info(year: str) -> None:
                     )
 
                 with col1:
-                    visual_func.draw_pie_chart(
+                    draw_pie_chart(
                         data=dict([
                             ["公办学校教职工数", get_base_data()[year][period]["公办学校教职工数"]],
                             ["民办学校教职工数", get_base_data()[year][period]["民办学校教职工数"]]
@@ -323,7 +320,7 @@ def show_period_detail_info(year: str) -> None:
 
                     # st.dataframe(height=385, width=int(1920/3), hide_index=True)
 
-                    visual_func.draw_dataframe(
+                    draw_dataframe(
                         data=pd.DataFrame(
                             [
                                 ["合计学校数", get_base_data()[year][period]["合计学校数"]],
@@ -339,7 +336,7 @@ def show_period_detail_info(year: str) -> None:
                     )
 
                 with col2:
-                    visual_func.draw_pie_chart(
+                    draw_pie_chart(
                         data=dict([
                             ["公办学校专任教师数", get_base_data()[year][period]["公办学校专任教师数"]],
                             ["民办学校专任教师数", get_base_data()[year][period]["民办学校专任教师数"]]
@@ -348,7 +345,7 @@ def show_period_detail_info(year: str) -> None:
                         formatter="{c}--占比{d}%"
                     )
 
-                    visual_func.draw_pie_chart(
+                    draw_pie_chart(
                         data=dict([
                             ["白云区", get_base_data()[year][period]["民办学校白云区户籍学生数"]],
                             ["市内外区",
@@ -379,7 +376,7 @@ def show_period_detail_info(year: str) -> None:
 
                 with col_mid:
 
-                    visual_func.draw_dataframe(
+                    draw_dataframe(
                         data=pd.DataFrame(
                             [
                                 ["办学类型",
@@ -414,7 +411,7 @@ def show_detail_button() -> None:
     with col_mid:
         st.button(
             label="学段详细信息",
-            on_click=visual_func.page1_show_detail_info
+            on_click=page1_show_detail_info
         )
 
 
@@ -428,6 +425,6 @@ def hide_detail_button() -> None:
     with col_mid:
         st.button(
             label="收起",
-            on_click=visual_func.page1_hide_detail_info,
+            on_click=page1_hide_detail_info,
             type="primary"
         )

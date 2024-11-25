@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-import streamlit as st
-
 # 加入项目路径
 sys.path.append(
     str(
@@ -10,14 +8,13 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool import func as visual_func
-from data_visualization.render import page_1 as r
+from data_visualization.render.page_1 import *
 
 # 清空其他页暂用变量
-visual_func.session_state_reset(page=1)
+session_state_reset(page=1)
 
 # 设置全局属性
-visual_func.set_page_configuration(title="教育数字大屏", icon=":sparkler:")
+set_page_configuration(title="教育数字大屏", icon=":sparkler:")
 
 
 def get_year_list() -> list:
@@ -27,7 +24,7 @@ def get_year_list() -> list:
     """
 
     return sorted(
-        visual_func.load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"],
+        load_json_data(folder="database", file_name="database_basic_info")["list_for_update_school_info"],
         reverse=True
     )
 
@@ -56,18 +53,18 @@ with right:
         placeholder="可选项"
     )
 
-r.show_pie_chart_info(year=year_0)
+show_pie_chart_info(year=year_0)
 
-r.show_summarized_info(year=year_0)
+show_summarized_info(year=year_0)
 
 # 某学段展示
 
 # 展示信息时
 if st.session_state.page1_show_detail:
 
-    r.show_period_detail_info(year=year_0)
+    show_period_detail_info(year=year_0)
 
 # 不展示信息时
 else:
     # 放一个展开信息的按钮
-    r.show_detail_button()
+    show_detail_button()
