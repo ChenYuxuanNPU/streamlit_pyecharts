@@ -33,6 +33,14 @@ class DataFrameContainer:
         return self.dataframes.copy()
 
 
+def get_period_list() -> list[str]:
+    """
+    学段列表：["高中", "初中", "小学", "幼儿园"]
+    :return:
+    """
+    return ["高中", "初中", "小学", "幼儿园"]
+
+
 def get_base_data() -> dict:
     """
     获取全区教师数据
@@ -199,6 +207,9 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         st.info("在编教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_count(year_list=year_list, area=area)
 
+        st.info("学段教师数随年份变化情况")
+        show_multi_years_and_1_area_teacher_0_period(year_list=year_list, area=area)
+
 
 def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
     """
@@ -300,17 +311,83 @@ def get_multi_years_age_dataframe(year_list: list[str], area: str) -> DataFrameC
 
     container.add_dataframe(name="growth_rate_by_year", df=df4)
 
-    # print("")
-    # print("总人数的dataframe：")
-    # print("")
-    # print(f"df1:{df1}")
-    # print("")
-    # print(f"df2:{df2}")
-    # print("")
-    # print(f"df3:{df3}")
-    # print("")
-    # print(f"df4:{df4}")
-    # print("")
+    return container
+
+
+def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str) -> None:
+    """
+    展示多年份不同学段教师数对比
+    :param year_list: 年份列表
+    :param area: 片镇名
+    :return:
+    """
+    df_container = get_multi_years_and_1_area_period_dataframe(year_list=year_list, area=area)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="period_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="period_growth_rate_and_year").T, title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="period_and_year"),
+        df_line=df_container.get_dataframe(name="period_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        line_max_=20,
+        line_min_=-20,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    return None
+
+
+def get_multi_years_and_1_area_period_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学段统计dataframe，放置在container中\n
+    period_and_year：所有数据，列为学段，行为年份\n
+    period_growth_rate_and_year：所有数据对学段求增长率，行为增长率对应年份，列为学段，单行\n
+    :param year_list: 查询的年份列表
+    :param area: 片镇名
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学段列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "高中":100,
+            "初中":200
+            },
+        "2023"：{
+            "高中"：50，
+            "初中"：100
+            }
+        }
+        """
+        period_count_list = execute_sql_sentence(
+            sentence=f'select "任教学段", count(*) from teacher_data_0_{year} where "区域" = "{area}" and "任教学段" in ({', '.join([f'"{period}"' for period in get_period_list() if period != "高中"])}) group by "任教学段"'
+        )
+
+        for item in period_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=[period for period in get_period_list() if period != "高中"])
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="period_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe(name="period_growth_rate_and_year", df=df2)
 
     return container
 
@@ -324,4 +401,5 @@ def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
 
 
 if __name__ == '__main__':
-    df_container1 = get_multi_years_age_dataframe(year_list=["2023", "2024"], area="永平")
+    # get_multi_years_and_1_area_period_dataframe(year_list=["2023", "2024"], area="永平")
+    pass
