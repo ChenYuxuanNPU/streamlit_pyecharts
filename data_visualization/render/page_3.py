@@ -180,6 +180,9 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         st.info("学科教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_discipline(year_list=year_list, area=area)
 
+        st.info("教师毕业院校水平随年份变化情况")
+        show_multi_years_and_1_area_teacher_0_grad_school(year_list=year_list, area=area)
+
 
 def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
     """
@@ -614,6 +617,104 @@ def get_multi_years_and_1_area_teacher_0_discipline_dataframe(year_list: list[st
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe("discipline_growth_rate_and_year", df=df2)
+
+    return container
+
+
+def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area: str) -> None:
+    """
+    展示多年份教师毕业院校质量对比
+    :param year_list: 年份列表
+    :param area: 片镇名
+    :return:
+    """
+
+    df_container = get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list=year_list, area=area)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="grad_school_kind_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="grad_school_kind_and_year"),
+        df_line=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        # line_max_=65,
+        # line_min_=-65,
+        line_formatter="{value} %"
+    )
+
+    return None
+
+
+def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学科统计dataframe，放置在container中\n
+    grad_school_id_and_year：所有数据，列为院校代码，行为年份\n
+    grad_school_kind_and_year：所有数据，列为院校类型，行为年份\n
+    grad_school_kind_growth_rate_and_year：所有数据对院校类型求增长率，行为增长率对应年份，列为院校类型，单行\n
+    :param year_list: 查询的年份列表
+    :param area: 片镇名
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+    grad_school_id_list = []
+
+    for year in year_list:
+        df0[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "10699":100,
+            "10558":200
+            },
+        "2023"：{
+            "10699"：50，
+            "10558"：100
+            }
+        }
+        """
+
+        grad_school_id_list.extend(item for item in execute_sql_sentence(
+            sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
+        ))
+
+    for item in grad_school_id_list:
+        if item[1] not in df0[item[0]].keys():
+            df0[item[0]][item[1]] = 1
+        else:
+            df0[item[0]][item[1]] += 1
+
+    df1 = convert_dict_to_dataframe(d=df0)
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="grad_school_id_and_year", df=df1)
+
+    df2 = {}
+    for year in year_list:
+        df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
+
+    for item in grad_school_id_list:
+        for kind in distinguish_school_id(item[1]):
+            df2[item[0]][kind] += 1
+
+    df2 = convert_dict_to_dataframe(d=df2)
+    df2.fillna(value=0, inplace=True)
+    df2 = df2.loc[:, ~(df2 == 0).all()]  # 删除全为0的列
+    container.add_dataframe(name="grad_school_kind_and_year", df=df2)
+
+    df3 = get_growth_rate_from_multi_rows_dataframe(df=df2)
+    container.add_dataframe("grad_school_kind_growth_rate_and_year", df=df3)
 
     return container
 
