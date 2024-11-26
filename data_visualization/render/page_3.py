@@ -177,6 +177,9 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         st.info("专技职称随年份变化情况")
         show_multi_years_and_1_area_teacher_0_vocational_level(year_list=year_list, area=area)
 
+        st.info("学科教师数随年份变化情况")
+        show_multi_years_and_1_area_teacher_0_discipline(year_list=year_list, area=area)
+
 
 def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
     """
@@ -526,10 +529,91 @@ def get_multi_years_and_1_area_teacher_0_vocational_level_dataframe(year_list: l
 
     df3 = convert_dict_to_dataframe(d=df3).reindex(columns=get_vocational_level_detail_list())
     df3.fillna(value=0, inplace=True)
+    df3 = df3.loc[:, ~(df3 == 0).all()]  # 删除全为0的列
     container.add_dataframe(name="vocational_level_detail_and_year", df=df3)
 
     df4 = get_growth_rate_from_multi_rows_dataframe(df=df3)
     container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df4)
+
+    return container
+
+
+def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area: str) -> None:
+    """
+    展示多年份不同学科教师数对比
+    :param year_list: 年份列表
+    :param area: 片镇名
+    :return:
+    """
+    df_container = get_multi_years_and_1_area_teacher_0_discipline_dataframe(year_list=year_list, area=area)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="discipline_and_year"),
+        df_line=df_container.get_dataframe(name="discipline_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        # line_max_=50,
+        # line_min_=-100,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    return None
+
+
+def get_multi_years_and_1_area_teacher_0_discipline_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学科统计dataframe，放置在container中\n
+    discipline_and_year：所有数据，列为学科，行为年份\n
+    discipline_growth_rate_and_year：所有数据对学科求增长率，行为增长率对应年份，列为学科，单行\n
+    :param year_list: 查询的年份列表
+    :param area: 片镇名
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "语文":100,
+            "数学":200
+            },
+        "2023"：{
+            "语文"：50，
+            "数学"：100
+            }
+        }
+        """
+        discipline_count_list = execute_sql_sentence(
+            sentence=f'select "主教学科", count(*) from teacher_data_0_{year} where "区域" = "{area}" and "主教学科" in ({', '.join([f'"{discipline}"' for discipline in get_discipline_list()])}) group by "主教学科"'
+        )
+
+        for item in discipline_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_discipline_list())
+    df1.fillna(value=0, inplace=True)
+    df1 = df1.loc[:, ~(df1 == 0).all()]  # 删除全为0的列
+    container.add_dataframe(name="discipline_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("discipline_growth_rate_and_year", df=df2)
 
     return container
 
