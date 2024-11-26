@@ -7,3 +7,6 @@
 /test_code/
 /.idea/
 /update_data_source/output/
+
+/data_visualization/pages/100_testpage.py
+/daily_work/execute_given_sql_sentence.py
