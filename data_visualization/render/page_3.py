@@ -41,6 +41,14 @@ def get_period_list() -> list[str]:
     return ["高中", "初中", "小学", "幼儿园"]
 
 
+def get_edu_bg_list() -> list[str]:
+    """
+    学历列表：["专科", "本科", "硕士研究生", "博士研究生"]
+    :return:
+    """
+    return ["专科", "本科", "硕士研究生", "博士研究生"]
+
+
 def get_base_data() -> dict:
     """
     获取全区教师数据
@@ -210,6 +218,9 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         st.info("学段教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_period(year_list=year_list, area=area)
 
+        st.info("学历水平随年份变化情况")
+        show_multi_years_and_1_area_teacher_0_edu_bg(year_list=year_list, area=area)
+
 
 def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
     """
@@ -321,7 +332,7 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
     :param area: 片镇名
     :return:
     """
-    df_container = get_multi_years_and_1_area_period_dataframe(year_list=year_list, area=area)
+    df_container = get_multi_years_and_1_area_teacher_0_period_dataframe(year_list=year_list, area=area)
 
     left, right = st.columns(spec=2)
 
@@ -348,7 +359,7 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
     return None
 
 
-def get_multi_years_and_1_area_period_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+def get_multi_years_and_1_area_teacher_0_period_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
     """
     根据年份列表生成多个学段统计dataframe，放置在container中\n
     period_and_year：所有数据，列为学段，行为年份\n
@@ -388,6 +399,85 @@ def get_multi_years_and_1_area_period_dataframe(year_list: list[str], area: str)
 
     df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
     container.add_dataframe(name="period_growth_rate_and_year", df=df2)
+
+    return container
+
+
+def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str) -> None:
+    """
+    展示多年份教师学历对比
+    :param year_list: 年份列表
+    :param area: 片镇名
+    :return:
+    """
+    df_container = get_multi_years_and_1_area_teacher_0_edu_bg_dataframe(year_list=year_list, area=area)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").T, title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="edu_bg_and_year"),
+        df_line=df_container.get_dataframe(name="edu_bg_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        line_max_=60,
+        line_min_=-100,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    return None
+
+
+def get_multi_years_and_1_area_teacher_0_edu_bg_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
+    """
+    根据年份列表生成多个学历统计dataframe，放置在container中\n
+    edu_bg_and_year：所有数据，列为学历，行为年份\n
+    edu_bg_growth_rate_and_year：所有数据对学历求增长率，行为增长率对应年份，列为学历，单行\n
+    :param year_list: 查询的年份列表
+    :param area: 片镇名
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+
+    for year in year_list:
+
+        df1[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "本科":100,
+            "硕士研究生":200
+            },
+        "2023"：{
+            "本科"：50，
+            "硕士研究生"：100
+            }
+        }
+        """
+        edu_bg_count_list = execute_sql_sentence(
+            sentence=f'select "最高学历", count(*) from teacher_data_0_{year} where "区域" = "{area}" and "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}) group by "最高学历"'
+        )
+
+        for item in edu_bg_count_list:
+            df1[year][item[0]] = item[1]
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
+    df1.fillna(value=0, inplace=True)
+    df1 = df1.loc[:, ~(df1 == 0).all()]  # 删除全为0的列
+    container.add_dataframe(name="edu_bg_and_year", df=df1)
+
+    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
+    container.add_dataframe("edu_bg_growth_rate_and_year", df=df2)
 
     return container
 
