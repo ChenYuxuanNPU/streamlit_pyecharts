@@ -224,81 +224,125 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
     """
     container = DataFrameContainer()
 
-    container.add_dataframe(
-        name="df_985",
-        df=pd.Series(
-            dict(
-                execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+    try:
+        container.add_dataframe(
+            name="df_985",
+            df=pd.Series(
+                dict(
+                    execute_sql_sentence(
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    )
                 )
             )
+            .nlargest(20).to_frame()
+            .rename(
+                index={
+                    key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+                },
+                columns={0: "人数"}
+            )
+            .rename_axis(["985院校"])
         )
-        .nlargest(20).to_frame()
-        .rename(
-            index={
-                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            },
-            columns={0: "人数"}
-        )
-        .rename_axis(["985院校"])
-    )
 
-    container.add_dataframe(
-        name="df_nettp",
-        df=pd.Series(
-            dict(
-                execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
-                )
+    except TypeError as e:
+        if "Cannot use method 'nlargest' with dtype object" in str(e):
+            st.toast(f'无985院校毕业生', icon="😟")
+            container.add_dataframe(
+                name="df_985",
+                df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["985院校"])
             )
-        )
-        .nlargest(20).to_frame()
-        .rename(
-            index={
-                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            },
-            columns={0: "人数"}
-        )
-        .rename_axis(["国优计划院校"])
-    )
+        else:
+            print(e)
 
-    container.add_dataframe(
-        name="df_affiliate",
-        df=pd.Series(
-            dict(
-                execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+    try:
+        container.add_dataframe(
+            name="df_nettp",
+            df=pd.Series(
+                dict(
+                    execute_sql_sentence(
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    )
                 )
             )
+            .nlargest(20).to_frame()
+            .rename(
+                index={
+                    key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+                },
+                columns={0: "人数"}
+            )
+            .rename_axis(["国优计划院校"])
         )
-        .nlargest(20).to_frame()
-        .rename(
-            index={
-                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            },
-            columns={0: "人数"}
-        )
-        .rename_axis(["部属师范院校"])
-    )
 
-    container.add_dataframe(
-        name="df_211",
-        df=pd.Series(
-            dict(
-                execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+    except TypeError as e:
+        if "Cannot use method 'nlargest' with dtype object" in str(e):
+            st.toast(f'无国优计划院校毕业生', icon="😟")
+            container.add_dataframe(
+                name="df_nettp",
+                df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["国优计划院校"])
+            )
+        else:
+            print(e)
+
+    try:
+        container.add_dataframe(
+            name="df_affiliate",
+            df=pd.Series(
+                dict(
+                    execute_sql_sentence(
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    )
                 )
             )
+            .nlargest(20).to_frame()
+            .rename(
+                index={
+                    key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+                },
+                columns={0: "人数"}
+            )
+            .rename_axis(["部属师范院校"])
         )
-        .nlargest(20).to_frame()
-        .rename(
-            index={
-                key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
-            },
-            columns={0: "人数"}
+
+    except TypeError as e:
+        if "Cannot use method 'nlargest' with dtype object" in str(e):
+            st.toast(f'无部属师范院校毕业生', icon="😟")
+            container.add_dataframe(
+                name="df_affiliate",
+                df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["部属师范院校"])
+            )
+        else:
+            print(e)
+
+    try:
+        container.add_dataframe(
+            name="df_211",
+            df=pd.Series(
+                dict(
+                    execute_sql_sentence(
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    )
+                )
+            )
+            .nlargest(20).to_frame()
+            .rename(
+                index={
+                    key: value[0] for key, value in load_json_data(folder="source", file_name="院校代码").items()
+                },
+                columns={0: "人数"}
+            )
+            .rename_axis(["211院校"])
         )
-        .rename_axis(["211院校"])
-    )
+
+    except TypeError as e:
+        if "Cannot use method 'nlargest' with dtype object" in str(e):
+            st.toast(f'无211院校毕业生', icon="😟")
+            container.add_dataframe(
+                name="df_211",
+                df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["211院校"])
+            )
+        else:
+            print(e)
 
     container.add_dataframe(
         name="df_all",
