@@ -620,13 +620,15 @@ def draw_pie_chart(data: pd.DataFrame | dict, title: str, height=0, formatter="{
     return None
 
 
-def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_show_visual_map=True) -> None:
+def draw_bar_chart(data: pd.DataFrame | dict, title: str, height: int = 0, end: int = 100, axis_font_size: int = 12,
+                   is_show_visual_map: bool = True) -> None:
     """
     绘制柱状图
     :param data: 绘图所用数据
     :param title: 图表标题
     :param height: 图表高度，默认根据分辨率自适应
     :param end: 图标下方动态进度条最大值
+    :param axis_font_size: 坐标轴标签字体大小
     :param is_show_visual_map: 是否显示动态进度条
     :return:
     """
@@ -635,19 +637,20 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
         height = int(get_monitors()[0].height / 1080) * 350
 
     if isinstance(data, dict):
-        chart_data = [values for values in data.values()]
+        chart = Bar()
+        chart.add_xaxis([keys for keys in data.keys()])
+        chart.add_yaxis("总人数", [values for values in data.values()])
+
     elif isinstance(data, pd.DataFrame):
         return None
+
     else:
         return None
-
-    chart = Bar()
-    chart.add_xaxis([keys for keys in data.keys()])
-    chart.add_yaxis("总人数", chart_data)
 
     chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
                           legend_opts=opts.LegendOpts(is_show=False),
                           datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
+                          xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(font_size=axis_font_size)),
                           visualmap_opts=opts.VisualMapOpts(is_show=is_show_visual_map, pos_right="1%",
                                                             pos_top="30%",
                                                             max_=max([values for values in data.values()])))
@@ -665,7 +668,8 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height=0, end=100, is_
 def draw_line_chart(data: pd.DataFrame, title: str,
                     mark_line_y: int = None,
                     formatter: str = "{value}",
-                    height=350, is_symbol_show: bool = True, is_label_show: bool = False) -> None:
+                    height: int = 350, axis_font_size: int = 12,
+                    is_symbol_show: bool = True, is_label_show: bool = False) -> None:
     """
     绘制折线图
     :param data: 绘图所用数据
@@ -673,6 +677,7 @@ def draw_line_chart(data: pd.DataFrame, title: str,
     :param mark_line_y: 标记线绝对高度
     :param formatter: 坐标轴单位
     :param height: 图表高度，默认根据分辨率自适应
+    :param axis_font_size: 坐标轴标签字体大小
     :param is_symbol_show: 是否在鼠标悬停数据点时显示信息，数据点是否扩大为圈圈
     :param is_label_show: 是否在数据点上显示数值
     :return:
@@ -698,7 +703,8 @@ def draw_line_chart(data: pd.DataFrame, title: str,
 
     chart.set_global_opts(
         title_opts=opts.TitleOpts(title=title),
-        yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter))
+        yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter)),
+        xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(font_size=axis_font_size))
     )
 
     st_pyecharts(
