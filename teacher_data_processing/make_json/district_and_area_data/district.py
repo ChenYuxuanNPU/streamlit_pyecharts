@@ -1,7 +1,4 @@
-import sqlite3
-
-from teacher_data_processing.read_database import get_database_data as gd
-from teacher_data_processing.tool import func as tch_proc_func
+from teacher_data_processing.tool.func import *
 
 
 def update(year: str, kind: str) -> dict:
@@ -13,9 +10,9 @@ def update(year: str, kind: str) -> dict:
     """
     result = []
 
-    c, conn = tch_proc_func.connect_database()
+    c, conn = connect_database()
 
-    json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
+    json_data = load_json_data(folder="result", file_name="teacher_info")
 
     # 下面更新在编和编外都有的字段
 
@@ -33,7 +30,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/总人数", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/总人数", value=result,
                                               json_data=json_data)
 
     result = []
@@ -51,7 +48,7 @@ def update(year: str, kind: str) -> dict:
 
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_educational_background_order()[x[0]]
+                c.fetchall(), key=lambda x: get_educational_background_order()[x[0]]
             )
         )
 
@@ -62,7 +59,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高学历", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高学历", value=result,
                                               json_data=json_data)
 
     result = []
@@ -88,7 +85,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/性别", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/性别", value=result,
                                               json_data=json_data)
 
     result = []
@@ -106,7 +103,7 @@ def update(year: str, kind: str) -> dict:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_area_order()[x[0]]
+                c.fetchall(), key=lambda x: get_area_order()[x[0]]
             )
         )
 
@@ -117,7 +114,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/片区统计", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/片区统计", value=result,
                                               json_data=json_data)
 
     result = []
@@ -134,7 +131,7 @@ def update(year: str, kind: str) -> dict:
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_period_order()[x[0]]
+                c.fetchall(), key=lambda x: get_period_order()[x[0]]
             )
         )
 
@@ -145,7 +142,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/学段统计", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/学段统计", value=result,
                                               json_data=json_data)
 
     result = []
@@ -160,10 +157,10 @@ def update(year: str, kind: str) -> dict:
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = tch_proc_func.combine_none_and_others(
+        result = combine_none_and_others(
             dict(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.get_cadre_teacher_order()[x[0]]
+                    c.fetchall(), key=lambda x: get_cadre_teacher_order()[x[0]]
                 )
             )
         )
@@ -175,7 +172,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/骨干教师", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/骨干教师", value=result,
                                               json_data=json_data)
 
     result = []
@@ -201,7 +198,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/未持有教师资格",
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/未持有教师资格",
                                               value=result,
                                               json_data=json_data)
 
@@ -222,7 +219,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/持有教师资格", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
 
     result = []
@@ -247,7 +244,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/未持有教师资格", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/未持有教师资格", value=result,
                                               json_data=json_data)
 
     result = []
@@ -268,7 +265,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/持有教师资格", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/幼儿园/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
 
     result = []
@@ -292,7 +289,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/未持有教师资格", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/未持有教师资格", value=result,
                                               json_data=json_data)
 
     result = []
@@ -312,7 +309,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/持有教师资格", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/中小学/教师资格/持有教师资格", value=result,
                                               json_data=json_data)
 
     result = []
@@ -327,9 +324,9 @@ def update(year: str, kind: str) -> dict:
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = tch_proc_func.combine_highest_title(
+        result = combine_highest_title(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_highest_title_order()[x[0]]
+                c.fetchall(), key=lambda x: get_highest_title_order()[x[0]]
             )
         )
 
@@ -340,7 +337,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高职称", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/最高职称", value=result,
                                               json_data=json_data)
 
     result = []
@@ -365,7 +362,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/四名工作室主持人",
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/四名工作室主持人",
                                               value=result,
                                               json_data=json_data)
 
@@ -385,7 +382,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/无", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/四名工作室/无", value=result,
                                               json_data=json_data)
 
     result = []
@@ -401,8 +398,10 @@ def update(year: str, kind: str) -> dict:
 
     try:
         c.execute(sql_sentence)
-        result = dict(
-            c.fetchall()
+        result = simplify_school_name(
+            d=dict(
+                c.fetchall()
+            )
         )
 
     except Exception as e:
@@ -412,7 +411,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布前三十", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布前三十", value=result,
                                               json_data=json_data)
 
     result = []
@@ -429,8 +428,10 @@ def update(year: str, kind: str) -> dict:
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = dict(
-            c.fetchall()
+        result = simplify_school_name(
+            d=dict(
+                c.fetchall()
+            )
         )
 
     except Exception as e:
@@ -440,7 +441,7 @@ def update(year: str, kind: str) -> dict:
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布后三十", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/教师分布后三十", value=result,
                                               json_data=json_data)
 
     result = []
@@ -465,9 +466,9 @@ def update(year: str, kind: str) -> dict:
         case _:
             print("报错 district.py")
 
-    tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
+    save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
-    tch_proc_func.disconnect_database(conn=conn)
+    disconnect_database(conn=conn)
 
     return json_data
 
@@ -493,7 +494,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = tch_proc_func.age_statistics(
+        result = age_statistics(
             age_count_list=c.fetchall()
         )
 
@@ -504,7 +505,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/年龄", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/年龄", value=result,
                                               json_data=json_data)
 
     result = []
@@ -532,7 +533,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/主教学科", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/主教学科", value=result,
                                               json_data=json_data)
 
     result = []
@@ -559,7 +560,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/专业技术岗位", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/专业技术岗位", value=result,
                                               json_data=json_data)
     result = []
 
@@ -575,7 +576,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        result = tch_proc_func.count_school_id(
+        result = count_school_id(
             c.fetchall()
         )
 
@@ -586,7 +587,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别", value=result,
                                               json_data=json_data)
 
     result = []
@@ -601,15 +602,15 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
     try:
         c.execute(sql_sentence)
-        # result = tch_proc_func.combine_administrative_position(
+        # result = combine_administrative_position(
         #     sorted(
-        #         c.fetchall(), key=lambda x: tch_proc_func.get_current_administrative_position_order()[x[0]]
+        #         c.fetchall(), key=lambda x: get_current_administrative_position_order()[x[0]]
         #     )
         # )
 
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_current_administrative_position_order()[x[0]]
+                c.fetchall(), key=lambda x: get_current_administrative_position_order()[x[0]]
             )
         )
 
@@ -620,7 +621,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/行政职务", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/行政职务", value=result,
                                               json_data=json_data)
 
     result = []
@@ -637,7 +638,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
         c.execute(sql_sentence)
         result = dict(
             sorted(
-                c.fetchall(), key=lambda x: tch_proc_func.get_area_of_supporting_education_order()[x[0]]
+                c.fetchall(), key=lambda x: get_area_of_supporting_education_order()[x[0]]
             )
         )
 
@@ -648,7 +649,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     finally:
         conn.commit()
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/所有学段/支教地域", value=result,
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/支教地域", value=result,
                                               json_data=json_data)
 
     result = []
@@ -690,7 +691,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
     result = []
 
     # 遍历四个学段
-    for period in tch_proc_func.get_period_list():
+    for period in get_period_list():
 
         ###
         # 全区分学段人员年龄统计
@@ -701,7 +702,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = tch_proc_func.age_statistics(
+            result = age_statistics(
                 age_count_list=c.fetchall()
             )
 
@@ -712,7 +713,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/年龄", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/年龄", value=result,
                                                   json_data=json_data)
         # json_data['在编']['全区'][period]['年龄'] = copy.deepcopy(dict(result))
         result = []
@@ -739,7 +740,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/性别", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/性别", value=result,
                                                   json_data=json_data)
         # json_data['在编']['全区'][period]['性别'] = copy.deepcopy(dict(result))
         result = []
@@ -767,7 +768,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/主教学科", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/主教学科", value=result,
                                                   json_data=json_data)
         # json_data['在编']['全区'][period]['主教学科'] = copy.deepcopy(result)
         result = []
@@ -785,7 +786,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
             c.execute(sql_sentence)
             result = dict(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.get_educational_background_order()[x[0]]
+                    c.fetchall(), key=lambda x: get_educational_background_order()[x[0]]
                 )
             )
 
@@ -796,7 +797,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/最高学历", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高学历", value=result,
                                                   json_data=json_data)
         # json_data['在编']['全区'][period]['最高学历'] = copy.deepcopy(result)
 
@@ -813,9 +814,9 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = tch_proc_func.combine_highest_title(
+            result = combine_highest_title(
                 sorted(
-                    c.fetchall(), key=lambda x: tch_proc_func.get_highest_title_order()[x[0]]
+                    c.fetchall(), key=lambda x: get_highest_title_order()[x[0]]
                 )
             )
 
@@ -826,7 +827,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称", value=result,
                                                   json_data=json_data)
 
         result = []
@@ -844,7 +845,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         # 取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
         try:
             c.execute(sql_sentence)
-            result = tch_proc_func.count_school_id(
+            result = count_school_id(
                 c.fetchall()
             )
 
@@ -855,7 +856,7 @@ def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.C
         finally:
             conn.commit()
 
-        json_data = tch_proc_func.dict_assignment(route=f"{year}/{kind}/全区/{period}/院校级别", value=result,
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/院校级别", value=result,
                                                   json_data=json_data)
 
         result = []
