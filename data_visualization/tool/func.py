@@ -1060,6 +1060,13 @@ def simplify_school_name(dict1: dict) -> dict:
         if len(temp_item) > 2 and temp_item[-2:] == "学校":
             temp_item = temp_item[:-2]
 
+        # 针对广二师实验优化 广东第二师范学院实验中学
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)东第(.*?)范学院(.*?)$')
+
+        # 针对广外实验优化 广东外语外贸大学实验中学
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)东(.*?)语外贸大学(.*?)$')
+
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)属(.*?)学$')
         temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)第(.*?)学$')
 
         output.append([temp_item, item[1]])
