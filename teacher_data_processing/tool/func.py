@@ -302,13 +302,13 @@ def reverse_label_and_value(old_list: list) -> list:
     return new_list
 
 
-def simplify_school_name(dict1: dict) -> dict:
+def simplify_school_name(d: dict) -> dict:
     """
     简化校名（对于输入的字典只化简key的校名）
-    :param dict1: 校名数据，形如：{'广州市培英中学': ['124401114553841006', '完全中学', '直管', 412, 0, 412], '广州市第六十五中学': ['12440111455384127X', '完全中学', '直管', 349, 0, 349],}
+    :param d: 校名数据，形如：{'广州市培英中学': ['124401114553841006', '完全中学', '直管', 412, 0, 412], '广州市第六十五中学': ['12440111455384127X', '完全中学', '直管', 349, 0, 349],}
     :return: 返回化简后的字典，只有每一个校名key被修改了，value不变
     """
-    temp = [item for item in dict1.items()]
+    temp = [item for item in d.items()]
     output = []
 
     for item in temp:
@@ -326,9 +326,6 @@ def simplify_school_name(dict1: dict) -> dict:
         if len(temp_item) > 2 and temp_item[0:2] == "广州":
             temp_item = temp_item[2:]
 
-        if len(temp_item) > 2 and temp_item[0:2] == "学校":
-            temp_item = temp_item[2:]
-
         if len(temp_item) > 2 and temp_item[-2:] == "学校":
             temp_item = temp_item[:-2]
 
@@ -338,6 +335,8 @@ def simplify_school_name(dict1: dict) -> dict:
         # 针对广外实验优化 广东外语外贸大学实验中学
         temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)东(.*?)语外贸大学(.*?)$')
 
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)附属第(.*?)学$')
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)第(.*?)初级(.*?)学$')
         temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)属(.*?)学$')
         temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)第(.*?)学$')
 
