@@ -1,5 +1,6 @@
 import copy
 import json
+import re
 import sqlite3
 from pathlib import Path
 
@@ -303,13 +304,11 @@ def reverse_label_and_value(old_list: list) -> list:
 
 def simplify_school_name(dict1: dict) -> dict:
     """
-    简化校名，删除前缀“广州市白云区”、“广州市”、“白云区”、“广州”，删除后缀“学校”
-    :param dict1:
-    :return:
+    简化校名（对于输入的字典只化简key的校名）
+    :param dict1: 校名数据，形如：{'广州市培英中学': ['124401114553841006', '完全中学', '直管', 412, 0, 412], '广州市第六十五中学': ['12440111455384127X', '完全中学', '直管', 349, 0, 349],}
+    :return: 返回化简后的字典，只有每一个校名key被修改了，value不变
     """
-
     temp = [item for item in dict1.items()]
-    temp_item = ""
     output = []
 
     for item in temp:
@@ -333,6 +332,8 @@ def simplify_school_name(dict1: dict) -> dict:
         if len(temp_item) > 2 and temp_item[-2:] == "学校":
             temp_item = temp_item[:-2]
 
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)第(.*?)学$')
+
         output.append([temp_item, item[1]])
 
     output_dict = {}
@@ -341,6 +342,20 @@ def simplify_school_name(dict1: dict) -> dict:
         output_dict[item[0]] = item[1]
 
     return output_dict
+
+
+def simplify_string(s: str, pattern: str) -> str:
+    """
+    用于匹配字符串并且删除其中特定的某些字\n
+    如：需要将X第Y学更新为XY，可以设置pattern为r'^(.*?)第(.*?)学$'
+    :param s: 需要缩短的字符串
+    :param pattern: 匹配用的正则表达式
+    :return:
+    """
+    if re.match(pattern=pattern, string=s):
+        return "".join(re.match(pattern, s).groups())
+    else:
+        return s
 
 
 def combine_none_and_others(input_dict: dict) -> dict:

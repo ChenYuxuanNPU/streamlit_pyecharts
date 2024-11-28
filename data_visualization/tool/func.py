@@ -1060,6 +1060,8 @@ def simplify_school_name(dict1: dict) -> dict:
         if len(temp_item) > 2 and temp_item[-2:] == "学校":
             temp_item = temp_item[:-2]
 
+        temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)第(.*?)学$')
+
         output.append([temp_item, item[1]])
 
     output_dict = {}
@@ -1068,6 +1070,20 @@ def simplify_school_name(dict1: dict) -> dict:
         output_dict[item[0]] = item[1]
 
     return output_dict
+
+
+def simplify_string(s: str, pattern: str) -> str:
+    """
+    用于匹配字符串并且删除其中特定的某些字\n
+    如：需要将X第Y学更新为XY，可以设置pattern为r'^(.*?)第(.*?)学$'
+    :param s: 需要缩短的字符串
+    :param pattern: 匹配用的正则表达式
+    :return:
+    """
+    if re.match(pattern=pattern, string=s):
+        return "".join(re.match(pattern, s).groups())
+    else:
+        return s
 
 
 def count_empty_values(lst: list) -> int:
