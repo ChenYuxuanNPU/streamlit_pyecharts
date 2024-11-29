@@ -1,5 +1,3 @@
-import streamlit as st
-
 from calculation.retirement import *
 from data_visualization.tool.func import *
 
@@ -55,7 +53,23 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
     """
     data = get_base_data()
 
-    st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+    try:
+        st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+
+    except KeyError as e:
+
+        if e.args[0] == year:
+            st.error(f"缺少{year}年的数据", icon="🤣")
+
+        elif e.args[0] == "在编":
+            st.error(f"缺少{year}年的在编数据", icon="😆")
+
+        elif e.args[0] == "学校教师总数":
+            st.error("缺少在编或编外信息", icon="😆")
+
+        else:
+            print(e)
+            st.error(str(e), icon="😭")
 
     with st.container(border=False):
         c0, c1, c2 = st.columns(spec=3)
@@ -76,7 +90,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
             # 在编毕业院校统计
             draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
-                           title="毕业院校", is_show_visual_map=False, axis_font_size=12)
+                           title="毕业院校", is_show_visual_map=False)
 
         with c2:
             # 在编职称统计
@@ -288,7 +302,23 @@ def show_1_year_and_1_area_teacher_1(year: str, area: str) -> None:
     """
     data = get_base_data()
 
-    st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+    try:
+        st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+
+    except KeyError as e:
+
+        if e.args[0] == year:
+            st.error(f"缺少{year}年的数据", icon="🤣")
+
+        elif e.args[0] == "编外":
+            st.error(f"缺少{year}年的编外数据", icon="😆")
+
+        elif e.args[0] == "学校教师总数":
+            st.error("缺少在编或编外信息", icon="😆")
+
+        else:
+            print(e)
+            st.error(str(e), icon="😭")
 
     with st.container(border=False):
         c0, c1, c2 = st.columns(spec=3)
@@ -337,22 +367,22 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         )
         st.divider()
 
-        st.info("在编教师数随年份变化情况")
+        st.info(f"{area}在编教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_count(year_list=year_list, area=area)
 
-        st.info("学段教师数随年份变化情况")
+        st.info(f"{area}学段教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_period(year_list=year_list, area=area)
 
-        st.info("学历水平随年份变化情况")
+        st.info(f"{area}学历水平随年份变化情况")
         show_multi_years_and_1_area_teacher_0_edu_bg(year_list=year_list, area=area)
 
-        st.info("专技职称随年份变化情况")
+        st.info(f"{area}专技职称随年份变化情况")
         show_multi_years_and_1_area_teacher_0_vocational_level(year_list=year_list, area=area)
 
-        st.info("学科教师数随年份变化情况")
+        st.info(f"{area}学科教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_discipline(year_list=year_list, area=area)
 
-        st.info("教师毕业院校水平随年份变化情况")
+        st.info(f"{area}教师毕业院校水平随年份变化情况")
         show_multi_years_and_1_area_teacher_0_grad_school(year_list=year_list, area=area)
 
 
@@ -891,8 +921,39 @@ def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[s
     return container
 
 
-def show_1_year_and_multi_areas_teacher_0(year_list: list[str]) -> None:
-    pass
+def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list) -> None:
+    """
+    用于展示同一片镇多年的在编教师数据对比信息
+    :param year: 年份
+    :param area_list: 查询的片镇列表
+    :return:
+    """
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>片镇对比</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        st.info(f"{year}在编教师数随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_count(year=year, area_list=area_list)
+
+        st.info(f"{year}学段教师数随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_period(year=year, area_list=area_list)
+
+        st.info(f"{year}学历水平随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_edu_bg(year=year, area_list=area_list)
+
+        st.info(f"{year}专技职称随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_vocational_level(year=year, area_list=area_list)
+
+        st.info(f"{year}学科教师数随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_discipline(year=year, area_list=area_list)
+
+        st.info(f"{year}教师毕业院校水平随年份变化情况")
+        # show_1_year_and_multi_areas_teacher_0_grad_school(year=year, area_list=area_list)
 
 
 def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:

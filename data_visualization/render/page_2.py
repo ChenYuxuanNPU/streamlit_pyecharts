@@ -133,11 +133,11 @@ def show_1_year_all_period(year: str):
 
         # 教师分布前三十统计
         draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                       end=100)
+                       end=100, axis_font_size=10)
 
         # 在编教师数后三十的学校统计
         draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
-                       end=100)
+                       end=100, axis_font_size=10)
 
 
 def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
@@ -443,7 +443,7 @@ def show_1_year_teacher_1(year: str):
 
     # 教师分布统计
     draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                   end=100)
+                   end=100, axis_font_size=10)
 
     c0, c1, c2 = st.columns(spec=3)
 
