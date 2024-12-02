@@ -42,40 +42,31 @@ st.markdown(
 
 st.divider()
 
-col0, col1 = st.columns(spec=2)
-with col0:
-    year_0 = st.selectbox(
-        label="请选择需要查询的年份",
+year = sorted(
+    st.multiselect(
+        label="请选择需要比较的年份",
+        # [year for year in year_list if year != year_0],
         options=get_year_list(),
-        index=0,
+        default=get_year_list()[0],
+        placeholder="可选项"
     )
-
-with col1:
-    year_1 = sorted(
-        st.multiselect(
-            label="请选择需要比较的年份",
-            # [year for year in year_list if year != year_0],
-            options=get_year_list(),
-            default=[],
-            placeholder="可选项"
-        )
-    )
+)
 
 # 只是展示某一年的数据
-if year_0 is not None and len(year_1) < 2:
+if len(year) == 1:
 
     with st.container(border=True):
 
         try:
-            show_1_year_teacher_0(year=year_0)
+            show_1_year_teacher_0(year=year[0])
 
         except KeyError as e:
 
-            if e.args[0] == year_0:
-                st.error(f"缺少{year_0}年的数据", icon="🤣")
+            if e.args[0] == year[0]:
+                st.error(f"缺少{year[0]}年的数据", icon="🤣")
 
             elif e.args[0] == "在编":
-                st.error(f"缺少{year_0}年的在编数据", icon="😆")
+                st.error(f"缺少{year[0]}年的在编数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -90,15 +81,15 @@ if year_0 is not None and len(year_1) < 2:
     with st.container(border=True):
 
         try:
-            show_1_year_teacher_1(year=year_0)
+            show_1_year_teacher_1(year=year[0])
 
         except KeyError as e:
 
-            if e.args[0] == year_0:
-                st.error(f"缺少{year_0}年的数据", icon="🤣")
+            if e.args[0] == year[0]:
+                st.error(f"缺少{year[0]}年的数据", icon="🤣")
 
             elif e.args[0] == "编外":
-                st.error(f"缺少{year_0}年的编外数据", icon="😆")
+                st.error(f"缺少{year[0]}年的编外数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -108,9 +99,9 @@ if year_0 is not None and len(year_1) < 2:
                 st.error(str(e), icon="😭")
 
 # 展示对比数据
-elif year_0 is not None and len(year_1) >= 2:
+elif len(year) >= 2:
 
-    show_multi_years_teacher_0(year_list=year_1)
+    show_multi_years_teacher_0(year_list=year)
 
 else:
     st.toast("?")
