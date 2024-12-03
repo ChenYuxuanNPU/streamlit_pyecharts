@@ -66,21 +66,21 @@ with st.container(border=True):
     with col0:
         year = sorted(
             st.multiselect(
-                label="请选择需要比较的年份",
+                label="请选择需要查询的年份",
                 # [year for year in year_list if year != year_0],
                 options=get_year_list(),
                 default=[],
-                placeholder="可选项"
+                placeholder="必选项"
             )
         )
 
     with col1:
         area = sorted(
             st.multiselect(
-                label="请选择需要比较的片镇",
+                label="请选择需要查询的片镇",
                 options=get_area_list(),
                 default=[],
-                placeholder="可选项"
+                placeholder="必选项"
             ),
             key=lambda x: get_area_order()[x]
         )

@@ -90,7 +90,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
             # 在编毕业院校统计
             draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
-                           title="毕业院校", is_show_visual_map=False)
+                           title="毕业院校", visual_map_is_show=False)
 
         with c2:
             # 在编职称统计
@@ -118,7 +118,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
         # 在编学科统计
         draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
-                       title="主教学科", is_show_visual_map=False)
+                       title="主教学科", visual_map_is_show=False)
 
         c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
 
@@ -368,7 +368,7 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         st.divider()
 
         st.info(f"{area}在编教师数随年份变化情况")
-        show_multi_years_and_1_area_teacher_0_count(year_list=year_list, area=area)
+        show_multi_years_and_1_area_teacher_0_age(year_list=year_list, area=area)
 
         st.info(f"{area}学段教师数随年份变化情况")
         show_multi_years_and_1_area_teacher_0_period(year_list=year_list, area=area)
@@ -386,7 +386,7 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str) -> No
         show_multi_years_and_1_area_teacher_0_grad_school(year_list=year_list, area=area)
 
 
-def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str) -> None:
+def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str) -> None:
     """
     展示多年份教师数对比
     :param year_list: 年份列表
@@ -406,7 +406,7 @@ def show_multi_years_and_1_area_teacher_0_count(year_list: list[str], area: str)
         with st.container(border=True):
             draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
                             mark_line_y=0, formatter="{value} %")
-
+    print(df_container.get_dataframe(name="age_and_year"), )
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="age_and_year"),
         df_line=df_container.get_dataframe(name="age_growth_rate_and_year"),
@@ -938,9 +938,9 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list) -> None:
         st.divider()
 
         st.info(f"{year}在编教师数随年份变化情况")
-        # show_1_year_and_multi_areas_teacher_0_count(year=year, area_list=area_list)
+        show_1_year_and_multi_areas_teacher_0_age(year=year, area_list=area_list)
 
-        st.info(f"{year}学段教师数随年份变化情况")
+        # st.info(f"{year}学段教师数随年份变化情况")
         # show_1_year_and_multi_areas_teacher_0_period(year=year, area_list=area_list)
 
         st.info(f"{year}学历水平随年份变化情况")
@@ -956,10 +956,81 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list) -> None:
         # show_1_year_and_multi_areas_teacher_0_grad_school(year=year, area_list=area_list)
 
 
+def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str]) -> None:
+    """
+    展示多年份教师数对比
+    :param year: 年份
+    :param area_list: 查询的片镇列表
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_teacher_0_age_dataframe(year=year, area_list=area_list)
+
+    with st.container(border=True):
+        draw_line_chart(data=df_container.get_dataframe(name="age_and_area"), title="", height=600,
+                        datazoom_is_show=True, )
+
+    return None
+
+
+def get_1_year_and_multi_areas_teacher_0_age_dataframe(year: str, area_list: list[str]) -> DataFrameContainer:
+    """
+    根据片镇列表生成单个年龄统计dataframe，放置在container中\n
+    age_and_area：所有数据，列为年龄，行为片镇\n
+    :param year: 查询的年份
+    :param area_list: 查询的片镇列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+
+    for area in area_list:
+
+        df1[area] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "永平":{
+            25:100,
+            26:200
+            },
+        "石井"：{
+            25：50，
+            24：100
+            }
+        }
+        """
+
+        id_list = del_tuple_in_list(
+            data=execute_sql_sentence(
+                sentence=f'select "身份证号" from teacher_data_0_{year} where "区域" = "{area}"'
+            )
+        )
+
+        for item in id_list:
+
+            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
+
+            if age == "0":
+                print_color_text(item)
+                print_color_text(year)
+
+            if age in df1[area].keys():
+                df1[area][age] += 1
+            else:
+                df1[area][age] = 1
+
+    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="age_and_area", df=df1)
+
+    return container
+
+
 def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
 
 
 if __name__ == '__main__':
-    # get_multi_years_and_1_area_period_dataframe(year_list=["2023", "2024"], area="永平")
-    pass
+    print(get_1_year_and_multi_areas_teacher_0_age_dataframe(year="2024",
+                                                             area_list=["永平", "石井", "江高"]).get_dataframe(
+        "age_and_area"))

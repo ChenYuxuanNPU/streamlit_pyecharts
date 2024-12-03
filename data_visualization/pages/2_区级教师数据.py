@@ -48,7 +48,7 @@ year = sorted(
         # [year for year in year_list if year != year_0],
         options=get_year_list(),
         default=get_year_list()[0],
-        placeholder="可选项"
+        placeholder="必选项"
     )
 )
 

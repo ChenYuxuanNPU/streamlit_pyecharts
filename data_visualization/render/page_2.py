@@ -101,7 +101,7 @@ def show_1_year_all_period(year: str):
         with st.container(border=True):
             draw_line_chart(data=pd.DataFrame([data["2023"]["在编"]["全区"]["所有学段"]["院校级别"]],
                                               columns=data["2023"]["在编"]["全区"]["所有学段"]["院校级别"].keys(),
-                                              index=["人数"]), title="毕业院校", height=400)
+                                              index=["人数"]), title="毕业院校", height=400, datazoom_is_show=True)
 
         with st.container(border=True):
             df_container = get_1_year_grad_school_dataframe(year=year)
@@ -133,11 +133,11 @@ def show_1_year_all_period(year: str):
 
         # 教师分布前三十统计
         draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                       end=100, axis_font_size=10)
+                       visual_map_is_show=True, datazoom_is_show=True, axis_font_size=10)
 
         # 在编教师数后三十的学校统计
         draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
-                       end=100, axis_font_size=10)
+                       visual_map_is_show=True, datazoom_is_show=True, axis_font_size=10)
 
 
 def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
@@ -383,7 +383,7 @@ def show_1_year_given_period(year: str, period: str) -> None:
 
         with c0:
             draw_bar_chart(data=data[year]["在编"]["全区"][period]["主教学科"], title="主教学科",
-                           end=get_end_dict()[period])
+                           visual_map_is_show=True, datazoom_end=get_end_dict()[period])
 
         with c1:
             draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
@@ -396,7 +396,7 @@ def show_1_year_given_period(year: str, period: str) -> None:
 
         with c1:
             draw_bar_chart(data=data[year]["在编"]["全区"][period]["院校级别"], title="毕业院校",
-                           is_show_visual_map=False)
+                           visual_map_is_show=False)
 
         with c2:
             draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
@@ -443,7 +443,7 @@ def show_1_year_teacher_1(year: str):
 
     # 教师分布统计
     draw_bar_chart(data=data[year]["编外"]["全区"]["所有学段"]["教师分布前三十"], title="最多教师数",
-                   end=100, axis_font_size=10)
+                   visual_map_is_show=True, axis_font_size=10)
 
     c0, c1, c2 = st.columns(spec=3)
 
@@ -476,7 +476,7 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
         st.divider()
 
         st.info("在编教师数随年份变化情况")
-        show_multi_years_teacher_0_count(year_list=year_list)
+        show_multi_years_teacher_0_age(year_list=year_list)
 
         st.info("片镇教师数随年份变化情况")
         show_multi_years_teacher_0_area(year_list=year_list)
@@ -497,7 +497,7 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
         show_multi_years_teacher_0_grad_school(year_list=year_list)
 
 
-def show_multi_years_teacher_0_count(year_list: list[str]) -> None:
+def show_multi_years_teacher_0_age(year_list: list[str]) -> None:
     """
     展示多年份教师数对比
     :param year_list: 年份列表
