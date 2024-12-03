@@ -64,21 +64,7 @@ with st.container(border=True):
     col0, col1 = st.columns(spec=2)
 
     with col0:
-        year_0 = st.selectbox(
-            label="请选择需要查询的年份",
-            options=get_year_list(),
-            index=0,
-        )
-
-        area_0 = st.selectbox(
-            label="想查询哪一个片镇的信息？",
-            options=get_area_list(),
-            index=None,
-            placeholder="必选项"
-        )
-
-    with col1:
-        year_1 = sorted(
+        year = sorted(
             st.multiselect(
                 label="请选择需要比较的年份",
                 # [year for year in year_list if year != year_0],
@@ -88,7 +74,8 @@ with st.container(border=True):
             )
         )
 
-        area_1 = sorted(
+    with col1:
+        area = sorted(
             st.multiselect(
                 label="请选择需要比较的片镇",
                 options=get_area_list(),
@@ -99,30 +86,30 @@ with st.container(border=True):
         )
 
     # 查询某一年某片镇的教师信息
-    if year_0 and area_0 and len(year_1) <= 1 and len(area_1) <= 1:
+    if len(year) == 1 and len(area) == 1:
 
-        show_1_year_and_1_area_teacher_0(year=year_0, area=area_0)
+        show_1_year_and_1_area_teacher_0(year=year[0], area=area[0])
 
-        show_1_year_and_1_area_teacher_1(year=year_0, area=area_0)
+        show_1_year_and_1_area_teacher_1(year=year[0], area=area[0])
 
     # 对比不同年份不同片镇的教师信息
-    elif len(year_1) > 1 and len(area_1) > 1:
+    elif len(year) > 1 and len(area) > 1:
 
         st.info("对比不同年份不同片镇的教师信息")
 
-        show_multi_years_and_multi_areas_teacher_0(year_list=year_1)
+        show_multi_years_and_multi_areas_teacher_0(year_list=year)
 
     # 对比某一片镇不同年份的教师信息
-    elif len(year_1) > 1 and area_0:
+    elif len(year) > 1 and len(area) == 1:
 
-        show_multi_years_and_1_area_teacher_0(year_list=year_1, area=area_0)
+        show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0])
 
     # 对比同一年份不同片镇的教师信息
-    elif len(area_1) > 1 and year_0:
+    elif len(year) == 1 and len(area) > 1:
 
         st.info("对比同一年份不同片镇的教师信息")
 
-        show_1_year_and_multi_areas_teacher_0(year=year_0, area_list=area_1)
+        show_1_year_and_multi_areas_teacher_0(year=year[0], area_list=area)
 
     else:
         show_text_info()

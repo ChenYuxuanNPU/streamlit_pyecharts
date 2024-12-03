@@ -44,7 +44,7 @@ st.divider()
 
 year = sorted(
     st.multiselect(
-        label="请选择需要比较的年份",
+        label="请选择需要查询的年份",
         # [year for year in year_list if year != year_0],
         options=get_year_list(),
         default=get_year_list()[0],
