@@ -620,16 +620,19 @@ def draw_pie_chart(data: pd.DataFrame | dict, title: str, height=0, formatter="{
     return None
 
 
-def draw_bar_chart(data: pd.DataFrame | dict, title: str, height: int = 0, end: int = 100, axis_font_size: int = 12,
-                   is_show_visual_map: bool = True) -> None:
+def draw_bar_chart(data: pd.DataFrame | dict, title: str, height: int = 0, axis_font_size: int = 12,
+                   visual_map_is_show: bool = True,
+                   datazoom_is_show: bool = False, datazoom_start: int = 0, datazoom_end: int = 100, ) -> None:
     """
     绘制柱状图
     :param data: 绘图所用数据
     :param title: 图表标题
     :param height: 图表高度，默认根据分辨率自适应
-    :param end: 图标下方动态进度条最大值
     :param axis_font_size: 坐标轴标签字体大小
-    :param is_show_visual_map: 是否显示动态进度条
+    :param visual_map_is_show: 是否显示动态进度条
+    :param datazoom_is_show: 是否展示下方的缩放选择栏
+    :param datazoom_start: 缩放选择栏起始值
+    :param datazoom_end: 缩放选择栏结束值
     :return:
     """
 
@@ -649,11 +652,13 @@ def draw_bar_chart(data: pd.DataFrame | dict, title: str, height: int = 0, end: 
 
     chart.set_global_opts(title_opts=opts.TitleOpts(title=title),
                           legend_opts=opts.LegendOpts(is_show=False),
-                          datazoom_opts=opts.DataZoomOpts(is_show=True, range_start=0, range_end=end),
                           xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(font_size=axis_font_size)),
-                          visualmap_opts=opts.VisualMapOpts(is_show=is_show_visual_map, pos_right="1%",
+                          datazoom_opts=opts.DataZoomOpts(is_show=datazoom_is_show, range_start=datazoom_start,
+                                                          range_end=datazoom_end),
+                          visualmap_opts=opts.VisualMapOpts(is_show=visual_map_is_show, pos_right="1%",
                                                             pos_top="30%",
                                                             max_=max([values for values in data.values()])))
+
     chart.set_series_opts(label_opts=opts.LabelOpts(position="top"))
 
     with (st.container(border=True)):
@@ -669,7 +674,9 @@ def draw_line_chart(data: pd.DataFrame, title: str,
                     mark_line_y: int = None,
                     formatter: str = "{value}",
                     height: int = 350, axis_font_size: int = 12,
-                    is_symbol_show: bool = True, is_label_show: bool = False) -> None:
+                    is_symbol_show: bool = True, is_label_show: bool = False,
+                    is_smooth: bool = False, datazoom_is_show: bool = False,
+                    datazoom_start: int = 0, datazoom_end: int = 100, ) -> None:
     """
     绘制折线图
     :param data: 绘图所用数据
@@ -680,6 +687,10 @@ def draw_line_chart(data: pd.DataFrame, title: str,
     :param axis_font_size: 坐标轴标签字体大小
     :param is_symbol_show: 是否在鼠标悬停数据点时显示信息，数据点是否扩大为圈圈
     :param is_label_show: 是否在数据点上显示数值
+    :param is_smooth: 是否平滑展示曲线
+    :param datazoom_is_show: 是否展示下方的缩放选择栏
+    :param datazoom_start: 缩放选择栏起始值
+    :param datazoom_end: 缩放选择栏结束值
     :return:
     """
 
@@ -692,7 +703,9 @@ def draw_line_chart(data: pd.DataFrame, title: str,
     for label in data.index:
         chart.add_yaxis(series_name=label,
                         y_axis=data.loc[label].tolist(),
-                        is_connect_nones=True, is_symbol_show=is_symbol_show,
+                        is_connect_nones=True,
+                        is_symbol_show=is_symbol_show,
+                        is_smooth=is_smooth,
                         label_opts=opts.LabelOpts(is_show=False),
                         markline_opts=opts.MarkLineOpts(
                             data=[opts.MarkLineItem(y=mark_line_y, symbol="none")], symbol="none",
@@ -704,7 +717,8 @@ def draw_line_chart(data: pd.DataFrame, title: str,
     chart.set_global_opts(
         title_opts=opts.TitleOpts(title=title),
         yaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(formatter=formatter)),
-        xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(font_size=axis_font_size))
+        xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(font_size=axis_font_size)),
+        datazoom_opts=opts.DataZoomOpts(is_show=datazoom_is_show, range_start=datazoom_start, range_end=datazoom_end),
     )
 
     st_pyecharts(
@@ -782,6 +796,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             multiple_for_border: int = 50,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             mark_line_label_is_show: bool = False,
+                            datazoom_is_show: bool = False, datazoom_start: int = 0, datazoom_end: int = 100,
                             height: int | float = 0,
                             bar_formatter: str = "{value}", line_formatter: str = "{value}",
                             x_axis_font_size: int = 12) -> None:
@@ -808,6 +823,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param mark_line_y: 折线图标记线高度（高优先级）
     :param mark_line_type: 折线图标记线类型（str，可填"min"/"max"/"average"，低优先级）
     :param mark_line_label_is_show: 是否展示markline的label
+    :param datazoom_is_show: 是否展示下方的缩放选择栏
+    :param datazoom_start: 缩放选择栏起始值
+    :param datazoom_end: 缩放选择栏结束值
     :param height: 图表高度
     :param bar_formatter: 柱状图坐标轴单位
     :param line_formatter: 折线图坐标轴单位
@@ -907,6 +925,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
             axistick_opts=opts.AxisTickOpts(is_show=True),
             splitline_opts=opts.SplitLineOpts(is_show=True),
         ),
+        datazoom_opts=opts.DataZoomOpts(is_show=datazoom_is_show, range_start=datazoom_start, range_end=datazoom_end),
     )
 
     bar_chart.extend_axis(
