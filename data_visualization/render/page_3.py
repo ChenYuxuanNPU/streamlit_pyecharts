@@ -90,7 +90,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
             # 在编毕业院校统计
             draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
-                           title="毕业院校", visual_map_is_show=False)
+                           title="毕业院校", is_visual_map_show=False)
 
         with c2:
             # 在编职称统计
@@ -118,7 +118,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
         # 在编学科统计
         draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
-                       title="主教学科", visual_map_is_show=False)
+                       title="主教学科", is_visual_map_show=False, axis_font_size=10)
 
         c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
 
@@ -967,8 +967,22 @@ def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str]) -
     df_container = get_1_year_and_multi_areas_teacher_0_age_dataframe(year=year, area_list=area_list)
 
     with st.container(border=True):
+        st.markdown(
+            "<h4 style='text-align: center;'>人数对比</h4>",
+            unsafe_allow_html=True
+        )
+
         draw_line_chart(data=df_container.get_dataframe(name="age_and_area"), title="", height=600,
-                        datazoom_is_show=True, )
+                        is_datazoom_show=True)
+
+    with st.container(border=True):
+        st.markdown(
+            "<h4 style='text-align: center;'>人数占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="age_percentage_and_area"), title="", height=600,
+                        is_datazoom_show=True, formatter="{value} %")
 
     return None
 
@@ -977,16 +991,19 @@ def get_1_year_and_multi_areas_teacher_0_age_dataframe(year: str, area_list: lis
     """
     根据片镇列表生成单个年龄统计dataframe，放置在container中\n
     age_and_area：所有数据，列为年龄，行为片镇\n
+    age_percentage_and_area: 所有年龄占片镇占比，列为年龄，行为片镇
     :param year: 查询的年份
     :param area_list: 查询的片镇列表
     :return: DataFrameContainer，包含若干个dataframe
     """
     container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+    df2_values_sum = {}
 
     for area in area_list:
 
         df1[area] = {}  # 初始化该年份的子字典
+        df2_values_sum[area] = 0  # 计算每一个片镇当年的总人数，用于计算某个年龄的占比
         """
         df_dict:{
         "永平":{
@@ -1019,9 +1036,20 @@ def get_1_year_and_multi_areas_teacher_0_age_dataframe(year: str, area_list: lis
             else:
                 df1[area][age] = 1
 
+            df2_values_sum[area] += 1
+
+    df2 = df1
     df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="age_and_area", df=df1)
+
+    for area in area_list:
+        for age in df2[area].keys():
+            df2[area][age] = round(number=100 * float(df2[area][age] / df2_values_sum[area]), ndigits=1)
+
+    df2 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df2))
+    df2.fillna(value=0, inplace=True)
+    container.add_dataframe(name="age_percentage_and_area", df=df2)
 
     return container
 
@@ -1033,4 +1061,4 @@ def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
 if __name__ == '__main__':
     print(get_1_year_and_multi_areas_teacher_0_age_dataframe(year="2024",
                                                              area_list=["永平", "石井", "江高"]).get_dataframe(
-        "age_and_area"))
+        "age_percentage_and_area"))

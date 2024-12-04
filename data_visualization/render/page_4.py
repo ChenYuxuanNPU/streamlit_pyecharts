@@ -172,7 +172,7 @@ def show_teacher_0(year: str, school_name: str, period: str) -> None:
 
     # 在编学科统计
     visual_func.draw_bar_chart(data=get_base_data()[year]["在编"]["学校"][school_name][period]["主教学科"],
-                               title="主教学科", datazoom_is_show=True, )
+                               title="主教学科", is_datazoom_show=True, )
 
     col0, col1, col2 = st.columns([1, 1, 1])
 
@@ -189,7 +189,7 @@ def show_teacher_0(year: str, school_name: str, period: str) -> None:
         # 在编毕业院校统计
         visual_func.draw_bar_chart(
             data=get_base_data()[year]["在编"]["学校"][school_name][period]["院校级别"],
-            title="毕业院校", visual_map_is_show=False)
+            title="毕业院校", is_visual_map_show=False)
 
         # 在编骨干教师统计
         visual_func.draw_pie_chart(data=get_base_data()[year]["在编"]["学校"][school_name][period]["骨干教师"],
