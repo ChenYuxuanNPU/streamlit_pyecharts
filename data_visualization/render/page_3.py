@@ -934,22 +934,19 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list) -> None:
         )
         st.divider()
 
-        st.info(f"{year}在编教师数随年份变化情况")
+        st.info(f"{year}年不同片镇在编教师数情况")
         show_1_year_and_multi_areas_teacher_0_age(year=year, area_list=area_list)
 
-        # st.info(f"{year}学段教师数随年份变化情况")
-        # show_1_year_and_multi_areas_teacher_0_period(year=year, area_list=area_list)
-
-        st.info(f"{year}学历水平随年份变化情况")
+        st.info(f"{year}年不同片镇学历水平情况")
         show_1_year_and_multi_areas_teacher_0_edu_bg(year=year, area_list=area_list)
 
-        st.info(f"{year}专技职称随年份变化情况")
-        # show_1_year_and_multi_areas_teacher_0_vocational_level(year=year, area_list=area_list)
+        st.info(f"{year}年不同片镇专技职称情况")
+        show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year=year, area_list=area_list)
 
-        st.info(f"{year}学科教师数随年份变化情况")
+        st.info(f"{year}年不同片镇学科教师数情况")
         # show_1_year_and_multi_areas_teacher_0_discipline(year=year, area_list=area_list)
 
-        st.info(f"{year}教师毕业院校水平随年份变化情况")
+        st.info(f"{year}年不同片镇教师毕业院校水平化情况")
         # show_1_year_and_multi_areas_teacher_0_grad_school(year=year, area_list=area_list)
 
 
@@ -1049,7 +1046,7 @@ def get_1_year_and_multi_areas_teacher_0_age_dataframe(year: str, area_list: lis
 
 def show_1_year_and_multi_areas_teacher_0_edu_bg(year: str, area_list: list[str]) -> None:
     """
-    展示多年份教师数对比
+    展示多年份教师学历情况对比
     :param year: 年份
     :param area_list: 查询的片镇列表
     :return:
@@ -1101,32 +1098,97 @@ def get_1_year_and_multi_areas_teacher_0_edu_bg_dataframe(year: str, area_list: 
     edu_bg_list = execute_sql_sentence(
         sentence=f'select "最高学历", "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}) and "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}) group by "最高学历", "区域"'
     )
-    print(edu_bg_list)
+
     count_list = execute_sql_sentence(
         sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}) group by "区域"'
     )
 
     for item in edu_bg_list:
-        print(item)
         df1[item[1]][item[0]] = item[2]
 
         df2_values_sum[item[1]][item[0]] = round(
             number=100 * float(item[2] / list(x[1] for x in count_list if x[0] == item[1])[0]),
             ndigits=1
         )
-    print(df1)
-    print(df2_values_sum)
-    df1 = convert_dict_to_dataframe(d=df1)
+
+    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="edu_bg_and_area", df=df1)
 
-    # for area in area_list:
-    #     for age in df2[area].keys():
-    #         df2[area][age] = round(number=100 * float(df2[area][age] / df2_values_sum[area]), ndigits=1)
+    df2 = convert_dict_to_dataframe(d=df2_values_sum).reindex(columns=get_edu_bg_list())
+    df2.fillna(value=0, inplace=True)
+    container.add_dataframe(name="edu_bg_percentage_and_area", df=df2)
+
+    return container
+
+
+def show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year: str, area_list: list[str]) -> None:
+    """
+    展示多年份教师专业技术等级对比
+    :param year: 年份
+    :param area_list: 查询的片镇列表
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year=year,
+                                                                                          area_list=area_list)
+
+    with st.container(border=True):
+        st.markdown(
+            "<h4 style='text-align: center;'>专业技术等级占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_area"), title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+    return None
+
+
+def get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year: str,
+                                                                           area_list: list[str]) -> DataFrameContainer:
+    """
+    根据片镇列表生成单个专技等级统计dataframe，放置在container中\n
+    vocational_level_detail_and_area：所有数据，列为专技等级，行为片镇\n
+    vocational_level_detail_percentage_and_area: 所有专技等级占片镇占比，列为专技等级，行为片镇
+    :param year: 查询的年份
+    :param area_list: 查询的片镇列表
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为专技等级列
+    df1.update({a: {} for a in area_list})  # 初始化该年份的子字典
+
+    df2_values_sum = {}
+    df2_values_sum.update({a: {} for a in area_list})  # 计算每一个片镇当年的总人数，用于计算某个专技等级的占比
+
+    vocational_level_detail_list = execute_sql_sentence(
+        sentence=f'select "专业技术岗位", "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}) and "专业技术岗位" in ({', '.join([f'"{d}"' for d in get_vocational_level_detail_list()])}) group by "专业技术岗位", "区域"'
+    )
+
+    count_list = execute_sql_sentence(
+        sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}) group by "区域"'
+    )
+
+    for item in vocational_level_detail_list:
+        df1[item[1]][item[0]] = item[2]
+
+        df2_values_sum[item[1]][item[0]] = round(
+            number=100 * float(item[2] / list(x[1] for x in count_list if x[0] == item[1])[0]),
+            ndigits=1
+        )
+
+    df1 = convert_dict_to_dataframe(d=df1)
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="vocational_level_detail_and_area", df=df1)
 
     df2 = convert_dict_to_dataframe(d=df2_values_sum)
     df2.fillna(value=0, inplace=True)
-    container.add_dataframe(name="edu_bg_percentage_and_area", df=df2)
+    df2 = df2.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+        columns=shorten_vocational_level_detail_dict())
+    container.add_dataframe(name="vocational_level_detail_percentage_and_area", df=df2)
 
     return container
 
@@ -1136,6 +1198,7 @@ def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
 
 
 if __name__ == '__main__':
-    print(get_1_year_and_multi_areas_teacher_0_edu_bg_dataframe(year="2024",
-                                                                area_list=["永平", "石井", "江高"]).get_dataframe(
-        "edu_bg_percentage_and_area"))
+    print(get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year="2024",
+                                                                                 area_list=["永平", "石井",
+                                                                                            "江高"]).get_dataframe(
+        "vocational_level_detail_percentage_and_area"))
