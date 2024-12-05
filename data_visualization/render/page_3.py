@@ -406,7 +406,7 @@ def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str) -
         with st.container(border=True):
             draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
                             mark_line_y=0, formatter="{value} %")
-    print(df_container.get_dataframe(name="age_and_year"), )
+
     draw_mixed_bar_and_line(
         df_bar=df_container.get_dataframe(name="age_and_year"),
         df_line=df_container.get_dataframe(name="age_growth_rate_and_year"),
@@ -871,26 +871,22 @@ def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[s
     """
     container = DataFrameContainer()
     df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+    df0.update({y: {} for y in year_list})
+
     grad_school_id_list = []
 
-    for year in year_list:
-        df0[year] = {}  # 初始化该年份的子字典
-        """
-        df_dict:{
-        "2024":{
-            "10699":100,
-            "10558":200
-            },
-        "2023"：{
-            "10699"：50，
-            "10558"：100
-            }
-        }
-        """
+    query_parts = []
+    for y in year_list:
+        query_part = f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "区域" = "{area}" and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
+        query_parts.append(query_part)
 
-        grad_school_id_list.extend(item for item in execute_sql_sentence(
-            sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
-        ))
+    final_query = " union all ".join(query_parts)
+
+    grad_school_id_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
 
     for item in grad_school_id_list:
         if item[1] not in df0[item[0]].keys():
@@ -900,6 +896,7 @@ def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[s
 
     df1 = convert_dict_to_dataframe(d=df0)
     df1.fillna(value=0, inplace=True)
+    print(df1)
     container.add_dataframe(name="grad_school_id_and_year", df=df1)
 
     df2 = {}
@@ -998,45 +995,41 @@ def get_1_year_and_multi_areas_teacher_0_age_dataframe(year: str, area_list: lis
     """
     container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
+    df1.update({a: {} for a in area_list})  # 初始化该年份的子字典
+
     df2_values_sum = {}
+    df2_values_sum.update({a: 0 for a in area_list})  # 计算每一个片镇当年的总人数，用于计算某个年龄的占比
 
-    for area in area_list:
-
-        df1[area] = {}  # 初始化该年份的子字典
-        df2_values_sum[area] = 0  # 计算每一个片镇当年的总人数，用于计算某个年龄的占比
-        """
-        df_dict:{
-        "永平":{
-            25:100,
-            26:200
-            },
-        "石井"：{
-            25：50，
-            24：100
-            }
+    id_list = execute_sql_sentence(
+        sentence=f'select "身份证号", "区域" from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])})'
+    )
+    """
+    df_dict:{
+    "永平":{
+        25:100,
+        26:200
+        },
+    "石井"：{
+        25：50，
+        24：100
         }
-        """
+    }
+    """
 
-        id_list = del_tuple_in_list(
-            data=execute_sql_sentence(
-                sentence=f'select "身份证号" from teacher_data_0_{year} where "区域" = "{area}"'
-            )
-        )
+    for item in id_list:
 
-        for item in id_list:
+        age = str(get_age_from_citizen_id(citizen_id=item[0], year=year))
 
-            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
+        if age == "0":
+            print_color_text(item[0])
+            print_color_text(year)
 
-            if age == "0":
-                print_color_text(item)
-                print_color_text(year)
+        if age in df1[item[1]].keys():
+            df1[item[1]][age] += 1
+        else:
+            df1[item[1]][age] = 1
 
-            if age in df1[area].keys():
-                df1[area][age] += 1
-            else:
-                df1[area][age] = 1
-
-            df2_values_sum[area] += 1
+        df2_values_sum[item[1]] += 1
 
     df2 = df1
     df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
