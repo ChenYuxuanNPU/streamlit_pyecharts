@@ -48,8 +48,24 @@ def get_area_order() -> dict:
     片镇排序（直管为首位）
     :return:
     """
-
     return {"直管": 1, "永平": 2, "石井": 3, "新市": 4, "江高": 5, "人和": 6, "太和": 7, "钟落潭": 8, None: 9}
+
+
+def get_period_list() -> list:
+    """
+    需要统计的学段列表\n
+    返回：["初中", "小学", "幼儿园"]
+    :return:
+    """
+    return ["初中", "小学", "幼儿园"]
+
+
+def get_period_order() -> dict:
+    """
+    学段排序
+    :return:
+    """
+    return {"初中": 1, "小学": 2, "幼儿园": 3, "None": 4}
 
 
 # 标题
@@ -61,7 +77,7 @@ st.markdown(
 st.divider()
 
 with st.container(border=True):
-    col0, col1 = st.columns(spec=2)
+    col0, col1, col2 = st.columns(spec=3)
 
     with col0:
         year = sorted(
@@ -83,6 +99,17 @@ with st.container(border=True):
                 placeholder="必选项"
             ),
             key=lambda x: get_area_order()[x]
+        )
+
+    with col2:
+        period = sorted(
+            st.multiselect(
+                label="请选择需要查询的学段",
+                options=get_period_list(),
+                default=[],
+                placeholder="可选项"
+            ),
+            key=lambda x: get_period_order()[x]
         )
 
     # 查询某一年某片镇的教师信息
