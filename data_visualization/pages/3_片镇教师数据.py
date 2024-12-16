@@ -102,41 +102,38 @@ with st.container(border=True):
         )
 
     with col2:
-        period = sorted(
-            st.multiselect(
-                label="请选择需要查询的学段",
-                options=get_period_list(),
-                default=[],
-                placeholder="可选项"
-            ),
-            key=lambda x: get_period_order()[x]
+        period = st.selectbox(
+            label="请选择需要查询的学段",
+            options=get_period_list(),
+            index=None,
+            placeholder="可选项"
         )
 
-    # 查询某一年某片镇的教师信息
-    if len(year) == 1 and len(area) == 1:
+# 查询某一年某片镇的教师信息
+if len(year) == 1 and len(area) == 1:
 
-        show_1_year_and_1_area_teacher_0(year=year[0], area=area[0])
+    show_1_year_and_1_area_teacher_0(year=year[0], area=area[0])
 
-        show_1_year_and_1_area_teacher_1(year=year[0], area=area[0])
+    show_1_year_and_1_area_teacher_1(year=year[0], area=area[0])
 
-    # 对比不同年份不同片镇的教师信息
-    elif len(year) > 1 and len(area) > 1:
+# 对比不同年份不同片镇的教师信息
+elif len(year) > 1 and len(area) > 1:
 
-        st.info("对比不同年份不同片镇的教师信息")
+    st.info("对比不同年份不同片镇的教师信息")
 
-        show_multi_years_and_multi_areas_teacher_0(year_list=year)
+    show_multi_years_and_multi_areas_teacher_0(year_list=year)
 
-    # 对比某一片镇不同年份的教师信息
-    elif len(year) > 1 and len(area) == 1:
+# 对比某一片镇不同年份的教师信息
+elif len(year) > 1 and len(area) == 1:
 
-        show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0])
+    show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0])
 
-    # 对比同一年份不同片镇的教师信息
-    elif len(year) == 1 and len(area) > 1:
+# 对比同一年份不同片镇的教师信息
+elif len(year) == 1 and len(area) > 1:
 
-        st.info("对比同一年份不同片镇的教师信息")
+    st.info("对比同一年份不同片镇的教师信息")
 
-        show_1_year_and_multi_areas_teacher_0(year=year[0], area_list=area)
+    show_1_year_and_multi_areas_teacher_0(year=year[0], area_list=area)
 
-    else:
-        show_text_info()
+else:
+    show_text_info()
