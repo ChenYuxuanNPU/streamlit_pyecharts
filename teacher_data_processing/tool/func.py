@@ -335,6 +335,9 @@ def simplify_school_name(d: dict) -> dict:
         if len(temp_item) > 4 and temp_item[0:4] == "华师附中":
             temp_item = f"华附{temp_item[4:]}"
 
+        if len(temp_item) > 4 and temp_item[-4:] == "职业技术":
+            temp_item = temp_item[:-4]
+
         # 针对广二师实验优化 广东第二师范学院实验中学
         temp_item = simplify_string(s=temp_item, pattern=r'^(.*?)东第(.*?)范学院(.*?)$')
 
