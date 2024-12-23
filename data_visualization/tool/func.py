@@ -150,18 +150,32 @@ def get_end_dict() -> dict:
     }
 
 
-def get_trans_period() -> dict:
+def get_trans_period(kind: Literal["option_to_string", "string_to_option"]) -> dict:
     """
-
+    转换学段与对应选项\n
+    option_to_string: 选项内容转换为字段\n
+    string_to_option: 字段转换为选项内容
+    :param kind: 转换方式
     :return: {"所有学段": None,"高中": "高中","初中": "初中","小学": "小学",None: None}
     """
-    return {
-        "所有学段": None,
-        "高中": "高中",
-        "初中": "初中",
-        "小学": "小学",
-        None: None
-    }
+    match kind:
+        case "option_to_string":
+            return {
+                "所有学段": None,
+                "高中": "高中",
+                "初中": "初中",
+                "小学": "小学",
+                None: None
+            }
+        case "string_to_option":
+            return {
+                "高中": "高中",
+                "初中": "初中",
+                "小学": "小学",
+                None: "所有学段"
+            }
+        case _:
+            return {}
 
 
 def get_school_codes() -> dict:
