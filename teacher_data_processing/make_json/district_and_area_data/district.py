@@ -177,12 +177,12 @@ def update(year: str, kind: str) -> dict:
             json_data = data_00_unique(json_data=json_data, year=year, kind=kind)
 
             #  这里更新全区在编不同学段的统计信息
-            json_data = period_update(json_data=json_data, year=year, kind=kind)
+            # json_data = period_update(json_data=json_data, year=year, kind=kind)
 
         case "编外":
-
+            pass
             #  这里更新一下编外的独特的字段
-            json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
+            # json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
 
         case _:
             print("报错 district.py")
@@ -192,189 +192,68 @@ def update(year: str, kind: str) -> dict:
     return json_data
 
 
-def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "在编") -> dict:
+def data_00_unique(json_data: dict, year: str, kind: str = "在编") -> dict:
     """
     更新在编独特的信息
     :param json_data: 基础数据更新后的字典
     :param year: 年份
-    :param c: 数据库连接
-    :param conn: 数据库连接
     :param kind: 在编或编外，默认在编
     :return:
     """
 
-    result = []
-
-    ###
-    #  全区在编人员年龄统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["年龄"], scope="全区", year=year)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = age_statistics(
-            age_count_list=c.fetchall()
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/年龄", value=result,
+    #  统计全区在编人员年龄
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/年龄",
+                                value=age_statistics(
+                                    age_count_list=execute_sql_sentence(
+                                        sentence=f'select "年龄", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "年龄"')
+                                ),
                                 json_data=json_data)
 
-    result = []
-
-    #  全区在编年龄统计结束
-
-    ###
-    #  全区在编人员主教学科统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["主教学科"], year=year,
-                                            scope="全区", limit=20, order="desc",
-                                            additional_requirement=['"主教学科" != "无"'])
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = dict(
-            c.fetchall()
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/主教学科", value=result,
+    #  统计全区在编人员主教学科
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/主教学科",
+                                value=dict(
+                                    execute_sql_sentence(
+                                        sentence=f'select "主教学科", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "主教学科" != "无" group by "主教学科" order by count(*) desc limit 20')
+                                ),
                                 json_data=json_data)
 
-    result = []
-
-    #  全区在编人员主教学科统计结束
-
-    ###
-    #  全区在编人员专业技术岗位统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["专业技术岗位"], scope="全区",
-                                            year=year, )
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = dict(
-            c.fetchall()
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/专业技术岗位", value=result,
-                                json_data=json_data)
-    result = []
-
-    #  全区在编人员专业技术岗位统计结束
-
-    ###
-    #  全区在编人员院校级别统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
-                                            year=year,
-                                            additional_requirement=[
-                                                '("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = count_school_id(
-            c.fetchall()
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别", value=result,
+    #  统计全区在编人员专业技术岗位
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/专业技术岗位",
+                                value=dict(
+                                    execute_sql_sentence(
+                                        sentence=f'select "专业技术岗位", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "专业技术岗位"')
+                                ),
                                 json_data=json_data)
 
-    result = []
-
-    #  全区在编人员院校级别统计结束
-
-    ###
-    #  全区在编人员行政职务统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["行政职务"], scope="全区", year=year)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        #  result = combine_administrative_position(
-        #     sorted(
-        #         c.fetchall(), key=lambda x: get_current_administrative_position_order()[x[0]]
-        #     )
-        #  )
-
-        result = dict(
-            sorted(
-                c.fetchall(), key=lambda x: get_current_administrative_position_order()[x[0]]
-            )
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/行政职务", value=result,
+    #  统计全区在编人员院校级别
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别",
+                                value=count_school_id(
+                                    execute_sql_sentence(
+                                        sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))')
+                                ),
                                 json_data=json_data)
 
-    result = []
-
-    #  全区在编人员行政职务统计结束
-
-    ###
-    #  全区在编人员支教地域统计
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["支教地域"], scope="全区", year=year)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = dict(
-            sorted(
-                c.fetchall(), key=lambda x: get_area_of_supporting_education_order()[x[0]]
-            )
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"{e}" + '\033[0m')
-        print(sql_sentence)
-
-    finally:
-        conn.commit()
-
-    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/支教地域", value=result,
+    #  统计全区在编人员行政职务
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/行政职务",
+                                value=dict(
+                                    sorted(
+                                        execute_sql_sentence(
+                                            sentence=f'select "行政职务", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "行政职务"'),
+                                        key=lambda x: get_current_administrative_position_order()[x[0]]
+                                    )
+                                ),
                                 json_data=json_data)
 
-    result = []
-
-    #  全区在编人员支教地域统计结束
+    #  统计全区在编人员支教地域
+    json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/支教地域",
+                                value=dict(
+                                    sorted(
+                                        execute_sql_sentence(
+                                            sentence=f'select "支教地域", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "支教地域"'),
+                                        key=lambda x: get_area_of_supporting_education_order()[x[0]]
+                                    )
+                                ),
+                                json_data=json_data)
 
     return json_data
 
