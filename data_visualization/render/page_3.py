@@ -44,17 +44,20 @@ def show_text_info() -> None:
         )
 
 
-def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
+def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
     """
     用于展示某一年某一片镇在编教师信息
     :param year: 年份
     :param area: 片镇
+    :param period: 学段
     :return:
     """
     data = get_base_data()
 
     try:
-        st.success(f"{area}在编总人数：{data[year]["在编"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+        st.success(
+            f"{area}在编总人数：{data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["总人数"]}",
+            icon="😋")
 
     except KeyError as e:
 
@@ -76,29 +79,35 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
 
         with c0:
             # 在编年龄统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["年龄"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["年龄"],
                            title="年龄", pos_left="15%", center_to_bottom="64%")
 
             # 在编学段统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["学段统计"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["学段统计"],
                            title="学段统计")
 
         with c1:
             # 在编学历统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高学历"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["最高学历"],
                            title="最高学历")
 
             # 在编毕业院校统计
-            draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["院校级别"],
+            draw_bar_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["院校级别"],
                            title="毕业院校", is_visual_map_show=False)
 
         with c2:
             # 在编职称统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["最高职称"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["最高职称"],
                            title="职称")
 
             # 在编行政职务统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["行政职务"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["行政职务"],
                            title="行政职务")
 
         # 最多毕业生数量统计
@@ -117,28 +126,32 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str) -> None:
                 st.dataframe(df_container.get_dataframe("df_all"), height=400, width=300)
 
         # 在编学科统计
-        draw_bar_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["主教学科"],
+        draw_bar_chart(
+            data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["主教学科"],
                        title="主教学科", is_visual_map_show=False, axis_font_size=10)
 
         c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
 
         with c0:
             # 在编骨干教师统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["骨干教师"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["骨干教师"],
                            title="骨干教师")
 
         with c1:
             # 在编教师支教统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["支教地域"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["支教地域"],
                            title="支教地域")
 
         with c2:
             # 在编四名教师统计
-            draw_pie_chart(data=data[year]["在编"]["片区"][area]["所有学段"]["四名工作室"],
+            draw_pie_chart(
+                data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["四名工作室"],
                            title="四名统计")
 
 
-def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFrameContainer:
+def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str, period: str = None) -> DataFrameContainer:
     """
     根据年份多个包含院校名及其频率的dataframe\n
     df_985:985院校名及其数量\n
@@ -147,6 +160,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
     df_211:211院校名及其数量\n
     :param year: 查询的年份
     :param area: 片镇名
+    :param period: 学段
     :return:
     """
     container = DataFrameContainer()
@@ -157,7 +171,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where {'' if period is None else f'"任教学段" = "{period}" and'} "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -173,7 +187,8 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
 
     except TypeError as e:
         if "Cannot use method 'nlargest' with dtype object" in str(e):
-            st.toast(f'{area}无985院校毕业生', icon="😟")
+            st.toast(f'{area}无985院校毕业生', icon="😟") if period is None else st.toast(
+                f'{area}{period}学段无985院校毕业生', icon="😟")
             container.add_dataframe(
                 name="df_985",
                 df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["985院校"])
@@ -187,7 +202,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where {'' if period is None else f'"任教学段" = "{period}" and'} "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -203,7 +218,8 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
 
     except TypeError as e:
         if "Cannot use method 'nlargest' with dtype object" in str(e):
-            st.toast(f'{area}无国优计划院校毕业生', icon="😟")
+            st.toast(f'{area}无国优计划院校毕业生', icon="😟") if period is None else st.toast(
+                f'{area}{period}学段无国优计划院校毕业生', icon="😟")
             container.add_dataframe(
                 name="df_nettp",
                 df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["国优计划院校"])
@@ -217,7 +233,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where {'' if period is None else f'"任教学段" = "{period}" and'} "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -233,7 +249,8 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
 
     except TypeError as e:
         if "Cannot use method 'nlargest' with dtype object" in str(e):
-            st.toast(f'{area}无部属师范院校毕业生', icon="😟")
+            st.toast(f'{area}无部属师范院校毕业生', icon="😟") if period is None else st.toast(
+                f'{area}{period}学段无部属师范院校毕业生', icon="😟")
             container.add_dataframe(
                 name="df_affiliate",
                 df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["部属师范院校"])
@@ -247,7 +264,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where {'' if period is None else f'"任教学段" = "{period}" and'} "区域" = "{area}" and "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -263,7 +280,8 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
 
     except TypeError as e:
         if "Cannot use method 'nlargest' with dtype object" in str(e):
-            st.toast(f'{area}无211院校毕业生', icon="😟")
+            st.toast(f'{area}无211院校毕业生', icon="😟") if period is None else st.toast(
+                f'{area}{period}学段无211院校毕业生', icon="😟")
             container.add_dataframe(
                 name="df_211",
                 df=pd.DataFrame(data=["0"], columns=["人数"], index=["无"]).rename_axis(["211院校"])
@@ -276,7 +294,7 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "区域" = "{area}" and "参加工作前毕业院校代码" not in ({', '.join([f'"{code}"' for code in ["无", "51161", "51315"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where {'' if period is None else f'"任教学段" = "{period}" and'} "区域" = "{area}" and "参加工作前毕业院校代码" not in ({', '.join([f'"{code}"' for code in ["无", "51161", "51315"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -293,17 +311,20 @@ def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str) -> DataFra
     return container
 
 
-def show_1_year_and_1_area_teacher_1(year: str, area: str) -> None:
+def show_1_year_and_1_area_teacher_1(year: str, area: str, period: str = None) -> None:
     """
     用于展示某一年某一片镇编外教师信息
     :param year: 年份
     :param area: 片镇
+    :param period: 学段
     :return:
     """
     data = get_base_data()
 
     try:
-        st.success(f"{area}编外总人数：{data[year]["编外"]["片区"][area]["所有学段"]["总人数"]}", icon="😋")
+        st.success(
+            f"{area}编外总人数：{data[year]["编外"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["总人数"]}",
+            icon="😋")
 
     except KeyError as e:
 
@@ -325,16 +346,19 @@ def show_1_year_and_1_area_teacher_1(year: str, area: str) -> None:
 
         with c0:
             # 编外学段统计
-            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["学段统计"],
+            draw_pie_chart(
+                data=data[year]["编外"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["学段统计"],
                            title="学段统计")
 
             # 编外教师资格统计
-            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["教师资格"],
+            draw_pie_chart(
+                data=data[year]["编外"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["教师资格"],
                            title="教师资格")
 
         with c1:
             # 编外学历统计
-            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高学历"],
+            draw_pie_chart(
+                data=data[year]["编外"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["最高学历"],
                            title="最高学历")
 
             # 编外中小学教师资格统计
@@ -343,7 +367,8 @@ def show_1_year_and_1_area_teacher_1(year: str, area: str) -> None:
 
         with c2:
             # 编外职称统计
-            draw_pie_chart(data=data[year]["编外"]["片区"][area]["所有学段"]["最高职称"],
+            draw_pie_chart(
+                data=data[year]["编外"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["最高职称"],
                            title="职称")
 
             # 编外幼儿园教师资格统计

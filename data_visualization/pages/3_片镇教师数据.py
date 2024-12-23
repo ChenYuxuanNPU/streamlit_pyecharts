@@ -112,9 +112,9 @@ with st.container(border=True):
 # 查询某一年某片镇的教师信息
 if len(year) == 1 and len(area) == 1:
 
-    show_1_year_and_1_area_teacher_0(year=year[0], area=area[0])
+    show_1_year_and_1_area_teacher_0(year=year[0], area=area[0], period=period)
 
-    show_1_year_and_1_area_teacher_1(year=year[0], area=area[0])
+    show_1_year_and_1_area_teacher_1(year=year[0], area=area[0], period=period)
 
 # 对比不同年份不同片镇的教师信息
 elif len(year) > 1 and len(area) > 1:
