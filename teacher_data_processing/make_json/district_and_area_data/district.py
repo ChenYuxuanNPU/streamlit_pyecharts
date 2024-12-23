@@ -182,7 +182,7 @@ def update(year: str, kind: str) -> dict:
         case "编外":
             pass
             #  这里更新一下编外的独特的字段
-            # json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
+            json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
 
         case _:
             print("报错 district.py")
@@ -258,17 +258,11 @@ def data_00_unique(json_data: dict, year: str, kind: str = "在编") -> dict:
     return json_data
 
 
-###
-#  这里更新编外独特的字段
-###
-
-def data_01_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "编外") -> dict:
+def data_01_unique(json_data: dict, year: str, kind: str = "编外") -> dict:
     """
     更新编外独特的信息
     :param json_data: 基础数据更新后的字典
     :param year: 年份
-    :param c: 数据库连接
-    :param conn: 数据库连接
     :param kind: 在编或编外，默认编外
     :return:
     """
