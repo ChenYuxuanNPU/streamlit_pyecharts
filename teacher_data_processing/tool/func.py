@@ -249,6 +249,28 @@ def disconnect_database(conn) -> None:
     return None
 
 
+def execute_sql_sentence(sentence: str, ) -> list:
+    """
+    执行数据库语句并返回列表
+    :param sentence: 需要执行的语句
+    :return:
+    """
+
+    c, conn = connect_database()
+
+    result = []
+    try:
+        c.execute(sentence)
+        result = c.fetchall()
+
+    except Exception as e:
+        print_color_text(text=str(e))
+
+    disconnect_database(conn=conn)
+
+    return result
+
+
 def load_json_data(folder: str, file_name: str) -> dict:
     """
     根据文件夹名和json文件名读取json文件中的数据
