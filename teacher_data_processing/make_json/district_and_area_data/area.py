@@ -33,7 +33,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/总人数", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -62,7 +62,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/最高学历", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -89,7 +89,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/性别", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -120,7 +120,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/学段统计", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -149,7 +149,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/最高职称", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -180,7 +180,7 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/骨干教师", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -205,8 +205,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师资格/未持教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -226,8 +226,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师资格/持有教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -250,8 +250,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/幼儿园/教师资格/未持教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -271,8 +271,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/幼儿园/教师资格/持有教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -296,8 +296,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/中小学/教师资格/未持教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -318,8 +318,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/中小学/教师资格/持有教师资格",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -367,8 +367,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/四名工作室/无",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -396,8 +396,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师分布前十",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -426,8 +426,8 @@ def update(kind: str, year: str, ) -> dict:
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师分布后十",
-                                                  value=result,
-                                                  json_data=json_data)
+                                    value=result,
+                                    json_data=json_data)
 
         result = []
 
@@ -438,7 +438,7 @@ def update(kind: str, year: str, ) -> dict:
         json_data = data_00_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
 
     elif kind == "编外":
-        json_data = data_01_unique(json_data=json_data, year=year, kind=kind, c=c, conn=conn)
+        json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
 
     else:
         print("你填的啥")
@@ -485,7 +485,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/年龄", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['年龄'] = copy.deepcopy(dict(result))
         result = []
 
@@ -514,7 +514,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/主教学科", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['主教学科'] = copy.deepcopy(result)
         result = []
 
@@ -542,7 +542,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/专业技术岗位",
                                     value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
         result = []
 
         # 全区在编人员专业技术岗位统计结束
@@ -576,7 +576,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/行政职务", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['行政职务'] = copy.deepcopy(result)
         result = []
 
@@ -605,7 +605,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/院校级别", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
 
         result = []
 
@@ -634,7 +634,7 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
             conn.commit()
 
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/支教地域", value=result,
-                                                  json_data=json_data)
+                                    json_data=json_data)
         # json_data['在编']['片区'][area]['所有学段']['支教地域'] = copy.deepcopy(result)
         result = []
 
@@ -643,16 +643,15 @@ def data_00_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.
     return json_data
 
 
-def data_01_unique(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "编外") -> dict:
+def data_01_unique(json_data: dict, year: str, kind: str = "编外") -> dict:
     """
     更新编外特有的信息
     :param json_data: 更新基础数据后的字典
     :param year: 年份
-    :param c: 数据库连接
-    :param conn: 数据库连接
     :param kind: 是否在编
     :return: 更新编外特有数据后的字典
     """
+
     return json_data
 
 
