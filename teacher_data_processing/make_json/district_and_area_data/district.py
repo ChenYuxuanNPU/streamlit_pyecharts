@@ -55,7 +55,7 @@ def update(year: str, kind: str) -> dict:
                                 value=dict(
                                     sorted(
                                         execute_sql_sentence(
-                                            sentence=f'select "任教学段",count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" != "其他" group by "任教学段"'),
+                                            sentence=f'select "任教学段", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" != "其他" group by "任教学段"'),
                                         key=lambda x: get_period_order()[x[0]]
                                     )
                                 ),
@@ -67,7 +67,7 @@ def update(year: str, kind: str) -> dict:
                                     dict(
                                         sorted(
                                             execute_sql_sentence(
-                                                sentence=f'select "骨干教师",count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "骨干教师"'),
+                                                sentence=f'select "骨干教师", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} group by "骨干教师"'),
                                             key=lambda x: get_cadre_teacher_order()[x[0]]
                                         )
                                     )
@@ -177,7 +177,7 @@ def update(year: str, kind: str) -> dict:
             json_data = data_00_unique(json_data=json_data, year=year, kind=kind)
 
             #  这里更新全区在编不同学段的统计信息
-            # json_data = period_update(json_data=json_data, year=year, kind=kind)
+            json_data = period_update(json_data=json_data, year=year, kind=kind)
 
         case "编外":
             pass
@@ -270,192 +270,70 @@ def data_01_unique(json_data: dict, year: str, kind: str = "编外") -> dict:
     return json_data
 
 
-def period_update(json_data: dict, year: str, c: sqlite3.Cursor, conn: sqlite3.Connection, kind: str = "在编") -> dict:
+def period_update(json_data: dict, year: str, kind: str = "在编") -> dict:
     """
     更新在编不同学段的统计信息
     :param json_data: 基础数据更新后的字典
     :param year: 年份
-    :param c: 数据库连接
-    :param conn: 数据库连接
     :param kind: 在编或编外，默认在编
     :return:
     """
 
-    result = []
-
     #  遍历四个学段
     for period in get_period_list():
-
-        ###
-        #  全区分学段人员年龄统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["年龄"], scope="全区", period=period,
-                                                year=year)
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = age_statistics(
-                age_count_list=c.fetchall()
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/年龄", value=result,
-                                    json_data=json_data)
-        #  json_data['在编']['全区'][period]['年龄'] = copy.deepcopy(dict(result))
-        result = []
-
-        #  全区分学段人员年龄统计结束
-
-        ###
-        #  全区分学段人员性别统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["性别"], year=year,
-                                                scope="全区", period=period, order="asc")
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = dict(
-                c.fetchall()
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/性别", value=result,
-                                    json_data=json_data)
-        #  json_data['在编']['全区'][period]['性别'] = copy.deepcopy(dict(result))
-        result = []
-
-        #  全区分学段人员性别统计结束
-
-        ###
-        #  全区分学段主教学科统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["主教学科"], year=year,
-                                                scope="全区", limit=20, order="desc", period=period,
-                                                additional_requirement=['"主教学科" != "无"'])
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = dict(
-                c.fetchall()
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/主教学科", value=result,
-                                    json_data=json_data)
-        #  json_data['在编']['全区'][period]['主教学科'] = copy.deepcopy(result)
-        result = []
-
-        #  全区分学段主教学科统计结束
-
-        ###
-        #  全区分学段最高学历统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高学历"], scope="全区", period=period,
-                                                year=year)
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = dict(
-                sorted(
-                    c.fetchall(), key=lambda x: get_educational_background_order()[x[0]]
-                )
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高学历", value=result,
-                                    json_data=json_data)
-        #  json_data['在编']['全区'][period]['最高学历'] = copy.deepcopy(result)
-
-        result = []
-
-        #  全区分学段学历统计结束
-
-        ###
-        #  全区分学段最高职称统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="全区", period=period,
-                                                year=year)
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = combine_highest_title(
-                sorted(
-                    c.fetchall(), key=lambda x: get_highest_title_order()[x[0]]
-                )
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称", value=result,
+        #  统计全区分学段人员年龄
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/年龄",
+                                    value=age_statistics(
+                                        age_count_list=execute_sql_sentence(
+                                            sentence=f'select "年龄", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" = "{period}" group by "年龄"')
+                                    ),
                                     json_data=json_data)
 
-        result = []
-
-        #  全区分学段最高职称统计结束
-
-        ###
-        #  全区分学段在编人员院校级别统计
-        ###
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=0, info=["参加工作前毕业院校代码"], scope="全区",
-                                                period=period,
-                                                year=year,
-                                                additional_requirement=[
-                                                    '("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'])
-
-        #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-        try:
-            c.execute(sql_sentence)
-            result = count_school_id(
-                c.fetchall()
-            )
-
-        except Exception as e:
-            print('\033[1;91m' + f"{e}" + '\033[0m')
-            print(sql_sentence)
-
-        finally:
-            conn.commit()
-
-        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/院校级别", value=result,
+        #  统计全区分学段人员性别
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/性别",
+                                    value=dict(
+                                        execute_sql_sentence(
+                                            sentence=f'select "性别", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year}  where  "任教学段" = "{period}"   group by "性别"  order by count(*) asc')
+                                    ),
                                     json_data=json_data)
 
-        result = []
+        #  统计全区分学段主教学科
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/主教学科",
+                                    value=dict(
+                                        execute_sql_sentence(
+                                            sentence=f'select "主教学科", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" = "{period}" and "主教学科" != "无" group by "主教学科" order by count(*) desc limit 20')
+                                    ),
+                                    json_data=json_data)
 
-        #  全区分学段在编人员院校级别统计结束
+        #  统计全区分学段最高学历
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高学历",
+                                    value=dict(
+                                        sorted(
+                                            execute_sql_sentence(
+                                                sentence=f'select "最高学历", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" = "{period}" group by "最高学历"'),
+                                            key=lambda x: get_educational_background_order()[x[0]]
+                                        )
+                                    ),
+                                    json_data=json_data)
+
+        #  统计全区分学段最高职称
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/最高职称",
+                                    value=combine_highest_title(
+                                        sorted(
+                                            execute_sql_sentence(
+                                                sentence=f'select "最高职称", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "任教学段" = "{period}" group by "最高职称"'),
+                                            key=lambda x: get_highest_title_order()[x[0]]
+                                        )
+                                    ),
+                                    json_data=json_data)
+
+        #  统计全区分学段在编人员院校级别
+        json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/院校级别",
+                                    value=count_school_id(
+                                        execute_sql_sentence(
+                                            sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year}  where "任教学段" = "{period}" and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))')
+                                    ),
+                                    json_data=json_data)
 
     return json_data
 
