@@ -418,15 +418,13 @@ def data_00_unique(json_data: dict, school_name: str, year: str, kind: str, c: s
 
 
 # 更新一些非在编特有的信息
-def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c: sqlite3.Cursor, conn: sqlite3.Connection, period: str = None) -> dict:
+def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, period: str = None) -> dict:
     """
     根据校名、学段、是否在编进行某所学校内在编教师信息统计
     :param json_data: 经过更新在编编外都有的信息后的json文件
     :param school_name: 校名
     :param year: 年份
     :param kind: 是否在编
-    :param c: 数据库连接
-    :param conn: 数据库连接
     :param period: 学段
     :return: 更新后生成的字典
     """
@@ -435,7 +433,7 @@ def data_01_unique(json_data: dict, school_name: str, year: str, kind: str, c: s
 
 if __name__ == '__main__':
     pass
-    # update(kind="在编", school_name="广州市白云中学", period="高中", year="2023")
-    # update(kind="在编", school_name="广州市白云区广州空港实验中学", year="2023")
-    # update(kind="编外", school_name="广州市实验外语学校", period="高中", year="2023")
-    # update(kind="在编", school_name="广州市培英中学", year="2023")
+    update(kind="在编", school_name="广州市白云中学", period="高中", year="2023")
+    update(kind="在编", school_name="广州市白云区广州空港实验中学", year="2023")
+    update(kind="编外", school_name="广州市实验外语学校", period="高中", year="2023")
+    update(kind="在编", school_name="广州市培英中学", year="2023")
