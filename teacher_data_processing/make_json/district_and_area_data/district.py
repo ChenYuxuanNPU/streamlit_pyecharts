@@ -180,7 +180,7 @@ def update(year: str, kind: str) -> dict:
             json_data = period_update(json_data=json_data, year=year, kind=kind)
 
         case "编外":
-            pass
+
             #  这里更新一下编外的独特的字段
             json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
 
