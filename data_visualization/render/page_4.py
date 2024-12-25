@@ -57,8 +57,17 @@ def set_flags_and_update_school_data(school_name: str, year: str, period: str) -
 
     # 至少展示一类信息
     if st.session_state.page4_kind_0_flag or st.session_state.page4_kind_1_flag:
-        st.session_state.page4_search_flag = True
+
         st.toast("查询成功！", icon="✅")
+        st.session_state.page4_search_flag = True
+
+        if not st.session_state.page4_kind_0_flag:
+            st.toast(tch_proc_func.school_name_and_period_check(kind="在编", year=year,
+                                                                school_name=school_name, period=period)[1], icon="⚠️")
+
+        if not st.session_state.page4_kind_1_flag:
+            st.toast(tch_proc_func.school_name_and_period_check(kind="编外", year=year,
+                                                                school_name=school_name, period=period)[1], icon="⚠️")
 
         update_specific_school(school_name=school_name, year=year, period=period,
                                kind_0_flag=st.session_state.page4_kind_0_flag,
@@ -84,9 +93,9 @@ def show_word_cloud(year: str) -> None:
     """
 
     with st.container(border=True):
-
         visual_func.draw_word_cloud_chart(
-            words=[[k, v[3]] for k, v in list(visual_func.simplify_school_name(get_base_data()[year]["学校教师总数"]).items()) \
+            words=[[k, v[3]] for k, v in
+                   list(visual_func.simplify_school_name(get_base_data()[year]["学校教师总数"]).items()) \
                    if v[1] != "幼儿园"][:180],
             title="区内学校")
 
