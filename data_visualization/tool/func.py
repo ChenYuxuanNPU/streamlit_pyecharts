@@ -165,6 +165,7 @@ def get_trans_period(kind: Literal["option_to_string", "string_to_option"]) -> d
                 "高中": "高中",
                 "初中": "初中",
                 "小学": "小学",
+                "幼儿园": "幼儿园",
                 None: None
             }
         case "string_to_option":
@@ -172,6 +173,7 @@ def get_trans_period(kind: Literal["option_to_string", "string_to_option"]) -> d
                 "高中": "高中",
                 "初中": "初中",
                 "小学": "小学",
+                "幼儿园": "幼儿园",
                 None: "所有学段"
             }
         case _:
@@ -368,6 +370,9 @@ def del_tuple_in_list(data: list) -> list:
     :param data:带有元组的列表
     :return: 清洗后的列表
     """
+
+    if not data or not data[0]:
+        return []
 
     if not isinstance(data[0], tuple):
         return data

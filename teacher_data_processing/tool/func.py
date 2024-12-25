@@ -523,6 +523,9 @@ def del_tuple_in_list(data: list) -> list:
     :return: 清洗后的列表
     """
 
+    if not data or not data[0]:
+        return []
+
     if not isinstance(data[0], tuple):
         return data
 
@@ -537,7 +540,7 @@ def distinguish_school_id(school_id: str | int) -> list:
     """
     根据院校代码生成学校所属类型的列表（由于985要统计到211里）
     :param school_id: 给定的院校代码
-    :return: ["985院校", ”国优计划院校“, "211院校", "部属师范院校", "其他院校"]的某个子串
+    :return: ["985", ”国优计划“, "211", "部属师范", "其他院校"]的某个子串
     """
 
     output = []
@@ -546,7 +549,7 @@ def distinguish_school_id(school_id: str | int) -> list:
     for key, value in get_school_codes().items():
         if str(school_id) in value:
             flag = 1
-            output.append(f"{key}院校")
+            output.append(f"{key}")
 
     if flag == 0:
         output.append("其他院校")
@@ -562,10 +565,10 @@ def count_school_id(data: list) -> dict:
     """
 
     output = {
-        '985院校': 0,
-        '国优计划院校': 0,
-        '部属师范院校': 0,
-        '211院校': 0,
+        '985': 0,
+        '国优计划': 0,
+        '部属师范': 0,
+        '211': 0,
         '其他院校': 0
     }
 
@@ -745,7 +748,7 @@ def dict_assignment(route: str, value, json_data: dict) -> dict:
 
     try:
         temp[route_list[-1]] = copy.deepcopy(value)
-        
+
     except Exception as e:
         print('\033[1;91m' + f"module.dict_assignment:{e}" + '\033[0m')
         print('\033[1;91m' + f"{route}路径上有奇怪的原始值" + '\033[0m')
