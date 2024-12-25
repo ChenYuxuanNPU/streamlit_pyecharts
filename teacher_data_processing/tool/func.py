@@ -4,8 +4,6 @@ import re
 import sqlite3
 from pathlib import Path
 
-from teacher_data_processing.read_database import get_database_data as gd
-
 
 # 用来设置排序
 # todo:插入新表时要在这里添加新的下拉选项
@@ -651,67 +649,77 @@ def school_name_and_period_check(kind: str, school_name: str, year: str, period=
     else:
         period = period if period not in ["所有学段", ""] else None
 
-    result = []
+    count = 0
 
-    c, conn = connect_database()
+    try:
+        count = execute_sql_sentence(
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}')[
+            0][0]
 
-    # 不考虑学段，只看有没有这个学校
-    if period is None:
+    except Exception as e:
+        print("fuck!")
+        return [False, "school_name_or_period_check函数查询异常"]
 
-        # 只统计个数时info项无效
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
-                                                school_name=school_name)
+    if count != 0:
+        return [True]
 
-        try:
-            c.execute(sql_sentence)
-            result = c.fetchall()[0][0]
+    else:
+        return [False, f'未找到{school_name}的{kind}{f"{period}" if period is not None else ""}教师信息']
 
-        except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-            if "no such table" in str(e):
-                return [False, f"未找到{school_name}的{period}{kind}教师"]
-
-        finally:
-            conn.commit()
-
-        disconnect_database(conn=conn)
-
-        if result != 0:
-            return [True]
-
-        if result == 0:
-            return [False, f"未找到{school_name}的{kind}教师信息"]
-
-    # 考虑学段，有学校且有对应学段才返回True
-    if period is not None:
-
-        # 只统计个数时info项无效
-        sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
-                                                school_name=school_name, period=period)
-
-        try:
-            c.execute(sql_sentence)
-            result = c.fetchall()[0][0]
-
-        except Exception as e:
-            print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-            if "no such table" in str(e):
-                return [False, f"未找到{school_name}的{period}{kind}教师"]
-
-        finally:
-            conn.commit()
-
-        disconnect_database(conn=conn)
-
-        if result != 0:
-            return [True]
-
-        if result == 0:
-            return [False, f"未找到{school_name}的{period}{kind}教师"]
-
-    return [False, "school_name_or_period_check函数异常"]
+    # # 不考虑学段，只看有没有这个学校
+    # if period is None:
+    #
+    #     # 只统计个数时info项无效
+    #     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
+    #                                             school_name=school_name)
+    #     print(sql_sentence)
+    #     print()
+    #
+    #     try:
+    #         c.execute(sql_sentence)
+    #         result = c.fetchall()[0][0]
+    #
+    #     except Exception as e:
+    #         print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+    #
+    #         if "no such table" in str(e):
+    #             return [False, f"未找到{school_name}的{period}{kind}教师"]
+    #
+    #     finally:
+    #         conn.commit()
+    #
+    #     if result != 0:
+    #         return [True]
+    #
+    #     if result == 0:
+    #         return [False, f"未找到{school_name}的{kind}教师信息"]
+    #
+    # # 考虑学段，有学校且有对应学段才返回True
+    # if period is not None:
+    #
+    #     # 只统计个数时info项无效
+    #     sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
+    #                                             school_name=school_name, period=period)
+    #     print(sql_sentence)
+    #
+    #     try:
+    #         c.execute(sql_sentence)
+    #         result = c.fetchall()[0][0]
+    #
+    #     except Exception as e:
+    #         print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
+    #
+    #         if "no such table" in str(e):
+    #             return [False, f"未找到{school_name}的{period}{kind}教师"]
+    #
+    #     finally:
+    #         conn.commit()
+    #
+    #     if result != 0:
+    #         return [True]
+    #
+    #     if result == 0:
+    #         return [False, f"未找到{school_name}的{period}{kind}教师"]
 
 
 def dict_assignment(route: str, value, json_data: dict) -> dict:
@@ -737,6 +745,7 @@ def dict_assignment(route: str, value, json_data: dict) -> dict:
 
     try:
         temp[route_list[-1]] = copy.deepcopy(value)
+        
     except Exception as e:
         print('\033[1;91m' + f"module.dict_assignment:{e}" + '\033[0m')
         print('\033[1;91m' + f"{route}路径上有奇怪的原始值" + '\033[0m')
