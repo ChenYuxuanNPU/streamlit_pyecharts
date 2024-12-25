@@ -23,10 +23,6 @@ def update(kind: str, school_name: str, year: str, period: str = None) -> None:
     else:
         period = period if period not in ["所有学段", ""] else None
 
-    result = []
-
-    c, conn = connect_database()
-
     json_data = load_json_data(folder="result", file_name="teacher_info")
 
     #  检查一下有没有这个学校和学段，没有的话就报错
@@ -36,191 +32,84 @@ def update(kind: str, school_name: str, year: str, period: str = None) -> None:
         print(check_result[1])
         return None
 
-    ###
     #  统计总人数 - 分学校
-    ###
-
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=[""], scope="学校", year=year,
-                                            school_name=school_name, period=period)
-
-    try:
-        c.execute(sql_sentence)
-        result = c.fetchall()[0][0]
-
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/总人数",
-        value=result, json_data=json_data)
+        value=execute_sql_sentence(
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}"' if period is not None else ''}')[
+            0][0],
+        json_data=json_data)
 
-    result = []
-
-    #  学校总人数统计结束
-
-    ###
-    #  最高学历统计 - 分学校
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高学历"], scope="学校", year=year,
-                                            school_name=school_name, period=period)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = dict(
-            sorted(
-                c.fetchall(), key=lambda x: get_educational_background_order()[x[0]]
-            )
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
+    #  统计最高学历 - 分学校
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高学历",
-        value=result, json_data=json_data)
+        value=dict(
+            sorted(
+                execute_sql_sentence(
+                    sentence=f'select "最高学历", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "最高学历"'
+                ),
+                key=lambda x: get_educational_background_order()[x[0]]
+            )
+        ),
+        json_data=json_data)
 
-    result = []
-
-    #  学校最高学历统计结束
-
-    ###
-    #  性别统计 - 分学校
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["性别"], scope="学校", year=year,
-                                            school_name=school_name, period=period, order="asc")
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = dict(
-            c.fetchall()
-        )
-
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
+    #  统计性别 - 分学校
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/性别",
-        value=result, json_data=json_data)
-
-    result = []
-
-    #  学校性别统计结束
-
-    ###
-    #  最高职称统计 - 分学校
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["最高职称"], scope="学校", year=year,
-                                            school_name=school_name, period=period)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = combine_highest_title(
-            sorted(
-                c.fetchall(), key=lambda x: get_highest_title_order()[x[0]]
+        value=dict(
+            execute_sql_sentence(
+                sentence=f'select "性别", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "性别" order by count(*) asc'
             )
-        )
+        ),
+        json_data=json_data)
 
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
+    #  统计最高职称 - 分学校
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/最高职称",
-        value=result, json_data=json_data)
-
-    result = []
-
-    #  学校最高职称统计结束
-
-    ###
-    #  在编人员骨干教师统计 - 分学校
-    ###
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=1, info=["骨干教师"], scope="学校", year=year,
-                                            school_name=school_name, period=period)
-
-    #  取出结果后，先进行排序，然后将count(*)与字段反转，强制转换为字典
-    try:
-        c.execute(sql_sentence)
-        result = combine_none_and_others(
-            dict(
-                sorted(
-                    c.fetchall(), key=lambda x: get_cadre_teacher_order()[x[0]]
-                )
+        value=combine_highest_title(
+            sorted(
+                execute_sql_sentence(
+                    sentence=f'select "最高职称", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "最高职称"'
+                ),
+                key=lambda x: get_highest_title_order()[x[0]]
             )
-        )
+        ),
+        json_data=json_data)
 
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
+    #  统计在编人员骨干教师 - 分学校
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/骨干教师",
-        value=result, json_data=json_data)
+        value=combine_none_and_others(
+            dict(
+                sorted(
+                    execute_sql_sentence(
+                        sentence=f'select "骨干教师", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "骨干教师"'
+                    ),
+                    key=lambda x: get_cadre_teacher_order()[x[0]]
+                )
+            )
+        ),
+        json_data=json_data)
 
-    result = []
+    #  统计学校教师资格
 
-    ###
-    #  学校教师资格统计
-    ###
     #  先统计没有教资的
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格学段"], period=period,
-                                            scope="学校", school_name=school_name, year=year,
-                                            additional_requirement=['"教师资格学段" = "无"'])
-    try:
-        c.execute(sql_sentence)
-        result = c.fetchall()[0][0]
-
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/未持教师资格",
-        value=result, json_data=json_data)
-
-    result = []
+        value=execute_sql_sentence(
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "教师资格学段" = "无"')[
+            0][0],
+        json_data=json_data)
 
     #  再统计有教资的
-    sql_sentence = gd.generate_sql_sentence(kind=kind, info_num=-1, info=["教师资格学段"], period=period,
-                                            scope="学校", school_name=school_name, year=year,
-                                            additional_requirement=['"教师资格学段" != "无"'])
-    try:
-        c.execute(sql_sentence)
-        result = c.fetchall()[0][0]
-
-    except Exception as e:
-        print('\033[1;91m' + f"执行mysql语句时报错：{e}" + '\033[0m')
-
-    finally:
-        conn.commit()
-
     json_data = dict_assignment(
         route=f"{year}/{kind}/学校/{school_name}/{period if period is not None else "所有学段"}/教师资格/持有教师资格",
-        value=result, json_data=json_data)
+        value=execute_sql_sentence(
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "教师资格学段" != "无"')[
+            0][0],
+        json_data=json_data)
 
-    result = []
-
-    #  学校教师资格统计结束
-
-    #  统计一下在编编外的特殊信息
+    #  统计一下在编编外的独有信息
     if kind == "在编":
         json_data = data_00_unique(json_data=json_data, school_name=school_name, period=period,
                                    year=year, kind=kind)
@@ -230,8 +119,6 @@ def update(kind: str, school_name: str, year: str, period: str = None) -> None:
                                    year=year, kind=kind)
 
     save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
-
-    disconnect_database(conn=conn)
 
     return None
 
