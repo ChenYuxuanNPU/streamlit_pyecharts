@@ -112,12 +112,12 @@ def shorten_vocational_level_detail_dict() -> dict:
 
 def get_discipline_list() -> list[str]:
     """
-    学科列表：["语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术", "科学", "信息技术", "通用技术", "劳动", "心理健康"]
+    学科列表：["语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术", "科学", "信息技术", "通用技术", "劳动", "心理健康", "幼儿教育"]
     :return:
     """
     return [
         "语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术",
-        "科学", "信息技术", "通用技术", "劳动", "心理健康"
+        "科学", "信息技术", "通用技术", "劳动", "心理健康", "幼儿教育"
     ]
 
 
@@ -877,6 +877,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     :param x_axis_font_size: x轴字体大小
     :return:
     """
+
+    if df_bar.empty or df_line.empty:
+        return None
 
     # 处理一下可能存在的空值
     df_bar.fillna(value=0, inplace=True)
