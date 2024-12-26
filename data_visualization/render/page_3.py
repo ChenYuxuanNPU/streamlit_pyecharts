@@ -1002,9 +1002,9 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list, period: st
         show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year=year, area_list=area_list, period=period)
 
         st.info(f"{year}年不同片镇学科教师数情况")
-        #  show_1_year_and_multi_areas_teacher_0_discipline(year=year, area_list=area_list)
+        show_1_year_and_multi_areas_teacher_0_discipline(year=year, area_list=area_list, period=period)
 
-        st.info(f"{year}年不同片镇教师毕业院校水平化情况")
+        st.info(f"{year}年不同片镇教师毕业院校水平情况")
         # show_1_year_and_multi_areas_teacher_0_grad_school(year=year, area_list=area_list)
 
 
@@ -1235,14 +1235,10 @@ def get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year:
     vocational_level_detail_list = execute_sql_sentence(
         sentence=f'select "专业技术岗位", "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "专业技术岗位" in ({', '.join([f'"{d}"' for d in get_vocational_level_detail_list()])}) group by "专业技术岗位", "区域"'
     )
-    print(
-        f'select "专业技术岗位", "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "专业技术岗位" in ({', '.join([f'"{d}"' for d in get_vocational_level_detail_list()])}) group by "专业技术岗位", "区域"')
 
     count_list = execute_sql_sentence(
         sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "区域"'
     )
-    print(
-        f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "区域"')
 
     for item in vocational_level_detail_list:
         df1[item[1]][item[0]] = item[2]
@@ -1261,6 +1257,80 @@ def get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year:
     df2 = df2.reindex(columns=shorten_vocational_level_detail_dict()).rename(
         columns=shorten_vocational_level_detail_dict())
     container.add_dataframe(name="vocational_level_detail_percentage_and_area", df=df2)
+
+    return container
+
+
+def show_1_year_and_multi_areas_teacher_0_discipline(year: str, area_list: list[str], period: str = None) -> None:
+    """
+    展示多年份教师学科数量对比
+    :param year: 年份
+    :param area_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_teacher_0_discipline_dataframe(year=year,
+                                                                             area_list=area_list,
+                                                                             period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "高中以下"}教师学科占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="discipline_percentage_and_area"), title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+    return None
+
+
+def get_1_year_and_multi_areas_teacher_0_discipline_dataframe(year: str, area_list: list[str],
+                                                              period: str = None) -> DataFrameContainer:
+    """
+    根据片镇列表生成学科人数统计dataframe，放置在container中\n
+    discipline_and_area：所有数据，列为学科，行为片镇\n
+    discipline_percentage_and_area: 所有学科占片镇占比，列为学科，行为片镇
+    :param year: 查询的年份
+    :param area_list: 查询的片镇列表
+    :param period: 任教学段
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+
+    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学科列
+    df1.update({a: {} for a in area_list})  # 初始化该年份的子字典
+
+    df2_values_sum = {}
+    df2_values_sum.update({a: {} for a in area_list})  # 计算每一个片镇当年的总人数，用于计算某个学科的占比
+
+    discipline_detail_list = execute_sql_sentence(
+        sentence=f'select "主教学科", "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "主教学科" in ({', '.join([f'"{d}"' for d in get_discipline_list()])}) group by "主教学科", "区域"'
+    )
+
+    count_list = execute_sql_sentence(
+        sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "区域"'
+    )
+
+    for item in discipline_detail_list:
+        df1[item[1]][item[0]] = item[2]
+
+        df2_values_sum[item[1]][item[0]] = round(
+            number=100 * float(item[2] / list(x[1] for x in count_list if x[0] == item[1])[0]),
+            ndigits=1
+        )
+
+    df1 = convert_dict_to_dataframe(d=df1)
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="discipline_and_area", df=df1)
+
+    df2 = convert_dict_to_dataframe(d=df2_values_sum)
+    df2 = df2.reindex(columns=get_discipline_list())
+    df2.fillna(value=0, inplace=True)
+    df2 = df2.loc[:, ~(df2 == 0).all()]
+    container.add_dataframe(name="discipline_percentage_and_area", df=df2)
 
     return container
 
