@@ -1,3 +1,5 @@
+from typing import Literal
+
 from teacher_data_processing.tool.func import *
 
 
@@ -177,12 +179,12 @@ def update(year: str, kind: str) -> dict:
             json_data = data_00_unique(json_data=json_data, year=year, kind=kind)
 
             #  这里更新全区在编不同学段的统计信息
-            json_data = period_update(json_data=json_data, year=year, kind=kind)
+            json_data = period_update(json_data=json_data, year=year)
 
         case "编外":
 
             #  这里更新一下编外的独特的字段
-            json_data = data_01_unique(json_data=json_data, year=year, kind=kind)
+            json_data = data_01_unique(json_data=json_data, year=year)
 
         case _:
             print("报错 district.py")
@@ -258,7 +260,7 @@ def data_00_unique(json_data: dict, year: str, kind: str = "在编") -> dict:
     return json_data
 
 
-def data_01_unique(json_data: dict, year: str, kind: str = "编外") -> dict:
+def data_01_unique(json_data: dict, year: str, kind: Literal["编外"] = "编外") -> dict:
     """
     更新编外独特的信息
     :param json_data: 基础数据更新后的字典
@@ -270,7 +272,7 @@ def data_01_unique(json_data: dict, year: str, kind: str = "编外") -> dict:
     return json_data
 
 
-def period_update(json_data: dict, year: str, kind: str = "在编") -> dict:
+def period_update(json_data: dict, year: str, kind: Literal["在编"] = "在编") -> dict:
     """
     更新在编不同学段的统计信息
     :param json_data: 基础数据更新后的字典
