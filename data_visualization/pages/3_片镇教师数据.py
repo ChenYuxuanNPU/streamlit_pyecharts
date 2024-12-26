@@ -114,7 +114,8 @@ if len(year) == 1 and len(area) == 1:
 
     show_1_year_and_1_area_teacher_0(year=year[0], area=area[0], period=period)
 
-    show_1_year_and_1_area_teacher_1(year=year[0], area=area[0], period=period)
+    if period is None:
+        show_1_year_and_1_area_teacher_1(year=year[0], area=area[0], period=period)
 
 # 对比不同年份不同片镇的教师信息
 elif len(year) > 1 and len(area) > 1:
@@ -126,7 +127,7 @@ elif len(year) > 1 and len(area) > 1:
 # 对比某一片镇不同年份的教师信息
 elif len(year) > 1 and len(area) == 1:
 
-    show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0])
+    show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0], period=period)
 
 # 对比同一年份不同片镇的教师信息
 elif len(year) == 1 and len(area) > 1:
