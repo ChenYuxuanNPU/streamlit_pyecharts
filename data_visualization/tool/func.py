@@ -238,11 +238,12 @@ def get_school_codes() -> dict:
 #             '19635', '19414', '91030', '90026']
 
 
-def distinguish_school_id(school_id: str | int) -> list:
+def distinguish_school_id(school_id: str | int, label_length: str = Literal["long", "short"]) -> list:
     """
     根据院校代码生成学校所属类型的列表（由于985要统计到211里）
     :param school_id: 给定的院校代码
-    :return: ["985院校","国优计划院校","部属师范院校","211院校","其他院校"]的某个子串
+    :param label_length: 返回字串长度类型，短会省略院校二字
+    :return: ["985", ”国优计划“, "211", "部属师范", "其他院校"]的某个子串
     """
 
     output = []
@@ -251,7 +252,7 @@ def distinguish_school_id(school_id: str | int) -> list:
     for key, value in get_school_codes().items():
         if str(school_id) in value:
             flag = 1
-            output.append(f"{key}院校")
+            output.append(f"{key}院校" if label_length == "long" else f"{key}")
 
     if flag == 0:
         output.append("其他院校")

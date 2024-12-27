@@ -1095,7 +1095,7 @@ def get_multi_years_grad_school_dataframe(year_list: list[str]) -> DataFrameCont
         df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
 
     for item in grad_school_id_list:
-        for kind in distinguish_school_id(item[1]):
+        for kind in distinguish_school_id(school_id=item[1], label_length="long"):
             df2[item[0]][kind] += 1
 
     df2 = convert_dict_to_dataframe(d=df2)

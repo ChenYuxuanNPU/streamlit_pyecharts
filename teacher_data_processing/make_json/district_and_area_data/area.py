@@ -1,5 +1,3 @@
-from typing import Literal
-
 from teacher_data_processing.tool.func import *
 
 
@@ -156,9 +154,10 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
     json_data = dict_assignment(
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/院校级别",
         value=count_school_id(
-            execute_sql_sentence(
+            data=execute_sql_sentence(
                 sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
-            )
+            ),
+            label_length="short"
         ),
         json_data=json_data)
 

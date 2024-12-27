@@ -1,5 +1,3 @@
-from typing import Literal
-
 from teacher_data_processing.tool.func import *
 
 
@@ -230,8 +228,9 @@ def data_00_unique(json_data: dict, year: str, kind: str = "在编") -> dict:
     #  统计全区在编人员院校级别
     json_data = dict_assignment(route=f"{year}/{kind}/全区/所有学段/院校级别",
                                 value=count_school_id(
-                                    execute_sql_sentence(
-                                        sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))')
+                                    data=execute_sql_sentence(
+                                        sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'),
+                                    label_length="long"
                                 ),
                                 json_data=json_data)
 
@@ -332,8 +331,9 @@ def period_update(json_data: dict, year: str, kind: Literal["在编"] = "在编"
         #  统计全区分学段在编人员院校级别
         json_data = dict_assignment(route=f"{year}/{kind}/全区/{period}/院校级别",
                                     value=count_school_id(
-                                        execute_sql_sentence(
-                                            sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year}  where "任教学段" = "{period}" and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))')
+                                        data=execute_sql_sentence(
+                                            sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year}  where "任教学段" = "{period}" and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'),
+                                        label_length="short"
                                     ),
                                     json_data=json_data)
 

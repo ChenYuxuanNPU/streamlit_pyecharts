@@ -3,6 +3,7 @@ import json
 import re
 import sqlite3
 from pathlib import Path
+from typing import Literal
 
 
 # 用来设置排序
@@ -536,10 +537,11 @@ def del_tuple_in_list(data: list) -> list:
     return output
 
 
-def distinguish_school_id(school_id: str | int) -> list:
+def distinguish_school_id(school_id: str | int, label_length: str = Literal["long", "short"]) -> list:
     """
     根据院校代码生成学校所属类型的列表（由于985要统计到211里）
     :param school_id: 给定的院校代码
+    :param label_length: 返回字串长度类型，短会省略院校二字
     :return: ["985", ”国优计划“, "211", "部属师范", "其他院校"]的某个子串
     """
 
@@ -549,7 +551,7 @@ def distinguish_school_id(school_id: str | int) -> list:
     for key, value in get_school_codes().items():
         if str(school_id) in value:
             flag = 1
-            output.append(f"{key}")
+            output.append(f"{key}院校" if label_length == "long" else f"{key}")
 
     if flag == 0:
         output.append("其他院校")
@@ -557,14 +559,21 @@ def distinguish_school_id(school_id: str | int) -> list:
     return output
 
 
-def count_school_id(data: list) -> dict:
+def count_school_id(data: list, label_length: str = Literal["long", "short"]) -> dict:
     """
     统计985211人数
     :param data: 院校代码列表，形如[('10699',), ('10558',), ('10561',),]
+    :param label_length: 返回字串长度类型，短会省略院校二字
     :return: 985、211、部署示范及其他的人数列表
     """
 
     output = {
+        '985院校': 0,
+        '国优计划院校': 0,
+        '部属师范院校': 0,
+        '211院校': 0,
+        '其他院校': 0
+    } if label_length == "long" else {
         '985': 0,
         '国优计划': 0,
         '部属师范': 0,
@@ -575,7 +584,7 @@ def count_school_id(data: list) -> dict:
     id_list = del_tuple_in_list(data=data)
 
     for school_id in id_list:
-        flag = distinguish_school_id(school_id=school_id)
+        flag = distinguish_school_id(school_id=school_id, label_length=label_length)
 
         for kind in flag:
             output[kind] += 1
