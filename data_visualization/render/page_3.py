@@ -961,7 +961,7 @@ def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[s
         df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
 
     for item in grad_school_id_list:
-        for kind in distinguish_school_id(item[1]):
+        for kind in distinguish_school_id(school_id=item[1], label_length="long"):
             df2[item[0]][kind] += 1
 
     df2 = convert_dict_to_dataframe(d=df2)
@@ -1005,7 +1005,7 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list, period: st
         show_1_year_and_multi_areas_teacher_0_discipline(year=year, area_list=area_list, period=period)
 
         st.info(f"{year}年不同片镇教师毕业院校水平情况")
-        # show_1_year_and_multi_areas_teacher_0_grad_school(year=year, area_list=area_list)
+        show_1_year_and_multi_areas_teacher_0_grad_school_level(year=year, area_list=area_list, period=period)
 
 
 def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str], period: str = None) -> None:
@@ -1335,12 +1335,114 @@ def get_1_year_and_multi_areas_teacher_0_discipline_dataframe(year: str, area_li
     return container
 
 
+def show_1_year_and_multi_areas_teacher_0_grad_school_level(year: str, area_list: list[str],
+                                                            period: str = None) -> None:
+    """
+    展示多年份教师毕业院校情况对比
+    :param year: 年份
+    :param area_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_teacher_0_grad_school_level_dataframe(year=year,
+                                                                                    area_list=area_list,
+                                                                                    period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "高中以下"}教师毕业院校占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="grad_school_percentage_and_area"), title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+    return None
+
+
+def get_1_year_and_multi_areas_teacher_0_grad_school_level_dataframe(year: str, area_list: list[str],
+                                                                     period: str = None) -> DataFrameContainer:
+    """
+    根据片镇列表生成毕业院校类型人数统计dataframe，放置在container中\n
+    grad_school_id_and_area: 所有数据，列为毕业院校id，行为片镇\n
+    grad_school_kind_and_area: 分类数据，列为毕业院校级别，行为片镇\n
+    grad_school_percentage_and_area: 所有学科占片镇占比，列为毕业院校级别，行为片镇
+    :param year: 查询的年份
+    :param area_list: 查询的片镇列表
+    :param period: 任教学段
+    :return: DataFrameContainer，包含若干个dataframe
+    """
+    container = DataFrameContainer()
+
+    df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
+    df0.update({a: {} for a in area_list})
+
+    grad_school_id_list = []
+
+    query_parts = []
+    for area in area_list:
+        query_part = f'select "{area}", "参加工作前毕业院校代码" from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
+        query_parts.append(query_part)
+
+    final_query = " union all ".join(query_parts)
+
+    grad_school_id_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
+
+    count_dict = dict(
+        execute_sql_sentence(
+            sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({', '.join([f'"{area}"' for area in area_list])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "区域"'
+        )
+    )
+
+    for item in grad_school_id_list:
+        if item[1] not in df0[item[0]].keys():
+            df0[item[0]][item[1]] = 1
+        else:
+            df0[item[0]][item[1]] += 1
+
+    df1 = convert_dict_to_dataframe(d=df0)
+    df1.fillna(value=0, inplace=True)
+    container.add_dataframe(name="grad_school_id_and_area", df=df1)
+
+    df2 = {}
+    df3 = {}
+    for area in area_list:
+        df2[area] = {item: 0. for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
+        df3[area] = {item: 0. for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
+
+    for item in grad_school_id_list:
+        for kind in distinguish_school_id(school_id=item[1], label_length="long"):
+            df2[item[0]][kind] += 1
+
+    for area, item in df2.items():
+        for key, value in item.items():
+            df3[area][key] = round(
+                number=100 * float(value / count_dict[area]),
+                ndigits=1
+            )
+
+    df2 = convert_dict_to_dataframe(d=df2)
+    df2.fillna(value=0, inplace=True)
+    df2 = df2.loc[:, ~(df2 == 0).all()]  # 删除全为0的列
+    container.add_dataframe(name="grad_school_kind_and_area", df=df2)
+
+    df3 = convert_dict_to_dataframe(d=df3)
+    df3.fillna(value=0, inplace=True)
+    df3 = df3.loc[:, ~(df3 == 0).all()]  # 删除全为0的列
+    container.add_dataframe(name="grad_school_percentage_and_area", df=df3)
+
+    return container
+
+
 def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
     pass
 
 
 if __name__ == '__main__':
-    print(get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year="2024",
-                                                                                 area_list=["永平", "石井",
-                                                                                            "江高"]).get_dataframe(
-        "vocational_level_detail_percentage_and_area"))
+    pass
