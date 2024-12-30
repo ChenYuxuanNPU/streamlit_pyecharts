@@ -785,6 +785,8 @@ def draw_horizontal_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: st
 
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, horizontal=True, height=100 * data['年份'].nunique())
 
+    return None
+
 
 def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, label: str) -> None:
     """
@@ -796,6 +798,8 @@ def draw_unstack_bar_chart(data: pd.DataFrame | dict, x_axis: str, y_axis: str, 
     :return:
     """
     st.bar_chart(data=data, x=x_axis, y=y_axis, color=label, stack=False)
+
+    return None
 
 
 def get_mixed_bar_and_yaxis_opts(max_: int | float | None, data_max: int | float | None, min_: int | float | None,
@@ -1007,6 +1011,8 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     with st.container(border=True):
         st_pyecharts(bar_chart, height=f"{height}px")
 
+    return None
+
 
 def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, height=-1) -> None:
     """
@@ -1027,6 +1033,8 @@ def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, heigh
         width=width,
         hide_index=hide_index
     )
+
+    return None
 
 
 def draw_word_cloud_chart(words: list, title: str, height=-1, height_factor=1300, shape="circle") -> None:
@@ -1058,6 +1066,8 @@ def draw_word_cloud_chart(words: list, title: str, height=-1, height_factor=1300
         ),
         height=f"{height}px"
     )
+
+    return None
 
 
 def load_json_data(folder: str, file_name: str) -> dict:
@@ -1210,6 +1220,15 @@ def session_state_initial() -> None:
     if 'page1_show_detail' not in st.session_state:
         st.session_state.page1_show_detail = False
 
+    if 'page3_year_length' not in st.session_state:
+        st.session_state.page3_year_length = 0
+
+    if 'page3_area_length' not in st.session_state:
+        st.session_state.page3_area_length = 0
+
+    if 'page3_search_flag' not in st.session_state:
+        st.session_state.page3_search_flag = False
+
     # page4中的展示判断符
     if 'page4_search_flag' not in st.session_state:
         st.session_state.page4_search_flag = False
@@ -1221,6 +1240,8 @@ def session_state_initial() -> None:
     # page4中的编外展示判断符
     if 'page4_kind_1_flag' not in st.session_state:
         st.session_state.page4_kind_1_flag = False
+
+    return None
 
 
 def reset_others(page: int) -> None:
@@ -1236,12 +1257,16 @@ def reset_others(page: int) -> None:
         pass
 
     if page != 3:
-        pass
+        st.session_state.page3_year_length = 0
+        st.session_state.page3_area_length = 0
+        st.session_state.page3_search_flag = False
 
     if page != 4:
         st.session_state.page4_search_flag = False
         st.session_state.page4_kind_0_flag = False
         st.session_state.page4_kind_1_flag = False
+
+    return None
 
 
 def reset_self(page: int) -> None:
@@ -1253,6 +1278,9 @@ def reset_self(page: int) -> None:
 
     match page:
 
+        case 3:
+            st.session_state.page3_search_flag = False
+
         case 4:
             st.session_state.page4_search_flag = False
             st.session_state.page4_kind_0_flag = False
@@ -1260,6 +1288,8 @@ def reset_self(page: int) -> None:
 
         case _:
             pass
+
+    return None
 
 
 def session_state_reset(page: int) -> None:
@@ -1275,6 +1305,8 @@ def session_state_reset(page: int) -> None:
     # 重置本页面信息
     # reset_self(page=page)
 
+    return None
+
 
 def page1_show_detail_info() -> None:
     """
@@ -1283,6 +1315,8 @@ def page1_show_detail_info() -> None:
     """
     st.session_state.page1_show_detail = True
 
+    return None
+
 
 def page1_hide_detail_info() -> None:
     """
@@ -1290,6 +1324,37 @@ def page1_hide_detail_info() -> None:
     :return:
     """
     st.session_state.page1_show_detail = False
+
+    return None
+
+
+def page3_show_info(year_len: int, area_len: int) -> None:
+    """
+    判断片镇页参数是否合理并返回结果
+    :param year_len: 年份列表选中个数
+    :param area_len: 片镇列表选中个数
+    :return:
+    """
+    st.session_state.page3_year_length = year_len
+    st.session_state.page3_area_length = area_len
+
+    if min(year_len, area_len) > 1:
+        st.session_state.page3_search_flag = False
+        st.toast("年份与片镇不能同时多选！", icon="🥺")
+    else:
+        st.session_state.page3_search_flag = True
+
+    return None
+
+
+def page3_hide_info() -> None:
+    """
+    重置片镇查询页查询结果
+    :return:
+    """
+    st.session_state.page3_search_flag = False
+
+    return None
 
 
 if __name__ == '__main__':
