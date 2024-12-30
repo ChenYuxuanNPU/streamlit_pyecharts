@@ -87,7 +87,7 @@ with st.container(border=True):
                 options=get_year_list(),
                 default=[],
                 placeholder="必选项",
-                on_change=page3_hide_info,
+                # on_change=page3_hide_info,
             )
         )
 
@@ -98,7 +98,7 @@ with st.container(border=True):
                 options=get_area_list(),
                 default=[],
                 placeholder="必选项",
-                on_change=page3_hide_info,
+                # on_change=page3_hide_info,
             ),
             key=lambda x: get_area_order()[x]
         )
@@ -114,30 +114,37 @@ with st.container(border=True):
     _, mid, _ = st.columns([4, 1, 4])
 
     with mid:
-        st.button("查询信息", on_click=page3_show_info, args=[len(list(year)), len(list(area))])
+        st.button("查询信息", on_click=page3_show_info, args=[year, len(list(year)), area, len(list(area)), period])
 
 if st.session_state.page3_search_flag:
     # 查询某一年某片镇的教师信息
     if st.session_state.page3_year_length == 1 and st.session_state.page3_area_length == 1:
 
-        show_1_year_and_1_area_teacher_0(year=year[0], area=area[0], period=period)
+        show_1_year_and_1_area_teacher_0(year=st.session_state.page3_year_list[0],
+                                         area=st.session_state.page3_area_list[0], period=st.session_state.page3_period)
 
-        if period is None:
-            show_1_year_and_1_area_teacher_1(year=year[0], area=area[0], period=period)
+        if st.session_state.page3_period is None:
+            show_1_year_and_1_area_teacher_1(year=st.session_state.page3_year_list[0],
+                                             area=st.session_state.page3_area_list[0],
+                                             period=st.session_state.page3_period)
 
     # 对比某一片镇不同年份的教师信息
     elif st.session_state.page3_year_length > 1 and st.session_state.page3_area_length == 1:
 
-        show_multi_years_and_1_area_teacher_0(year_list=year, area=area[0], period=period)
+        show_multi_years_and_1_area_teacher_0(year_list=st.session_state.page3_year_list,
+                                              area=st.session_state.page3_area_list[0],
+                                              period=st.session_state.page3_period)
 
     # 对比同一年份不同片镇的教师信息
     elif st.session_state.page3_year_length == 1 and st.session_state.page3_area_length > 1:
 
         st.info("对比同一年份不同片镇的教师信息")
 
-        show_1_year_and_multi_areas_teacher_0(year=year[0], area_list=area, period=period)
+        show_1_year_and_multi_areas_teacher_0(year=st.session_state.page3_year_list[0],
+                                              area_list=st.session_state.page3_area_list,
+                                              period=st.session_state.page3_period)
 
-    elif st.session_state.page3_year_length == 0 and st.session_state.page3_area_length == 0:
+    elif st.session_state.page3_year_length == 0 or st.session_state.page3_area_length == 0:
 
         if st.session_state.page3_year_length == 0:
             st.toast("需要选择查询年份", icon="🥱")
