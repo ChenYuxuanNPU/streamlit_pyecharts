@@ -48,6 +48,23 @@ class DataFrameContainer:
         return self.dataframes.copy()
 
 
+def get_year_list() -> list:
+    """
+    获取教师信息年份列表并按照年份逆序排序（由后到前）
+    :return:
+    """
+
+    return sorted(
+        list(
+            set(
+                [data[0] for data in load_json_data(folder="database", file_name="database_basic_info")[
+                    "list_for_update_teacher_info"]]
+            )
+        ),
+        reverse=True
+    )
+
+
 def get_area_list() -> list[str]:
     """
     片镇列表：["永平", "石井", "新市", "江高", "人和", "太和", "钟落潭"]
