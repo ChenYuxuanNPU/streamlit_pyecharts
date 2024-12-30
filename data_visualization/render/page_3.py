@@ -1440,9 +1440,5 @@ def get_1_year_and_multi_areas_teacher_0_grad_school_level_dataframe(year: str, 
     return container
 
 
-def show_multi_years_and_multi_areas_teacher_0(year_list: list[str]) -> None:
-    pass
-
-
 if __name__ == '__main__':
     pass
