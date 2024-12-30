@@ -141,6 +141,8 @@ def show_pie_chart_info(year: str) -> None:
 
     st.divider()
 
+    return None
+
 
 def show_summarized_info(year: str, ) -> None:
     """
@@ -249,6 +251,8 @@ def show_summarized_info(year: str, ) -> None:
             )
 
     st.divider()
+
+    return None
 
 
 def show_period_detail_info(year: str) -> None:
@@ -399,6 +403,8 @@ def show_period_detail_info(year: str) -> None:
             # 收起按钮
             hide_detail_button()
 
+    return None
+
 
 def show_detail_button() -> None:
     """
@@ -414,6 +420,8 @@ def show_detail_button() -> None:
             on_click=page1_show_detail_info
         )
 
+    return None
+
 
 def hide_detail_button() -> None:
     """
@@ -428,3 +436,5 @@ def hide_detail_button() -> None:
             on_click=page1_hide_detail_info,
             type="primary"
         )
+
+    return None

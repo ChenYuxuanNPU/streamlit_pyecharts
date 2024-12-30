@@ -2,7 +2,7 @@ from calculation.retirement import *
 from data_visualization.tool.func import *
 
 
-def show_1_year_teacher_0(year: str, ):
+def show_1_year_teacher_0(year: str, ) -> None:
     """
     在编教师展示框架
     :param year: 年份
@@ -30,8 +30,10 @@ def show_1_year_teacher_0(year: str, ):
         if item in period_list:
             show_1_year_given_period(year=year, period=item)
 
+    return None
 
-def show_1_year_all_period(year: str):
+
+def show_1_year_all_period(year: str) -> None:
     """
     展示某一年所有学段的在编教师信息
     :param year: 年份
@@ -139,6 +141,8 @@ def show_1_year_all_period(year: str):
         # 在编教师数后三十的学校统计
         draw_bar_chart(data=data[year]["在编"]["全区"]["所有学段"]["教师分布后三十"], title="最少教师数",
                        is_visual_map_show=True, is_datazoom_show=True, axis_font_size=10)
+
+    return None
 
 
 def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
@@ -402,8 +406,10 @@ def show_1_year_given_period(year: str, period: str) -> None:
         with c2:
             draw_pie_chart(data=data[year]["在编"]["全区"][period]["最高职称"], title="职称")
 
+    return None
 
-def show_1_year_teacher_1(year: str):
+
+def show_1_year_teacher_1(year: str) -> None:
     """
     展示某一年编外教师信息
     :param year: 年份
@@ -460,6 +466,8 @@ def show_1_year_teacher_1(year: str):
         # 编外幼儿园教师资格统计
         draw_pie_chart(data=data[year]["编外"]["全区"]["幼儿园"]["教师资格"], title="幼儿园")
 
+    return None
+
 
 def show_multi_years_teacher_0(year_list: list[str]) -> None:
     """
@@ -496,6 +504,8 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
 
         st.info("教师毕业院校水平随年份变化情况")
         show_multi_years_teacher_0_grad_school(year_list=year_list)
+
+    return None
 
 
 def show_multi_years_teacher_0_age(year_list: list[str]) -> None:

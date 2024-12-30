@@ -43,6 +43,8 @@ def show_text_info() -> None:
             height=350
         )
 
+    return None
+
 
 def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
     """
@@ -149,6 +151,8 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
             draw_pie_chart(
                 data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["四名工作室"],
                 title="四名统计")
+
+    return None
 
 
 def get_1_year_and_1_area_grad_school_dataframe(year: str, area: str, period: str = None) -> DataFrameContainer:
@@ -387,6 +391,8 @@ def show_1_year_and_1_area_teacher_1(year: str, area: str, period: str = None) -
             draw_pie_chart(data=data[year]["编外"]["片区"][area]["幼儿园"]["教师资格"],
                            title="幼儿园")
 
+    return None
+
 
 def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str, period: str) -> None:
     """
@@ -423,6 +429,8 @@ def show_multi_years_and_1_area_teacher_0(year_list: list[str], area: str, perio
 
         st.info(f"{area}在编{period if period is not None else ""}教师毕业院校水平随年份变化情况")
         show_multi_years_and_1_area_teacher_0_grad_school(year_list=year_list, area=area, period=period)
+
+    return None
 
 
 def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str, period: str = None) -> None:
@@ -1006,6 +1014,8 @@ def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list, period: st
 
         st.info(f"{year}年不同片镇教师毕业院校水平情况")
         show_1_year_and_multi_areas_teacher_0_grad_school_level(year=year, area_list=area_list, period=period)
+
+    return None
 
 
 def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str], period: str = None) -> None:
