@@ -1220,11 +1220,25 @@ def session_state_initial() -> None:
     if 'page1_show_detail' not in st.session_state:
         st.session_state.page1_show_detail = False
 
+    #  page3用于获取年份列表长度进行判断
     if 'page3_year_length' not in st.session_state:
         st.session_state.page3_year_length = 0
 
+    #  page3用于获取片镇列表长度进行判断
     if 'page3_area_length' not in st.session_state:
         st.session_state.page3_area_length = 0
+
+    #  page3用于获取年份实际查询列表，避免更改列表后马上修改图表
+    if 'page3_year_list' not in st.session_state:
+        st.session_state.page3_year_list = []
+
+    #  page3用于获取片镇实际查询列表，避免更改列表后马上修改图表
+    if 'page3_area_list' not in st.session_state:
+        st.session_state.page3_area_list = []
+
+    #  page3用于获取实际查询学段，避免更改后马上修改图表
+    if 'page3_period' not in st.session_state:
+        st.session_state.page3_period = None
 
     if 'page3_search_flag' not in st.session_state:
         st.session_state.page3_search_flag = False
@@ -1257,9 +1271,14 @@ def reset_others(page: int) -> None:
         pass
 
     if page != 3:
+        st.session_state.page3_search_flag = False
+
         st.session_state.page3_year_length = 0
         st.session_state.page3_area_length = 0
-        st.session_state.page3_search_flag = False
+
+        st.session_state.page3_year_list = []
+        st.session_state.page3_area_list = []
+        st.session_state.page3_period = None
 
     if page != 4:
         st.session_state.page4_search_flag = False
@@ -1280,6 +1299,9 @@ def reset_self(page: int) -> None:
 
         case 3:
             st.session_state.page3_search_flag = False
+            st.session_state.page3_year_list = []
+            st.session_state.page3_area_list = []
+            st.session_state.page3_period = None
 
         case 4:
             st.session_state.page4_search_flag = False
@@ -1301,9 +1323,6 @@ def session_state_reset(page: int) -> None:
 
     # 刷新其他页面
     reset_others(page=page)
-
-    # 重置本页面信息
-    # reset_self(page=page)
 
     return None
 
@@ -1328,13 +1347,21 @@ def page1_hide_detail_info() -> None:
     return None
 
 
-def page3_show_info(year_len: int, area_len: int) -> None:
+def page3_show_info(year_list: list, year_len: int, area_list: list, area_len: int, period: list or None) -> None:
     """
     判断片镇页参数是否合理并返回结果
+    :param year_list: 当前查询年份列表
+    :param area_list: 当前查询片镇列表
     :param year_len: 年份列表选中个数
     :param area_len: 片镇列表选中个数
+    :param period: 学段列表
     :return:
     """
+
+    st.session_state.page3_year_list = year_list
+    st.session_state.page3_area_list = area_list
+    st.session_state.page3_period = period
+
     st.session_state.page3_year_length = year_len
     st.session_state.page3_area_length = area_len
 
