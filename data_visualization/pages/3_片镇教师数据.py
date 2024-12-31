@@ -77,6 +77,8 @@ st.markdown(
 st.divider()
 
 with st.container(border=True):
+    st.warning("年份和片镇均为必选多选项，且不能同时多选；学段为可选单选项，不选择时则显示所有学段信息")
+
     col0, col1, col2 = st.columns(spec=3)
 
     with col0:
