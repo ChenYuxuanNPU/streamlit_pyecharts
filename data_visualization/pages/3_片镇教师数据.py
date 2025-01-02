@@ -148,12 +148,6 @@ if st.session_state.page3_search_flag:
 
     elif st.session_state.page3_year_length == 0 or st.session_state.page3_area_length == 0:
 
-        if st.session_state.page3_year_length == 0:
-            st.toast("需要选择查询年份", icon="🥱")
-
-        if st.session_state.page3_area_length == 0:
-            st.toast("需要选择查询片镇", icon="🥱")
-
         show_text_info()
 
     else:

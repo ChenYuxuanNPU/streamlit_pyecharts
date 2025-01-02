@@ -1389,30 +1389,41 @@ def page3_show_info(year_list: list, year_len: int, area_list: list, area_len: i
     :return:
     """
 
-    st.session_state.page3_year_list = year_list
-    st.session_state.page3_area_list = area_list
-    st.session_state.page3_period = period
-
-    st.session_state.page3_year_length = year_len
-    st.session_state.page3_area_length = area_len
-
     if min(year_len, area_len) > 1:
-        st.session_state.page3_search_flag = False
+
+        # st.session_state.page3_search_flag = False
         st.toast("年份与片镇不能同时多选！", icon="🥺")
+
+    elif min(year_len, area_len) == 0:
+
+        if year_len == 0:
+            st.toast("需要选择查询的年份", icon="🥱")
+
+        if area_len == 0:
+            st.toast("需要选择查询的片镇", icon="🥱")
+
     else:
+
+        st.session_state.page3_year_list = year_list
+        st.session_state.page3_area_list = area_list
+        st.session_state.page3_period = period
+
+        st.session_state.page3_year_length = year_len
+        st.session_state.page3_area_length = area_len
+
         st.session_state.page3_search_flag = True
 
     return None
 
 
-def page3_hide_info() -> None:
-    """
-    重置片镇查询页查询结果
-    :return:
-    """
-    st.session_state.page3_search_flag = False
-
-    return None
+# def page3_hide_info() -> None:
+#     """
+#     重置片镇查询页查询结果
+#     :return:
+#     """
+#     st.session_state.page3_search_flag = False
+#
+#     return None
 
 
 if __name__ == '__main__':
