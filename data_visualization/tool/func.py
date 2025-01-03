@@ -1141,7 +1141,7 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
 
 # 用来插入st.write_stream的数据
-def stream_data(sentence: str, delay=0.015) -> str:
+def stream_data(sentence: str, delay=0.01) -> str:
     """
     用于分批输出数据，配合st.write_stream()实现逐条一个个字生成的效果
     :param sentence: 需要输出的语句
@@ -1286,6 +1286,18 @@ def session_state_initial() -> None:
     if 'page4_kind_1_flag' not in st.session_state:
         st.session_state.page4_kind_1_flag = False
 
+    if 'page4_year_list' not in st.session_state:
+        st.session_state.page4_year_list = []
+
+    if 'page4_school_list' not in st.session_state:
+        st.session_state.page4_school_list = []
+
+    if 'page4_period' not in st.session_state:
+        st.session_state.page4_period = None
+
+    if 'page4_info_kind' not in st.session_state:
+        st.session_state.page4_info_kind = None
+
     return None
 
 
@@ -1319,30 +1331,30 @@ def reset_others(page: int) -> None:
     return None
 
 
-def reset_self(page: int) -> None:
-    """
-    重置本页面session_state变量
-    :param page: 当前页标签
-    :return:
-    """
-
-    match page:
-
-        case 3:
-            st.session_state.page3_search_flag = False
-            st.session_state.page3_year_list = []
-            st.session_state.page3_area_list = []
-            st.session_state.page3_period = None
-
-        case 4:
-            st.session_state.page4_search_flag = False
-            st.session_state.page4_kind_0_flag = False
-            st.session_state.page4_kind_1_flag = False
-
-        case _:
-            pass
-
-    return None
+# def reset_self(page: int) -> None:
+#     """
+#     重置本页面session_state变量
+#     :param page: 当前页标签
+#     :return:
+#     """
+#
+#     match page:
+#
+#         case 3:
+#             st.session_state.page3_search_flag = False
+#             st.session_state.page3_year_list = []
+#             st.session_state.page3_area_list = []
+#             st.session_state.page3_period = None
+#
+#         case 4:
+#             st.session_state.page4_search_flag = False
+#             st.session_state.page4_kind_0_flag = False
+#             st.session_state.page4_kind_1_flag = False
+#
+#         case _:
+#             pass
+#
+#     return None
 
 
 def session_state_reset(page: int) -> None:
@@ -1378,28 +1390,26 @@ def page1_hide_detail_info() -> None:
     return None
 
 
-def page3_show_info(year_list: list, year_len: int, area_list: list, area_len: int, period: list or None) -> None:
+def page3_show_info(year_list: list, area_list: list, period: str or None) -> None:
     """
     判断片镇页参数是否合理并返回结果
     :param year_list: 当前查询年份列表
     :param area_list: 当前查询片镇列表
-    :param year_len: 年份列表选中个数
-    :param area_len: 片镇列表选中个数
     :param period: 学段列表
     :return:
     """
 
-    if min(year_len, area_len) > 1:
+    if min(len(year_list), len(area_list)) > 1:
 
         # st.session_state.page3_search_flag = False
         st.toast("年份与片镇不能同时多选！", icon="🥺")
 
-    elif min(year_len, area_len) == 0:
+    elif min(len(year_list), len(area_list)) == 0:
 
-        if year_len == 0:
+        if len(year_list) == 0:
             st.toast("需要选择查询的年份", icon="🥱")
 
-        if area_len == 0:
+        if len(area_list) == 0:
             st.toast("需要选择查询的片镇", icon="🥱")
 
     else:
@@ -1408,8 +1418,8 @@ def page3_show_info(year_list: list, year_len: int, area_list: list, area_len: i
         st.session_state.page3_area_list = area_list
         st.session_state.page3_period = period
 
-        st.session_state.page3_year_length = year_len
-        st.session_state.page3_area_length = area_len
+        st.session_state.page3_year_length = len(year_list)
+        st.session_state.page3_area_length = len(area_list)
 
         st.session_state.page3_search_flag = True
 
