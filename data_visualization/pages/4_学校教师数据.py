@@ -8,7 +8,6 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool.func import *
 from data_visualization.render.page_4 import *
 
 # 清空其他页暂用变量
@@ -16,7 +15,6 @@ session_state_reset(page=4)
 
 # 设置全局属性
 set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
-
 
 # 标题
 st.markdown(
@@ -26,84 +24,69 @@ st.markdown(
 
 st.divider()
 
-left, right = st.columns(spec=2)
+left, mid, right = st.columns(spec=3)
 
 with left:
-    year_0 = st.selectbox(
-        label="请选择需要查询的年份",
-        options=get_year_list(kind="teacher_info"),
-        index=0,
-        on_change=reset_self,
-        args=[4]
+    year = list(
+        st.multiselect(
+            label="请选择需要查询的年份",
+            placeholder="必选项",
+            options=get_year_list(kind="teacher_info"),
+            default=[],
+        )
     )
+    st.write(st.session_state.page4_year_list)
 
-    school_name_0 = st.selectbox(
-        label="请输入需要查询的学校",
-        options=load_json_data(folder="result", file_name="teacher_info")[year_0]["学校教师总数"].keys(),
-        index=None,
-        placeholder="必选项",
-        on_change=reset_self,
-        args=[4]
+with mid:
+    school = list(
+        st.multiselect(
+            label="请输入需要查询的学校",
+            options=[values for key in get_year_list(kind="teacher_info") if
+                     key in load_json_data(folder="result", file_name="teacher_info").keys() and "学校教师总数" in
+                     load_json_data(folder="result", file_name="teacher_info")[key].keys() for values in
+                     load_json_data(folder="result", file_name="teacher_info")[key]["学校教师总数"].keys()],
+            placeholder="必选项",
+        )
     )
-
-    period_0 = st.selectbox(
-        label="选择查询学段",
-        options=[item for item in ["所有学段"] + get_period_list() if item != "幼儿园"],
-        on_change=reset_self,
-        args=[4]
-    )
+    st.write(st.session_state.page4_school_list)
 
 with right:
-    year_1 = st.selectbox(
-        label="请选择需要对比的年份",
-        options=get_year_list(kind="teacher_info"),
-        index=None,
+    period = st.selectbox(
+        label="选择查询学段",
         placeholder="可选项",
-        on_change=reset_self,
-        args=[4]
-    )
-
-    school_name_1 = st.selectbox(
-        label="请输入需要对比的学校",
-        options=load_json_data(folder="result", file_name="teacher_info")[year_0]["学校教师总数"].keys(),
         index=None,
-        placeholder="可选项",
-        on_change=reset_self,
-        args=[4]
+        options=[item for item in get_period_list() if item != "幼儿园"],
     )
+    st.write(st.session_state.page4_period)
 
-    period_1 = st.selectbox(
-        label="选择对比学段",
-        options=[item for item in ["所有学段"] + get_period_list() if item != "幼儿园"],
-        index=None,
-        placeholder="可选项",
-        on_change=reset_self,
-        args=[4]
-    )
-
-left, middle, right = st.columns([4, 1, 4])
+_, middle, _ = st.columns([4, 1, 4])
 
 with middle:
-    st.button("查询学校信息", args=[[year_0, year_1, school_name_0, school_name_1, period_0, period_1]],
+    st.button("查询学校信息", kwargs={"year_list": year, "school_list": school, "period": period},
               on_click=confirm_input)
 
 # 不查询的时候展示学校云图
 if not st.session_state.page4_search_flag:
-    show_word_cloud(year=year_0)
+    show_word_cloud()
 
-if st.session_state.page4_search_flag:
-    with st.container(border=True):
-        show_school_stream(school_name=school_name_0, year=year_0)
+if st.session_state.page4_info_kind == 1:
 
-# 展示某一年在编数据
-if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
-    with st.container(border=True):
-        show_teacher_0(year=year_0, school_name=school_name_0, period=period_0)
+    if st.session_state.page4_search_flag:
+        with st.container(border=True):
+            show_school_stream(year=st.session_state.page4_year_list[0],
+                               school_name=st.session_state.page4_school_list[0])
 
-if st.session_state.page4_kind_0_flag and st.session_state.page4_kind_1_flag:
-    st.divider()
+    # 展示某一年在编数据
+    if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
+        with st.container(border=True):
+            show_teacher_0(year=st.session_state.page4_year_list[0], school_name=st.session_state.page4_school_list[0],
+                           period=st.session_state.page4_period)
 
-# 展示某一年编外数据
-if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
-    with st.container(border=True):
-        show_teacher_1(year=year_0, school_name=school_name_0, period=period_0)
+    if st.session_state.page4_kind_0_flag and st.session_state.page4_kind_1_flag:
+        st.divider()
+
+    # 展示某一年编外数据
+    if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
+        with st.container(border=True):
+            show_teacher_1(year=st.session_state.page4_year_list[0], school_name=st.session_state.page4_school_list[0],
+                           period=st.session_state.page4_period)
