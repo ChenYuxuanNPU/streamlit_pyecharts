@@ -82,27 +82,31 @@ with st.container(border=True):
     col0, col1, col2 = st.columns(spec=3)
 
     with col0:
-        year = sorted(
-            st.multiselect(
-                label="请选择需要查询的年份",
-                # [year for year in year_list if year != year_0],
-                options=get_year_list(),
-                default=[],
-                placeholder="必选项",
-                # on_change=page3_hide_info,
+        year = list(
+            sorted(
+                st.multiselect(
+                    label="请选择需要查询的年份",
+                    # [year for year in year_list if year != year_0],
+                    options=get_year_list(),
+                    default=[],
+                    placeholder="必选项",
+                    # on_change=page3_hide_info,
+                )
             )
         )
 
     with col1:
-        area = sorted(
-            st.multiselect(
-                label="请选择需要查询的片镇",
-                options=get_area_list(),
-                default=[],
-                placeholder="必选项",
-                # on_change=page3_hide_info,
-            ),
-            key=lambda x: get_area_order()[x]
+        area = list(
+            sorted(
+                st.multiselect(
+                    label="请选择需要查询的片镇",
+                    options=get_area_list(),
+                    default=[],
+                    placeholder="必选项",
+                    # on_change=page3_hide_info,
+                ),
+                key=lambda x: get_area_order()[x]
+            )
         )
 
     with col2:
@@ -116,14 +120,15 @@ with st.container(border=True):
     _, mid, _ = st.columns([4, 1, 4])
 
     with mid:
-        st.button("查询信息", on_click=page3_show_info, args=[year, len(list(year)), area, len(list(area)), period])
+        st.button("查询信息", on_click=page3_show_info, kwargs={"year_list": year, "area_list": area, "period": period})
 
 if st.session_state.page3_search_flag:
     # 查询某一年某片镇的教师信息
     if st.session_state.page3_year_length == 1 and st.session_state.page3_area_length == 1:
 
         show_1_year_and_1_area_teacher_0(year=st.session_state.page3_year_list[0],
-                                         area=st.session_state.page3_area_list[0], period=st.session_state.page3_period)
+                                         area=st.session_state.page3_area_list[0],
+                                         period=st.session_state.page3_period)
 
         if st.session_state.page3_period is None:
             show_1_year_and_1_area_teacher_1(year=st.session_state.page3_year_list[0],
