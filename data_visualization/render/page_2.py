@@ -97,6 +97,7 @@ def show_1_year_all_period(year: str) -> None:
                 bar_axis_label="人数", line_axis_label="合计人数",
                 mark_line_type="average"
             )
+
         except Exception as e:
             print_color_text("学科柱状折线图展示异常")
             st.toast("学科柱状折线图展示异常", icon="😕")
@@ -146,10 +147,11 @@ def show_1_year_all_period(year: str) -> None:
     return None
 
 
-def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
+def get_1_year_age_and_gender_dataframe(year: str, period: str = None) -> DataFrameContainer:
     """
     根据年份生成列为年龄，行为性别的dataframe
     :param year: 查询的年份
+    :param period: 查询的学段
     :return:
     """
 
@@ -162,7 +164,7 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     max_age = -1
 
     id_list = execute_sql_sentence(
-        sentence=f'select "身份证号", "性别" from teacher_data_0_{year}'
+        sentence=f'select "身份证号", "性别" from teacher_data_0_{year}{f' where "任教学段" = "{period}"' if period is not None else ''}'
     )
 
     for item in id_list:
@@ -232,7 +234,7 @@ def get_1_year_discipline_and_gender_dataframe(year: str, ) -> DataFrameContaine
     return container
 
 
-def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
+def get_1_year_grad_school_dataframe(year: str, period: str = None) -> DataFrameContainer:
     """
     根据年份多个包含院校名及其频率的dataframe\n
     df_985:985院校名及其数量\n
@@ -240,6 +242,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
     df_affiliate:部属师范院校名及其数量\n
     df_211:211院校名及其数量\n
     :param year: 查询的年份
+    :param period: 查询的学段，可不填
     :return:
     """
     container = DataFrameContainer()
@@ -250,7 +253,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["985"]])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -280,7 +283,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["国优计划"]])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -310,7 +313,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["部属师范"]])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -340,7 +343,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
             df=pd.Series(
                 dict(
                     execute_sql_sentence(
-                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                        sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" in ({', '.join([f'"{code}"' for code in get_school_codes()["211"]])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                     )
                 )
             )
@@ -369,7 +372,7 @@ def get_1_year_grad_school_dataframe(year: str) -> DataFrameContainer:
         df=pd.Series(
             dict(
                 execute_sql_sentence(
-                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" not in ({', '.join([f'"{code}"' for code in ["无", "51161", "51315"]])}) and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
+                    sentence=f'select "参加工作前毕业院校代码",count(*) from teacher_data_0_{year} where "参加工作前毕业院校代码" not in ({', '.join([f'"{code}"' for code in ["无", "51161", "51315"]])}){f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生") group by "参加工作前毕业院校代码"'
                 )
             )
         )
@@ -399,6 +402,23 @@ def show_1_year_given_period(year: str, period: str) -> None:
     st.info(f"在编{period}信息", icon="😋")
 
     with st.container(border=False):
+
+        # 年龄性别柱状折线图，生成时要查询数据库，所以做个错误处理
+        try:
+            df_container = get_1_year_age_and_gender_dataframe(year=year, period=period)
+
+            draw_mixed_bar_and_line(
+                df_bar=df_container.get_dataframe(name="data"),
+                df_line=df_container.get_dataframe(name="sum"),
+                bar_axis_label="人数", line_axis_label="合计人数",
+                mark_line_type="average"
+            )
+
+        except Exception as e:
+            print_color_text("年龄柱状折线图展示异常")
+            print(e)
+            st.toast("年龄柱状折线图展示异常", icon="😕")
+
         c0, c1 = st.columns([2, 1])
 
         with c0:
@@ -408,6 +428,20 @@ def show_1_year_given_period(year: str, period: str) -> None:
         with c1:
             draw_pie_chart(data=data[year]["在编"]["全区"][period]["年龄"], title="年龄", pos_left="15%",
                            center_to_bottom="64%")
+
+        with st.container(border=True):
+            df_container = get_1_year_grad_school_dataframe(year=year, period=period)
+            a0, a1, a2, a3, a4 = st.columns(spec=5)
+            with a0:
+                st.dataframe(df_container.get_dataframe("df_985"), height=400, width=300)
+            with a1:
+                st.dataframe(df_container.get_dataframe("df_nettp"), height=400, width=300)
+            with a2:
+                st.dataframe(df_container.get_dataframe("df_affiliate"), height=400, width=300)
+            with a3:
+                st.dataframe(df_container.get_dataframe("df_211"), height=400, width=300)
+            with a4:
+                st.dataframe(df_container.get_dataframe("df_all"), height=400, width=300)
 
         c0, c1, c2 = st.columns(spec=3)
 
