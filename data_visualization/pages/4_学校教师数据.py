@@ -69,10 +69,16 @@ with middle:
 if not st.session_state.page4_info_kind:
     show_word_cloud()
 
-elif st.session_state.page4_info_kind == 1:
+elif st.session_state.page4_info_kind == "1":
 
     show_1_year_and_1_school(year=st.session_state.page4_year_list[0], school=st.session_state.page4_school_list[0],
                              period=st.session_state.page4_period)
 
-elif st.session_state.page4_info_kind == 2:
+elif st.session_state.page4_info_kind == "2.1":
     pass
+
+elif st.session_state.page4_info_kind == "1.2":
+    pass
+
+else:
+    show_word_cloud()

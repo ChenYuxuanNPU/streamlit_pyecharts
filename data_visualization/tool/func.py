@@ -1271,17 +1271,11 @@ def session_state_initial() -> None:
     if 'page3_period' not in st.session_state:
         st.session_state.page3_period = None
 
+    #  page3用于更换查询状态
     if 'page3_search_flag' not in st.session_state:
         st.session_state.page3_search_flag = False
 
-    # page4中的在编展示判断符
-    if 'page4_kind_0_flag' not in st.session_state:
-        st.session_state.page4_kind_0_flag = False
-
-    # page4中的编外展示判断符
-    if 'page4_kind_1_flag' not in st.session_state:
-        st.session_state.page4_kind_1_flag = False
-
+    #  page4用于获取参数
     if 'page4_year_list' not in st.session_state:
         st.session_state.page4_year_list = []
 
@@ -1291,8 +1285,17 @@ def session_state_initial() -> None:
     if 'page4_period' not in st.session_state:
         st.session_state.page4_period = None
 
+    #  page4用于决定查询类型
     if 'page4_info_kind' not in st.session_state:
         st.session_state.page4_info_kind = None
+
+    # page4中的在编展示判断符
+    if 'page4_1_year_and_1_school_kind_0_flag' not in st.session_state:
+        st.session_state.page4_1_year_and_1_school_kind_0_flag = False
+
+    # page4中的编外展示判断符
+    if 'page4_1_year_and_1_school_kind_1_flag' not in st.session_state:
+        st.session_state.page4_1_year_and_1_school_kind_1_flag = False
 
     return None
 
@@ -1320,8 +1323,8 @@ def reset_others(page: int) -> None:
         st.session_state.page3_period = None
 
     if page != 4:
-        st.session_state.page4_kind_0_flag = False
-        st.session_state.page4_kind_1_flag = False
+        st.session_state.page4_1_year_and_1_school_kind_0_flag = False
+        st.session_state.page4_1_year_and_1_school_kind_1_flag = False
 
         st.session_state.page4_year_list = []
 
@@ -1332,32 +1335,6 @@ def reset_others(page: int) -> None:
         st.session_state.page4_info_kind = None
 
     return None
-
-
-# def reset_self(page: int) -> None:
-#     """
-#     重置本页面session_state变量
-#     :param page: 当前页标签
-#     :return:
-#     """
-#
-#     match page:
-#
-#         case 3:
-#             st.session_state.page3_search_flag = False
-#             st.session_state.page3_year_list = []
-#             st.session_state.page3_area_list = []
-#             st.session_state.page3_period = None
-#
-#         case 4:
-#             st.session_state.page4_search_flag = False
-#             st.session_state.page4_kind_0_flag = False
-#             st.session_state.page4_kind_1_flag = False
-#
-#         case _:
-#             pass
-#
-#     return None
 
 
 def session_state_reset(page: int) -> None:
@@ -1427,16 +1404,6 @@ def page3_show_info(year_list: list, area_list: list, period: str or None) -> No
         st.session_state.page3_search_flag = True
 
     return None
-
-
-# def page3_hide_info() -> None:
-#     """
-#     重置片镇查询页查询结果
-#     :return:
-#     """
-#     st.session_state.page3_search_flag = False
-#
-#     return None
 
 
 if __name__ == '__main__':
