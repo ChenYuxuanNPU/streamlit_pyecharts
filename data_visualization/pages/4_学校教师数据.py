@@ -66,27 +66,13 @@ with middle:
               on_click=confirm_input)
 
 # 不查询的时候展示学校云图
-if not st.session_state.page4_search_flag:
+if not st.session_state.page4_info_kind:
     show_word_cloud()
 
-if st.session_state.page4_info_kind == 1:
+elif st.session_state.page4_info_kind == 1:
 
-    if st.session_state.page4_search_flag:
-        with st.container(border=True):
-            show_school_stream(year=st.session_state.page4_year_list[0],
-                               school_name=st.session_state.page4_school_list[0])
+    show_1_year_and_1_school(year=st.session_state.page4_year_list[0], school=st.session_state.page4_school_list[0],
+                             period=st.session_state.page4_period)
 
-    # 展示某一年在编数据
-    if st.session_state.page4_search_flag and st.session_state.page4_kind_0_flag:
-        with st.container(border=True):
-            show_teacher_0(year=st.session_state.page4_year_list[0], school_name=st.session_state.page4_school_list[0],
-                           period=st.session_state.page4_period)
-
-    if st.session_state.page4_kind_0_flag and st.session_state.page4_kind_1_flag:
-        st.divider()
-
-    # 展示某一年编外数据
-    if st.session_state.page4_search_flag and st.session_state.page4_kind_1_flag:
-        with st.container(border=True):
-            show_teacher_1(year=st.session_state.page4_year_list[0], school_name=st.session_state.page4_school_list[0],
-                           period=st.session_state.page4_period)
+elif st.session_state.page4_info_kind == 2:
+    pass

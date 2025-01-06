@@ -1274,10 +1274,6 @@ def session_state_initial() -> None:
     if 'page3_search_flag' not in st.session_state:
         st.session_state.page3_search_flag = False
 
-    # page4中的展示判断符
-    if 'page4_search_flag' not in st.session_state:
-        st.session_state.page4_search_flag = False
-
     # page4中的在编展示判断符
     if 'page4_kind_0_flag' not in st.session_state:
         st.session_state.page4_kind_0_flag = False
@@ -1324,9 +1320,16 @@ def reset_others(page: int) -> None:
         st.session_state.page3_period = None
 
     if page != 4:
-        st.session_state.page4_search_flag = False
         st.session_state.page4_kind_0_flag = False
         st.session_state.page4_kind_1_flag = False
+
+        st.session_state.page4_year_list = []
+
+        st.session_state.page4_school_list = []
+
+        st.session_state.page4_period = None
+
+        st.session_state.page4_info_kind = None
 
     return None
 
