@@ -1,8 +1,5 @@
 from teacher_data_processing.tool.func import *
 
-kind_list = get_kind_list()
-period_list = get_period_list()
-
 
 def update(kind: str, school_name: str, year: str, period: str = None) -> None:
     """
@@ -26,7 +23,7 @@ def update(kind: str, school_name: str, year: str, period: str = None) -> None:
     json_data = load_json_data(folder="result", file_name="teacher_info")
 
     #  检查一下有没有这个学校和学段，没有的话就报错
-    check_result = school_name_and_period_check(kind=kind, school_name=school_name, period=period,
+    check_result = school_name_and_period_check(kind=kind, school=school_name, period=period,
                                                 year=year)
     if not check_result[0]:
         print(check_result[1])
