@@ -55,6 +55,7 @@ def show_1_year_all_period(year: str) -> None:
                 bar_axis_label="人数", line_axis_label="合计人数",
                 mark_line_type="average"
             )
+
         except Exception as e:
             print_color_text("年龄柱状折线图展示异常")
             print(e)
@@ -157,6 +158,9 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为年龄列
     ages = set()  # 用于检查age_dict中是否有对应的年龄
 
+    min_age = 1000
+    max_age = -1
+
     id_list = execute_sql_sentence(
         sentence=f'select "身份证号", "性别" from teacher_data_0_{year}'
     )
@@ -164,6 +168,9 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
     for item in id_list:
 
         age = str(get_age_from_citizen_id(citizen_id=item[0], year=year))
+
+        min_age = int(age) if int(age) < min_age else min_age
+        max_age = int(age) if int(age) > max_age else max_age
 
         if age not in ages:
 
@@ -173,6 +180,14 @@ def get_1_year_age_and_gender_dataframe(year: str, ) -> DataFrameContainer:
         df_dict[item[1]][age] += 1
 
         ages.add(age)
+
+    for age in range(min_age, max_age):
+
+        if str(age) not in df_dict["男"].keys():
+            df_dict["男"][str(age)] = 0
+
+        if str(age) not in df_dict["女"].keys():
+            df_dict["女"][str(age)] = 0
 
     container.add_dataframe(name="data", df=sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)))
 
@@ -555,6 +570,9 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     container = DataFrameContainer()
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
 
+    min_age = 1000
+    max_age = -1
+
     for year in year_list:
 
         df1[year] = {}  # 初始化该年份的子字典
@@ -581,6 +599,9 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
 
             age = str(get_age_from_citizen_id(citizen_id=item, year=year))
 
+            min_age = int(age) if int(age) < min_age else min_age
+            max_age = int(age) if int(age) > max_age else max_age
+
             if age == "0":
                 print_color_text(item)
                 print_color_text(year)
@@ -589,6 +610,14 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
                 df1[year][age] += 1
             else:
                 df1[year][age] = 1
+
+    #  填充空年龄列
+    for year in year_list:
+
+        for age in range(min_age, max_age):
+
+            if str(age) not in df1[year].keys():
+                df1[year][str(age)] = 0
 
     df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
     df1.fillna(value=0, inplace=True)
@@ -605,18 +634,6 @@ def get_multi_years_age_dataframe(year_list: list[str], ) -> DataFrameContainer:
     df4.index = ["增长率"]
 
     container.add_dataframe(name="growth_rate_by_year", df=df4)
-
-    # print("")
-    # print("总人数的dataframe：")
-    # print("")
-    # print(f"df1:{df1}")
-    # print("")
-    # print(f"df2:{df2}")
-    # print("")
-    # print(f"df3:{df3}")
-    # print("")
-    # print(f"df4:{df4}")
-    # print("")
 
     return container
 

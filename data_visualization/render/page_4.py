@@ -1,3 +1,4 @@
+from calculation.retirement import *
 from data_visualization.tool.func import *
 from teacher_data_processing.make_json.school_data.update_data import *
 from teacher_data_processing.tool.func import *
@@ -223,6 +224,21 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
 
     # st.write(json_data["在编"]["学校"][school][period])
 
+    try:
+        df_container = get_1_year_and_1_school_age_and_gender_dataframe(year=year, school=school, period=period)
+
+        draw_mixed_bar_and_line(
+            df_bar=df_container.get_dataframe(name="data"),
+            df_line=df_container.get_dataframe(name="sum"),
+            bar_axis_label="人数", line_axis_label="合计人数",
+            mark_line_type="average"
+        )
+
+    except Exception as e:
+        print_color_text("年龄柱状折线图展示异常")
+        print(e)
+        st.toast("年龄柱状折线图展示异常", icon="😕")
+
     col0, col1, col2 = st.columns([1, 1, 1])
 
     with col0:
@@ -294,6 +310,63 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
             title="三名统计")
 
     return None
+
+
+def get_1_year_and_1_school_age_and_gender_dataframe(year: str, school: str, period: str) -> DataFrameContainer:
+    """
+    根据年份生成列为年龄，行为性别的dataframe\n
+    data: 二维dataframe，包含性别和年龄\n
+    sum: 一维dataframe，包含年龄和人数总和
+    :param year: 查询的年份
+    :param school: 查询的学校
+    :param period: 查询的学段
+    :return:
+    """
+
+    container = DataFrameContainer()
+
+    df_dict = {"男": {}, "女": {}}  # 使用嵌套字典保存数据，外层为性别行，内层为年龄列
+    ages = set()  # 用于检查age_dict中是否有对应的年龄
+
+    min_age = 1000
+    max_age = -1
+
+    id_list = execute_sql_sentence(
+        sentence=f'select "身份证号", "性别" from teacher_data_0_{year} where "校名" = "{school}"{f' and "任教学段" = "{period}"' if period is not None else ''}'
+    )
+
+    for item in id_list:
+
+        age = str(get_age_from_citizen_id(citizen_id=item[0], year=year))
+
+        min_age = int(age) if int(age) < min_age else min_age
+        max_age = int(age) if int(age) > max_age else max_age
+
+        if age not in ages:
+
+            for gender in ["男", "女"]:
+                df_dict[gender][age] = 0
+
+        df_dict[item[1]][age] += 1
+
+        ages.add(age)
+
+    for age in range(min_age, max_age):
+
+        if str(age) not in df_dict["男"].keys():
+            df_dict["男"][str(age)] = 0
+
+        if str(age) not in df_dict["女"].keys():
+            df_dict["女"][str(age)] = 0
+
+    container.add_dataframe(name="data", df=sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)))
+
+    df = pd.DataFrame(sort_dataframe_columns(df=convert_dict_to_dataframe(d=df_dict)).sum()).T
+    df.index = ["合计"]
+
+    container.add_dataframe("sum", df=df)
+
+    return container
 
 
 def show_1_year_and_1_school_teacher_1(year: str, school: str, period: str) -> None:
