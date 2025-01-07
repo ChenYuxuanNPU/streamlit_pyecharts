@@ -466,6 +466,11 @@ def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str, p
         line_formatter="{value} %"
     )
 
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="age_and_year"))
+
+        st.dataframe(data=df_container.get_dataframe(name="age_growth_rate_and_year"))
+
     return None
 
 
@@ -566,6 +571,13 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
         line_formatter="{value} %"
     )
 
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+        with left:
+            st.dataframe(data=df_container.get_dataframe(name="period_and_year"))
+        with right:
+            st.dataframe(data=df_container.get_dataframe(name="period_growth_rate_and_year"))
+
     return None
 
 
@@ -644,6 +656,13 @@ def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str
         mark_line_y=0,
         line_formatter="{value} %"
     )
+
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+        with left:
+            st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_year"))
+        with right:
+            st.dataframe(data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year"))
 
     return None
 
@@ -727,6 +746,10 @@ def show_multi_years_and_1_area_teacher_0_vocational_level(year_list: list[str],
         line_formatter="{value} %",
         x_axis_font_size=9
     )
+
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_year"))
+        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year"))
 
     return None
 
@@ -831,6 +854,10 @@ def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area:
         line_formatter="{value} %"
     )
 
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="discipline_and_year"))
+        st.dataframe(data=df_container.get_dataframe(name="discipline_growth_rate_and_year"))
+
     return None
 
 
@@ -915,6 +942,13 @@ def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area
         # line_min_=-65,
         line_formatter="{value} %"
     )
+
+    with st.expander("详细信息"):
+        left, right = st.columns(spec=2)
+        with left:
+            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_year"))
+        with right:
+            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year"))
 
     if df_container.get_dataframe(name="grad_school_kind_and_year").empty or df_container.get_dataframe(
             name="grad_school_kind_growth_rate_and_year").empty:
@@ -1047,6 +1081,11 @@ def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str], p
         draw_line_chart(data=df_container.get_dataframe(name="age_percentage_and_area"), title="", height=600,
                         is_datazoom_show=True, formatter="{value} %")
 
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="age_and_area"))
+
+        st.dataframe(data=df_container.get_dataframe(name="age_percentage_and_area"))
+
     return None
 
 
@@ -1135,6 +1174,13 @@ def show_1_year_and_multi_areas_teacher_0_edu_bg(year: str, area_list: list[str]
         draw_line_chart(data=df_container.get_dataframe(name="edu_bg_percentage_and_area"), title="", height=600,
                         is_datazoom_show=True, formatter="{value} %")
 
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_area"))
+            with right:
+                st.dataframe(data=df_container.get_dataframe(name="edu_bg_percentage_and_area"))
+
     return None
 
 
@@ -1220,6 +1266,13 @@ def show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year: str, are
                         height=600,
                         is_datazoom_show=True, formatter="{value} %")
 
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_area"))
+            with right:
+                st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_area"))
+
     return None
 
 
@@ -1260,6 +1313,8 @@ def get_1_year_and_multi_areas_teacher_0_vocational_level_detail_dataframe(year:
 
     df1 = convert_dict_to_dataframe(d=df1)
     df1.fillna(value=0, inplace=True)
+    df1 = df1.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+        columns=shorten_vocational_level_detail_dict())
     container.add_dataframe(name="vocational_level_detail_and_area", df=df1)
 
     df2 = convert_dict_to_dataframe(d=df2_values_sum)
@@ -1293,6 +1348,11 @@ def show_1_year_and_multi_areas_teacher_0_discipline(year: str, area_list: list[
         draw_line_chart(data=df_container.get_dataframe(name="discipline_percentage_and_area"), title="",
                         height=600,
                         is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            st.dataframe(data=df_container.get_dataframe(name="discipline_and_area"))
+
+            st.dataframe(data=df_container.get_dataframe(name="discipline_percentage_and_area"))
 
     return None
 
@@ -1333,6 +1393,7 @@ def get_1_year_and_multi_areas_teacher_0_discipline_dataframe(year: str, area_li
         )
 
     df1 = convert_dict_to_dataframe(d=df1)
+    df1 = df1.reindex(columns=get_discipline_list())
     df1.fillna(value=0, inplace=True)
     container.add_dataframe(name="discipline_and_area", df=df1)
 
@@ -1368,6 +1429,13 @@ def show_1_year_and_multi_areas_teacher_0_grad_school_level(year: str, area_list
         draw_line_chart(data=df_container.get_dataframe(name="grad_school_percentage_and_area"), title="",
                         height=600,
                         is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_area"))
+            with right:
+                st.dataframe(data=df_container.get_dataframe(name="grad_school_percentage_and_area"))
 
     return None
 
