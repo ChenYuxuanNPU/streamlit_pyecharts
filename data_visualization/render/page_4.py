@@ -51,7 +51,7 @@ def confirm_input(**kwargs) -> None:
         if not kwargs["school_list"]:
             st.toast("需要选择查询的学校", icon="🥱")
 
-    # 这里要判断是否只查询某一所学校
+    # 这里要判断查询类型并设置flag
     set_flags_and_update_school_data(school_list=kwargs["school_list"], year_list=kwargs["year_list"],
                                      period=kwargs["period"])
 
@@ -70,7 +70,7 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
     if len(year_list) == 1 and len(school_list) == 1:
 
         # 验证了输入的信息是否有误
-        st.session_state.page4_kind_0_flag = \
+        st.session_state.page4_1_year_and_1_school_kind_0_flag = \
             school_name_and_period_check(kind="在编", year=year_list[0],
                                          school=school_list[0],
                                          period=period)[0]
@@ -81,7 +81,7 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
                                          period=period)[0]
 
         # 至少展示一类信息
-        if st.session_state.page4_kind_0_flag or st.session_state.page4_1_year_and_1_school_kind_1_flag:
+        if st.session_state.page4_1_year_and_1_school_kind_0_flag or st.session_state.page4_1_year_and_1_school_kind_1_flag:
 
             st.toast("查询成功！", icon="✅")
 
@@ -90,7 +90,7 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
             st.session_state.page4_school_list = school_list
             st.session_state.page4_period = period
 
-            if not st.session_state.page4_kind_0_flag:
+            if not st.session_state.page4_1_year_and_1_school_kind_0_flag:
                 st.toast(school_name_and_period_check(kind="在编", year=year_list[0],
                                                       school=school_list[0], period=period)[1], icon="⚠️")
 
@@ -99,7 +99,7 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
                                                       school=school_list[0], period=period)[1], icon="⚠️")
 
             update_specific_school(school=school_list[0], year=year_list[0], period=period,
-                                   kind_0_flag=st.session_state.page4_kind_0_flag,
+                                   kind_0_flag=st.session_state.page4_1_year_and_1_school_kind_0_flag,
                                    kind_1_flag=st.session_state.page4_1_year_and_1_school_kind_1_flag)
 
         # 两类信息都找不到
@@ -144,12 +144,12 @@ def show_1_year_and_1_school(year: str, school: str, period: str) -> None:
                            school=school)
 
     # 展示某一年在编数据
-    if st.session_state.page4_info_kind == "1" and st.session_state.page4_kind_0_flag:
+    if st.session_state.page4_info_kind == "1" and st.session_state.page4_1_year_and_1_school_kind_0_flag:
         with st.container(border=True):
             show_1_year_and_1_school_teacher_0(year=year, school=school,
                                                period=period if period is not None else None)
 
-    if st.session_state.page4_info_kind == "1" and st.session_state.page4_kind_0_flag and st.session_state.page4_1_year_and_1_school_kind_1_flag:
+    if st.session_state.page4_info_kind == "1" and st.session_state.page4_1_year_and_1_school_kind_0_flag and st.session_state.page4_1_year_and_1_school_kind_1_flag:
         st.divider()
 
     # 展示某一年编外数据
