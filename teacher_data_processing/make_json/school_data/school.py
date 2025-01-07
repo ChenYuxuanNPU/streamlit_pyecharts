@@ -157,7 +157,7 @@ def data_00_unique(json_data: dict, school_name: str, year: str, kind: str = "�
             data=execute_sql_sentence(
                 sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school_name}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
             ),
-            label_length="long"
+            label_length="short"
         ),
         json_data=json_data)
 
