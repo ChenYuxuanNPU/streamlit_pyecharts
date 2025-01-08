@@ -41,10 +41,7 @@ with mid:
     school = list(
         st.multiselect(
             label="请输入需要查询的学校",
-            options=[values for key in get_year_list(kind="teacher_info") if
-                     key in load_json_data(folder="result", file_name="teacher_info").keys() and "学校教师总数" in
-                     load_json_data(folder="result", file_name="teacher_info")[key].keys() for values in
-                     load_json_data(folder="result", file_name="teacher_info")[key]["学校教师总数"].keys()],
+            options=get_school_list_by_year_list(year_list=year),
             placeholder="必选项",
         )
     )

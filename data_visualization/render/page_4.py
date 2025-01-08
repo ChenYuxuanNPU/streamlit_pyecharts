@@ -11,6 +11,29 @@ def get_base_data() -> dict:
     return load_json_data(folder="result", file_name="teacher_info")
 
 
+def get_school_list_by_year_list(year_list: list[str]) -> list:
+    """
+    用于计算选中年份对应的学校列表
+    :param year_list: 目前选中的年份列表
+    :return:
+    """
+    output = {}
+    dict1 = load_json_data(folder="result", file_name="teacher_info")
+
+    for year in year_list:
+        for school in dict1.get(f"{year}", {}).get("学校教师总数", {}).keys():
+
+            if school not in output.keys():
+                output[school] = dict1.get(f"{year}", {}).get("学校教师总数", {}).get(f"{school}", {})[5]
+
+            else:
+                output[school] = max(
+                    dict1.get(f"{year}", {}).get("学校教师总数", {}).get(f"{school}", {})[5], output[school]
+                )
+
+    return [key for key, value in sorted(output.items(), key=lambda item: item[1], reverse=True)]
+
+
 def update_specific_school(school: str, year: str, period: str, kind_0_flag=False, kind_1_flag=False) -> None:
     """
     根据参数更新json文件中的学校数据
@@ -374,3 +397,4 @@ def show_1_year_and_1_school_teacher_1(year: str, school: str, period: str) -> N
             title="骨干教师")
 
     return None
+
