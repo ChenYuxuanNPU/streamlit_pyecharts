@@ -65,7 +65,6 @@ def confirm_input(**kwargs) -> None:
         st.toast("年份与学校不能同时多选！", icon="🥺")
 
     if not kwargs["year_list"] or not kwargs["school_list"]:
-        # st.session_state.page4_info_kind = None
 
         if not kwargs["year_list"]:
             st.toast("需要选择查询的年份", icon="🥱")
@@ -131,6 +130,24 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
                                                   school=school_list[0], period=period)[1], icon="⚠️")
             st.toast(school_name_and_period_check(kind="编外", year=year_list[0],
                                                   school=school_list[0], period=period)[1], icon="⚠️")
+
+    elif len(year_list) > 1 and len(school_list) == 1:
+        pass
+
+    elif len(year_list) == 1 and len(school_list) > 1:
+
+        for school in school_list:
+            if school_name_and_period_check(kind="在编", year=year_list[0], school=school, period=period)[0]:
+
+                st.session_state.page4_info_kind = "1.2"
+                st.session_state.page4_year_list = year_list
+                st.session_state.page4_school_list = school_list
+                st.session_state.page4_period = period
+
+            else:
+                st.toast(
+                    school_name_and_period_check(kind="在编", year=year_list[0], school=school, period=period)[
+                        1], icon="⚠️")
 
     return None
 
@@ -398,3 +415,231 @@ def show_1_year_and_1_school_teacher_1(year: str, school: str, period: str) -> N
 
     return None
 
+
+def show_1_year_and_multi_schools(year: str, school_list: list[str], period: str) -> None:
+    """
+    展示某一年某一学校教师信息
+    :param year: 查询的某一年份
+    :param school_list: 查询的学校列表
+    :param period: 可选的查询学段
+    :return:
+    """
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>学校对比</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        pass
+
+        show_1_year_and_multi_schools_teacher_0(year=year, school_list=school_list, period=period)
+
+
+def show_1_year_and_multi_schools_teacher_0(year: str, school_list: list[str], period: str) -> None:
+    """
+    展示某一年某一学校教师信息
+    :param year: 查询的某一年份
+    :param school_list: 查询的学校列表
+    :param period: 可选的查询学段
+    :return:
+    """
+
+    st.markdown(
+        body="<h3 style='text-align: center;'>在编教师信息</h3>",
+        unsafe_allow_html=True
+    )
+    st.divider()
+
+    st.info(f"{year}年不同学校在编教师数情况")
+    show_1_year_and_multi_schools_teacher_0_age(year=year, school_list=school_list, period=period)
+
+    st.info(f"{year}年不同学校学历水平情况")
+    show_1_year_and_multi_schools_teacher_0_edu_bg(year=year, school_list=school_list, period=period)
+
+    st.info(f"{year}年不同学校专技职称情况")
+    show_1_year_and_multi_schools_teacher_0_vocational_level_detail(year=year, school_list=school_list,
+                                                                    period=period)
+
+    st.info(f"{year}年不同学校学科教师数情况")
+    show_1_year_and_multi_schools_teacher_0_discipline(year=year, school_list=school_list, period=period)
+
+    st.info(f"{year}年不同学校教师毕业院校水平情况")
+    show_1_year_and_multi_schools_teacher_0_grad_school_level(year=year, school_list=school_list, period=period)
+
+
+def show_1_year_and_multi_schools_teacher_0_age(year: str, school_list: list[str], period: str):
+    """
+    展示某一年某一学校教师信息
+    :param year: 查询的某一年份
+    :param school_list: 查询的学校列表
+    :param period: 可选的查询学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year=year, school_list=school_list,
+                                                                                 period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师人数对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="age_and_location"), title="", height=600,
+                        is_datazoom_show=True)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师人数占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="age_percentage_and_location"), title="", height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="age_and_location"))
+
+        st.dataframe(
+            data=df_container.get_dataframe(name="age_percentage_and_location").map(lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_1_year_and_multi_schools_teacher_0_edu_bg(year: str, school_list: list[str], period: str = None) -> None:
+    """
+    展示多学校教师学历情况对比
+    :param year: 年份
+    :param school_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_edu_bg_dataframe(year=year, school_list=school_list,
+                                                                                    period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师最高学历占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="edu_bg_percentage_and_location"), title="", height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_location"))
+            with right:
+                st.dataframe(data=df_container.get_dataframe(name="edu_bg_percentage_and_location").map(
+                    lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_1_year_and_multi_schools_teacher_0_vocational_level_detail(year: str, school_list: list[str],
+                                                                    period: str = None) -> None:
+    """
+    展示多学校教师专业技术等级对比
+    :param year: 年份
+    :param school_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_vocational_level_detail_dataframe(year=year,
+                                                                                                     school_list=school_list,
+                                                                                                     period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师专业技术等级占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_location"),
+                        title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_location"))
+            with right:
+                st.dataframe(
+                    data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_location").map(
+                        lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_1_year_and_multi_schools_teacher_0_discipline(year: str, school_list: list[str], period: str = None) -> None:
+    """
+    展示多学校教师学科数量对比
+    :param year: 年份
+    :param school_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_discipline_dataframe(year=year,
+                                                                                        school_list=school_list,
+                                                                                        period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师学科占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="discipline_percentage_and_location"), title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            st.dataframe(data=df_container.get_dataframe(name="discipline_and_location"))
+
+            st.dataframe(data=df_container.get_dataframe(name="discipline_percentage_and_location").map(
+                lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_1_year_and_multi_schools_teacher_0_grad_school_level(year: str, school_list: list[str],
+                                                              period: str = None) -> None:
+    """
+    展示不同学校教师毕业院校情况对比
+    :param year: 年份
+    :param school_list: 查询的片镇列表
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(year=year,
+                                                                                               school_list=school_list,
+                                                                                               period=period)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师毕业院校占比对比</h4>",
+            unsafe_allow_html=True
+        )
+
+        draw_line_chart(data=df_container.get_dataframe(name="grad_school_percentage_and_location"), title="",
+                        height=600,
+                        is_datazoom_show=True, formatter="{value} %")
+
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_location"))
+            with right:
+                st.dataframe(data=df_container.get_dataframe(name="grad_school_percentage_and_location").map(
+                    lambda x: f"{float(x):.1f}%"))
+
+    return None

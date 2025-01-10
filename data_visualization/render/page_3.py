@@ -296,7 +296,7 @@ def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str, p
     with st.expander("详细信息"):
         st.dataframe(data=df_container.get_dataframe(name="age_and_year"))
 
-        st.dataframe(data=df_container.get_dataframe(name="age_growth_rate_and_year"))
+        st.dataframe(data=df_container.get_dataframe(name="age_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -403,7 +403,8 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
         with left:
             st.dataframe(data=df_container.get_dataframe(name="period_and_year"))
         with right:
-            st.dataframe(data=df_container.get_dataframe(name="period_growth_rate_and_year"))
+            st.dataframe(
+                data=df_container.get_dataframe(name="period_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -489,7 +490,8 @@ def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str
         with left:
             st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_year"))
         with right:
-            st.dataframe(data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year"))
+            st.dataframe(
+                data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -576,7 +578,8 @@ def show_multi_years_and_1_area_teacher_0_vocational_level(year_list: list[str],
 
     with st.expander("详细信息"):
         st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_year"))
-        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year"))
+        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year").map(
+            lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -683,7 +686,8 @@ def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area:
 
     with st.expander("详细信息"):
         st.dataframe(data=df_container.get_dataframe(name="discipline_and_year"))
-        st.dataframe(data=df_container.get_dataframe(name="discipline_growth_rate_and_year"))
+        st.dataframe(
+            data=df_container.get_dataframe(name="discipline_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -775,7 +779,8 @@ def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area
         with left:
             st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_year"))
         with right:
-            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year"))
+            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"))
 
     if df_container.get_dataframe(name="grad_school_kind_and_year").empty or df_container.get_dataframe(
             name="grad_school_kind_growth_rate_and_year").empty:
@@ -912,7 +917,9 @@ def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str], p
     with st.expander("详细信息"):
         st.dataframe(data=df_container.get_dataframe(name="age_and_location"), height=282)
 
-        st.dataframe(data=df_container.get_dataframe(name="age_percentage_and_location"), height=282)
+        st.dataframe(
+            data=df_container.get_dataframe(name="age_percentage_and_location").map(lambda x: f"{float(x):.1f}%"),
+            height=282)
 
     return None
 
@@ -943,7 +950,8 @@ def show_1_year_and_multi_areas_teacher_0_edu_bg(year: str, area_list: list[str]
             with left:
                 st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_location"))
             with right:
-                st.dataframe(data=df_container.get_dataframe(name="edu_bg_percentage_and_location"))
+                st.dataframe(data=df_container.get_dataframe(name="edu_bg_percentage_and_location").map(
+                    lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -978,7 +986,9 @@ def show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year: str, are
             with left:
                 st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_location"))
             with right:
-                st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_location"))
+                st.dataframe(
+                    data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_location").map(
+                        lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -1009,7 +1019,8 @@ def show_1_year_and_multi_areas_teacher_0_discipline(year: str, area_list: list[
         with st.expander("详细信息"):
             st.dataframe(data=df_container.get_dataframe(name="discipline_and_location"))
 
-            st.dataframe(data=df_container.get_dataframe(name="discipline_percentage_and_location"))
+            st.dataframe(data=df_container.get_dataframe(name="discipline_percentage_and_location").map(
+                lambda x: f"{float(x):.1f}%"))
 
     return None
 
@@ -1043,7 +1054,8 @@ def show_1_year_and_multi_areas_teacher_0_grad_school_level(year: str, area_list
             with left:
                 st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_location"))
             with right:
-                st.dataframe(data=df_container.get_dataframe(name="grad_school_percentage_and_location"))
+                st.dataframe(data=df_container.get_dataframe(name="grad_school_percentage_and_location").map(
+                    lambda x: f"{float(x):.1f}%"))
 
     return None
 

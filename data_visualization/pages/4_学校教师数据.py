@@ -68,14 +68,17 @@ if not st.session_state.page4_info_kind:
 
 elif st.session_state.page4_info_kind == "1":
 
-    show_1_year_and_1_school(year=st.session_state.page4_year_list[0], school=st.session_state.page4_school_list[0],
+    show_1_year_and_1_school(year=st.session_state.page4_year_list[0],
+                             school=st.session_state.page4_school_list[0],
                              period=st.session_state.page4_period)
 
 elif st.session_state.page4_info_kind == "2.1":
     pass
 
 elif st.session_state.page4_info_kind == "1.2":
-    pass
+    show_1_year_and_multi_schools(year=st.session_state.page4_year_list[0],
+                                  school_list=st.session_state.page4_school_list,
+                                  period=st.session_state.page4_period)
 
 else:
     show_word_cloud()

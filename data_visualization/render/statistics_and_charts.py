@@ -275,7 +275,7 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year: str, are
     max_age = -1
 
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
-    df1.update({a: {} for a in area_list})  # 初始化该年份的子字典
+    df1.update({location: {} for location in (area_list if area_list is not None else school_list)})  # 初始化该年份的子字典
 
     df2_values_sum = {}
     df2_values_sum.update(
@@ -329,7 +329,8 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year: str, are
 
     for location in (area_list if area_list is not None else school_list):
         for age in df2[location].keys():
-            df2[location][age] = round(number=100 * float(df2[location][age] / df2_values_sum[location]), ndigits=1)
+            df2[location][age] = round(number=100 * float(
+                (df2[location][age] / df2_values_sum[location] if df2_values_sum[location] != 0 else 0)), ndigits=1)
 
     df2 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df2))
     df2.fillna(value=0, inplace=True)
@@ -568,10 +569,11 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(
 
     for location, item in df2.items():
         for key, value in item.items():
-            df3[location][key] = round(
-                number=100 * float(value / count_dict[location]),
-                ndigits=1
-            )
+            if location in count_dict.keys():
+                df3[location][key] = round(
+                    number=100 * float(value / count_dict[location]),
+                    ndigits=1
+                )
 
     df2 = convert_dict_to_dataframe(d=df2)
     df2.fillna(value=0, inplace=True)
@@ -584,3 +586,10 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(
     container.add_dataframe(name="grad_school_percentage_and_location", df=df3)
 
     return container
+
+
+if __name__ == '__main__':
+    container1 = get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year="2024",
+                                                                               school_list=["广州市培英中学",
+                                                                                            "广州市实验外语学校"])
+    print(container1.get_dataframe("age_and_location"))
