@@ -325,6 +325,7 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year: str, are
     df2 = df1
     df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
     df1.fillna(value=0, inplace=True)
+    df1 = df1[(df1 != 0).any(axis=1)]
     container.add_dataframe(name="age_and_location", df=df1)
 
     for location in (area_list if area_list is not None else school_list):
@@ -334,6 +335,7 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year: str, are
 
     df2 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df2))
     df2.fillna(value=0, inplace=True)
+    df2 = df2[(df2 != 0).any(axis=1)]
     container.add_dataframe(name="age_percentage_and_location", df=df2)
 
     return container
@@ -391,10 +393,12 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_edu_bg_dataframe(year: str, 
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
     df1.fillna(value=0, inplace=True)
+    df1 = df1[(df1 != 0).any(axis=1)]
     container.add_dataframe(name="edu_bg_and_location", df=df1)
 
     df2 = convert_dict_to_dataframe(d=df2_values_sum).reindex(columns=get_edu_bg_list())
     df2.fillna(value=0, inplace=True)
+    df2 = df2[(df2 != 0).any(axis=1)]
     container.add_dataframe(name="edu_bg_percentage_and_location", df=df2)
 
     return container
@@ -440,14 +444,20 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_vocational_level_detail_data
 
     df1 = convert_dict_to_dataframe(d=df1)
     df1.fillna(value=0, inplace=True)
-    df1 = df1.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+    # df1 = df1.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+    #     columns=shorten_vocational_level_detail_dict())
+    df1 = df1[[col for col in shorten_vocational_level_detail_dict().keys() if col in df1.columns]].rename(
         columns=shorten_vocational_level_detail_dict())
+    df1 = df1[(df1 != 0).any(axis=1)]
     container.add_dataframe(name="vocational_level_detail_and_location", df=df1)
 
     df2 = convert_dict_to_dataframe(d=df2_values_sum)
     df2.fillna(value=0, inplace=True)
-    df2 = df2.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+    # df2 = df2.reindex(columns=shorten_vocational_level_detail_dict()).rename(
+    #     columns=shorten_vocational_level_detail_dict())
+    df2 = df2[[col for col in shorten_vocational_level_detail_dict().keys() if col in df2.columns]].rename(
         columns=shorten_vocational_level_detail_dict())
+    df2 = df2[(df2 != 0).any(axis=1)]
     container.add_dataframe(name="vocational_level_detail_percentage_and_location", df=df2)
 
     return container
@@ -495,6 +505,7 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_discipline_dataframe(year: s
     df1 = convert_dict_to_dataframe(d=df1)
     df1 = df1.reindex(columns=get_discipline_list())
     df1.fillna(value=0, inplace=True)
+    df1 = df1[(df1 != 0).any(axis=1)]
     container.add_dataframe(name="discipline_and_location", df=df1)
 
     df2 = convert_dict_to_dataframe(d=df2_values_sum)
@@ -578,11 +589,13 @@ def get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(
     df2 = convert_dict_to_dataframe(d=df2)
     df2.fillna(value=0, inplace=True)
     df2 = df2.loc[:, ~(df2 == 0).all()]  # 删除全为0的列
+    df2 = df2[(df2 != 0).any(axis=1)]
     container.add_dataframe(name="grad_school_kind_and_location", df=df2)
 
     df3 = convert_dict_to_dataframe(d=df3)
     df3.fillna(value=0, inplace=True)
     df3 = df3.loc[:, ~(df3 == 0).all()]  # 删除全为0的列
+    df3 = df3[(df3 != 0).any(axis=1)]
     container.add_dataframe(name="grad_school_percentage_and_location", df=df3)
 
     return container
