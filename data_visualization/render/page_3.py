@@ -76,6 +76,22 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
             st.error(str(e), icon="😭")
 
     with st.container(border=False):
+
+        try:
+            df_container = get_1_year_age_and_gender_dataframe(year=year, area=area, period=period)
+
+            draw_mixed_bar_and_line(
+                df_bar=df_container.get_dataframe(name="data"),
+                df_line=df_container.get_dataframe(name="sum"),
+                bar_axis_label="人数", line_axis_label="合计人数",
+                mark_line_type="average"
+            )
+
+        except Exception as e:
+            print_color_text("年龄柱状折线图展示异常")
+            print(e)
+            st.toast("年龄柱状折线图展示异常", icon="😕")
+
         c0, c1, c2 = st.columns(spec=3)
 
         with c0:
