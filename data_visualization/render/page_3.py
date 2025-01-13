@@ -78,7 +78,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
     with st.container(border=False):
 
         try:
-            df_container = get_1_year_age_and_gender_dataframe(year=year, area=area, period=period)
+            df_container = get_1_year_teacher_0_age_and_gender_dataframe(year=year, area=area, period=period)
 
             draw_mixed_bar_and_line(
                 df_bar=df_container.get_dataframe(name="data"),
@@ -129,7 +129,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
 
         # 最多毕业生数量统计
         with st.container(border=True):
-            df_container = get_1_year_grad_school_dataframe(year=year, area=area, period=period)
+            df_container = get_1_year_teacher_0_grad_school_dataframe(year=year, area=area, period=period)
             a0, a1, a2, a3, a4 = st.columns(spec=5)
             with a0:
                 st.dataframe(df_container.get_dataframe("df_985"), height=400, width=300)
@@ -285,7 +285,7 @@ def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str, p
     :return:
     """
 
-    df_container = get_multi_years_and_1_area_age_dataframe(year_list=year_list, area=area, period=period)
+    df_container = get_multi_years_teacher_0_age_dataframe(year_list=year_list, area=area, period=period)
 
     left, right = st.columns(spec=2)
 
@@ -317,74 +317,6 @@ def show_multi_years_and_1_area_teacher_0_age(year_list: list[str], area: str, p
     return None
 
 
-def get_multi_years_and_1_area_age_dataframe(year_list: list[str], area: str, period: str = None) -> DataFrameContainer:
-    """
-    根据年份列表生成多个年龄统计dataframe，放置在container中\n
-    age_and_year：所有数据，列为年龄，行为年份\n
-    age_growth_rate_and_year：所有数据对年龄求增长率，列为年龄，行为年份（存疑）\n
-    count_by_year：每年的总人数，列为年份，单行\n
-    growth_rate_by_year：原dataframe中每一年相对于上一年的总增长率（年份总人数增长率，不考虑年龄），列为年份，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 查询的片镇名
-    :param period: 任教学段
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
-
-    for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        """
-        df_dict:{
-        "2024":{
-            25:100,
-            26:200
-            },
-        "2023"：{
-            25：50，
-            24：100
-            }
-        }
-        """
-        id_list = del_tuple_in_list(
-            data=execute_sql_sentence(
-                sentence=f'select "身份证号" from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}"' if period is not None else ''}'
-            )
-        )
-
-        for item in id_list:
-
-            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
-
-            if age == "0":
-                print_color_text(item)
-                print_color_text(year)
-
-            if age in df1[year].keys():
-                df1[year][age] += 1
-            else:
-                df1[year][age] = 1
-
-    df1 = sort_dataframe_columns(df=convert_dict_to_dataframe(d=df1))
-    df1.fillna(value=0, inplace=True)
-    container.add_dataframe(name="age_and_year", df=df1)
-
-    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("age_growth_rate_and_year", df=df2)
-
-    df3 = pd.DataFrame(df1.sum(axis="columns")).T
-    df3.index = ["总人数"]
-    container.add_dataframe(name="count_by_year", df=df3)
-
-    df4 = get_growth_rate_from_one_row_dataframe(df=df3)
-    df4.index = ["增长率"]
-
-    container.add_dataframe(name="growth_rate_by_year", df=df4)
-
-    return container
-
-
 def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str) -> None:
     """
     展示多年份不同学段教师数对比
@@ -392,7 +324,7 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
     :param area: 片镇名
     :return:
     """
-    df_container = get_multi_years_and_1_area_teacher_0_period_dataframe(year_list=year_list, area=area)
+    df_container = get_multi_years_teacher_0_period_dataframe(year_list=year_list, area=area)
 
     left, right = st.columns(spec=2)
 
@@ -425,50 +357,6 @@ def show_multi_years_and_1_area_teacher_0_period(year_list: list[str], area: str
     return None
 
 
-def get_multi_years_and_1_area_teacher_0_period_dataframe(year_list: list[str], area: str) -> DataFrameContainer:
-    """
-    根据年份列表生成多个学段统计dataframe，放置在container中\n
-    period_and_year：所有数据，列为学段，行为年份\n
-    period_growth_rate_and_year：所有数据对学段求增长率，行为增长率对应年份，列为学段，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 片镇名
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学段列
-
-    for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        """
-        df_dict:{
-        "2024":{
-            "高中":100,
-            "初中":200
-            },
-        "2023"：{
-            "高中"：50，
-            "初中"：100
-            }
-        }
-        """
-        period_count_list = execute_sql_sentence(
-            sentence=f'select "任教学段", count(*) from teacher_data_0_{year} where "区域" = "{area}" and "任教学段" in ({', '.join([f'"{period}"' for period in get_period_list() if period != "高中"])}) group by "任教学段"'
-        )
-
-        for item in period_count_list:
-            df1[year][item[0]] = item[1]
-
-    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=[period for period in get_period_list() if period != "高中"])
-    df1.fillna(value=0, inplace=True)
-    container.add_dataframe(name="period_and_year", df=df1)
-
-    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe(name="period_growth_rate_and_year", df=df2)
-
-    return container
-
-
 def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str, period: str = None) -> None:
     """
     展示多年份教师学历对比
@@ -477,7 +365,7 @@ def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str
     :param period: 任教学段
     :return:
     """
-    df_container = get_multi_years_and_1_area_teacher_0_edu_bg_dataframe(year_list=year_list, area=area, period=period)
+    df_container = get_multi_years_teacher_0_edu_bg_dataframe(year_list=year_list, area=area, period=period)
 
     left, right = st.columns(spec=2)
 
@@ -512,53 +400,6 @@ def show_multi_years_and_1_area_teacher_0_edu_bg(year_list: list[str], area: str
     return None
 
 
-def get_multi_years_and_1_area_teacher_0_edu_bg_dataframe(year_list: list[str], area: str,
-                                                          period: str = None) -> DataFrameContainer:
-    """
-    根据年份列表生成多个学历统计dataframe，放置在container中\n
-    edu_bg_and_year：所有数据，列为学历，行为年份\n
-    edu_bg_growth_rate_and_year：所有数据对学历求增长率，行为增长率对应年份，列为学历，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 片镇名
-    :param period: 任教学段
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
-
-    for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        """
-        df_dict:{
-        "2024":{
-            "本科":100,
-            "硕士研究生":200
-            },
-        "2023"：{
-            "本科"：50，
-            "硕士研究生"：100
-            }
-        }
-        """
-        edu_bg_count_list = execute_sql_sentence(
-            sentence=f'select "最高学历", count(*) from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}) group by "最高学历"'
-        )
-
-        for item in edu_bg_count_list:
-            df1[year][item[0]] = item[1]
-
-    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
-    df1.fillna(value=0, inplace=True)
-    df1 = df1.loc[:, ~(df1 == 0).all()]  # 删除全为0的列
-    container.add_dataframe(name="edu_bg_and_year", df=df1)
-
-    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("edu_bg_growth_rate_and_year", df=df2)
-
-    return container
-
-
 def show_multi_years_and_1_area_teacher_0_vocational_level(year_list: list[str], area: str, period: str = None) -> None:
     """
     展示多年份教师专业技术级别对比
@@ -567,8 +408,7 @@ def show_multi_years_and_1_area_teacher_0_vocational_level(year_list: list[str],
     :param period: 任教学段
     :return:
     """
-    df_container = get_multi_years_and_1_area_teacher_0_vocational_level_dataframe(year_list=year_list, area=area,
-                                                                                   period=period)
+    df_container = get_multi_years_teacher_0_vocational_level_dataframe(year_list=year_list, area=area, period=period)
 
     left, right = st.columns(spec=2)
 
@@ -600,72 +440,6 @@ def show_multi_years_and_1_area_teacher_0_vocational_level(year_list: list[str],
     return None
 
 
-def get_multi_years_and_1_area_teacher_0_vocational_level_dataframe(year_list: list[str], area: str,
-                                                                    period: str = None) -> DataFrameContainer:
-    """
-    根据年份列表生成多个教师级别、专业技术级别统计dataframe，放置在container中\n
-    vocational_level_and_year：所有数据，列为教师级别，行为年份\n
-    vocational_level_growth_rate_and_year：所有数据对教师级别求增长率，行为增长率对应年份，列为教师级别，单行\n
-    vocational_level_detail_and_year：所有数据，列为专技级别，行为年份\n
-    vocational_level_detail_growth_rate_and_year：所有数据对专技级别求增长率，行为增长率对应年份，列为专技级别，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 片镇名
-    :param period: 任教学段
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为年龄列
-    df3 = {}
-
-    for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        df3[year] = {}
-        """
-        df_dict:{
-        "2024":{
-            "一级教师":100,
-            "二级教师":200
-            },
-        "2023"：{
-            "一级教师"：50，
-            "二级教师"：100
-            }
-        }
-        """
-        vocational_level_count_list = execute_sql_sentence(
-            sentence=f'select "最高职称", count(*) from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "最高职称" in ({', '.join([f'"{level}"' for level in get_vocational_level_list()])}) group by "最高职称"'
-        )
-
-        for item in vocational_level_count_list:
-            df1[year][item[0]] = item[1]
-
-        vocational_level_detail_count_list = execute_sql_sentence(
-            sentence=f'select "专业技术岗位", count(*) from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "专业技术岗位" in ({', '.join([f'"{level}"' for level in get_vocational_level_detail_list()])}) group by "专业技术岗位"'
-        )
-
-        for item in vocational_level_detail_count_list:
-            df3[year][item[0]] = item[1]
-
-    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_vocational_level_list())
-    df1.fillna(value=0, inplace=True)
-    df1 = df1.loc[:, ~(df1 == 0).all()]  # 删除全为0的列
-    container.add_dataframe(name="vocational_level_and_year", df=df1)
-
-    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("vocational_level_growth_rate_and_year", df=df2)
-
-    df3 = convert_dict_to_dataframe(d=df3).reindex(columns=get_vocational_level_detail_list())
-    df3.fillna(value=0, inplace=True)
-    df3 = df3.loc[:, ~(df3 == 0).all()]  # 删除全为0的列
-    container.add_dataframe(name="vocational_level_detail_and_year", df=df3)
-
-    df4 = get_growth_rate_from_multi_rows_dataframe(df=df3)
-    container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df4)
-
-    return container
-
-
 def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area: str, period: str = None) -> None:
     """
     展示多年份不同学科教师数对比
@@ -674,8 +448,7 @@ def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area:
     :param period: 任教学段
     :return:
     """
-    df_container = get_multi_years_and_1_area_teacher_0_discipline_dataframe(year_list=year_list, area=area,
-                                                                             period=period)
+    df_container = get_multi_years_teacher_0_discipline_dataframe(year_list=year_list, area=area, period=period)
 
     left, right = st.columns(spec=2)
 
@@ -708,53 +481,6 @@ def show_multi_years_and_1_area_teacher_0_discipline(year_list: list[str], area:
     return None
 
 
-def get_multi_years_and_1_area_teacher_0_discipline_dataframe(year_list: list[str], area: str,
-                                                              period: str = None) -> DataFrameContainer:
-    """
-    根据年份列表生成多个学科统计dataframe，放置在container中\n
-    discipline_and_year：所有数据，列为学科，行为年份\n
-    discipline_growth_rate_and_year：所有数据对学科求增长率，行为增长率对应年份，列为学科，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 片镇名
-    :param period: 任教学段
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
-
-    for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        """
-        df_dict:{
-        "2024":{
-            "语文":100,
-            "数学":200
-            },
-        "2023"：{
-            "语文"：50，
-            "数学"：100
-            }
-        }
-        """
-        discipline_count_list = execute_sql_sentence(
-            sentence=f'select "主教学科", count(*) from teacher_data_0_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "主教学科" in ({', '.join([f'"{discipline}"' for discipline in get_discipline_list()])}) group by "主教学科"'
-        )
-
-        for item in discipline_count_list:
-            df1[year][item[0]] = item[1]
-
-    df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_discipline_list())
-    df1.fillna(value=0, inplace=True)
-    df1 = df1.loc[:, ~(df1 == 0).all()]  # 删除全为0的列
-    container.add_dataframe(name="discipline_and_year", df=df1)
-
-    df2 = get_growth_rate_from_multi_rows_dataframe(df=df1)
-    container.add_dataframe("discipline_growth_rate_and_year", df=df2)
-
-    return container
-
-
 def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area: str, period: str = None) -> None:
     """
     展示多年份教师毕业院校质量对比
@@ -764,8 +490,7 @@ def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area
     :return:
     """
 
-    df_container = get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list=year_list, area=area,
-                                                                              period=period)
+    df_container = get_multi_years_teacher_0_grad_school_dataframe(year_list=year_list, area=area, period=period)
 
     left, right = st.columns(spec=2)
 
@@ -803,66 +528,6 @@ def show_multi_years_and_1_area_teacher_0_grad_school(year_list: list[str], area
         st.error(f'{area}的{period}在编教师工作前全日制最高学历均为大专及以下', icon="😕")
 
     return None
-
-
-def get_multi_years_and_1_area_teacher_0_grad_school_dataframe(year_list: list[str], area: str,
-                                                               period: str = None) -> DataFrameContainer:
-    """
-    根据年份列表生成多个学科统计dataframe，放置在container中\n
-    grad_school_id_and_year：所有数据，列为院校代码，行为年份\n
-    grad_school_kind_and_year：所有数据，列为院校类型，行为年份\n
-    grad_school_kind_growth_rate_and_year：所有数据对院校类型求增长率，行为增长率对应年份，列为院校类型，单行\n
-    :param year_list: 查询的年份列表
-    :param area: 片镇名
-    :param period: 任教学段
-    :return: DataFrameContainer，包含若干个dataframe
-    """
-    container = DataFrameContainer()
-    df0 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
-    df0.update({y: {} for y in year_list})
-
-    grad_school_id_list = []
-
-    query_parts = []
-    for y in year_list:
-        query_part = f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
-        query_parts.append(query_part)
-
-    final_query = " union all ".join(query_parts)
-
-    grad_school_id_list.extend(
-        item for item in execute_sql_sentence(
-            sentence=final_query
-        )
-    )
-
-    for item in grad_school_id_list:
-        if item[1] not in df0[item[0]].keys():
-            df0[item[0]][item[1]] = 1
-        else:
-            df0[item[0]][item[1]] += 1
-
-    df1 = convert_dict_to_dataframe(d=df0)
-    df1.fillna(value=0, inplace=True)
-    container.add_dataframe(name="grad_school_id_and_year", df=df1)
-
-    df2 = {}
-    for year in year_list:
-        df2[year] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
-
-    for item in grad_school_id_list:
-        for kind in distinguish_school_id(school_id=item[1], label_length="long"):
-            df2[item[0]][kind] += 1
-
-    df2 = convert_dict_to_dataframe(d=df2)
-    df2.fillna(value=0, inplace=True)
-    df2 = df2.loc[:, ~(df2 == 0).all()]  # 删除全为0的列
-    container.add_dataframe(name="grad_school_kind_and_year", df=df2)
-
-    df3 = get_growth_rate_from_multi_rows_dataframe(df=df2)
-    container.add_dataframe("grad_school_kind_growth_rate_and_year", df=df3)
-
-    return container
 
 
 def show_1_year_and_multi_areas_teacher_0(year: str, area_list: list, period: str = None) -> None:
@@ -909,8 +574,7 @@ def show_1_year_and_multi_areas_teacher_0_age(year: str, area_list: list[str], p
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year=year, area_list=area_list,
-                                                                                 period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_age_dataframe(year=year, area_list=area_list, period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -949,8 +613,8 @@ def show_1_year_and_multi_areas_teacher_0_edu_bg(year: str, area_list: list[str]
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_edu_bg_dataframe(year=year, area_list=area_list,
-                                                                                    period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_edu_bg_dataframe(year=year, area_list=area_list,
+                                                                             period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -982,9 +646,9 @@ def show_1_year_and_multi_areas_teacher_0_vocational_level_detail(year: str, are
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_vocational_level_detail_dataframe(year=year,
-                                                                                                     area_list=area_list,
-                                                                                                     period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_vocational_level_detail_dataframe(year=year,
+                                                                                              area_list=area_list,
+                                                                                              period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -1018,9 +682,8 @@ def show_1_year_and_multi_areas_teacher_0_discipline(year: str, area_list: list[
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_discipline_dataframe(year=year,
-                                                                                        area_list=area_list,
-                                                                                        period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_discipline_dataframe(year=year, area_list=area_list,
+                                                                                 period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -1051,9 +714,8 @@ def show_1_year_and_multi_areas_teacher_0_grad_school_level(year: str, area_list
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(year=year,
-                                                                                               area_list=area_list,
-                                                                                               period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_grad_school_level_dataframe(year=year, area_list=area_list,
+                                                                                        period=period)
 
     with st.container(border=True):
         st.markdown(

@@ -264,7 +264,7 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
     # st.write(json_data["在编"]["学校"][school][period])
 
     try:
-        df_container = get_1_year_age_and_gender_dataframe(year=year, school=school, period=period)
+        df_container = get_1_year_teacher_0_age_and_gender_dataframe(year=year, school=school, period=period)
 
         draw_mixed_bar_and_line(
             df_bar=df_container.get_dataframe(name="data"),
@@ -308,7 +308,7 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
         title="主教学科", is_datazoom_show=True, )
 
     with st.container(border=True):
-        df_container = get_1_year_grad_school_dataframe(year=year, school=school, period=period)
+        df_container = get_1_year_teacher_0_grad_school_dataframe(year=year, school=school, period=period)
         a0, a1, a2, a3, a4 = st.columns(spec=5)
         with a0:
             st.dataframe(df_container.get_dataframe("df_985"), height=400, width=300)
@@ -479,8 +479,8 @@ def show_1_year_and_multi_schools_teacher_0_age(year: str, school_list: list[str
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_age_dataframe(year=year, school_list=school_list,
-                                                                                 period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_age_dataframe(year=year, school_list=school_list,
+                                                                          period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -518,8 +518,8 @@ def show_1_year_and_multi_schools_teacher_0_edu_bg(year: str, school_list: list[
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_edu_bg_dataframe(year=year, school_list=school_list,
-                                                                                    period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_edu_bg_dataframe(year=year, school_list=school_list,
+                                                                             period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -551,9 +551,9 @@ def show_1_year_and_multi_schools_teacher_0_vocational_level_detail(year: str, s
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_vocational_level_detail_dataframe(year=year,
-                                                                                                     school_list=school_list,
-                                                                                                     period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_vocational_level_detail_dataframe(year=year,
+                                                                                              school_list=school_list,
+                                                                                              period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -587,9 +587,9 @@ def show_1_year_and_multi_schools_teacher_0_discipline(year: str, school_list: l
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_discipline_dataframe(year=year,
-                                                                                        school_list=school_list,
-                                                                                        period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_discipline_dataframe(year=year,
+                                                                                 school_list=school_list,
+                                                                                 period=period)
 
     with st.container(border=True):
         st.markdown(
@@ -620,9 +620,9 @@ def show_1_year_and_multi_schools_teacher_0_grad_school_level(year: str, school_
     :return:
     """
 
-    df_container = get_1_year_and_multi_areas_or_schools_teacher_0_grad_school_level_dataframe(year=year,
-                                                                                               school_list=school_list,
-                                                                                               period=period)
+    df_container = get_1_year_and_multi_locations_teacher_0_grad_school_level_dataframe(year=year,
+                                                                                        school_list=school_list,
+                                                                                        period=period)
 
     with st.container(border=True):
         st.markdown(
