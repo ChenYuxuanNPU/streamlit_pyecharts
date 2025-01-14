@@ -132,7 +132,20 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
                                                   school=school_list[0], period=period)[1], icon="⚠️")
 
     elif len(year_list) > 1 and len(school_list) == 1:
-        pass
+
+        for year in year_list:
+
+            if school_name_and_period_check(kind="在编", year=year, school=school_list[0], period=period)[0]:
+
+                st.session_state.page4_info_kind = "2.1"
+                st.session_state.page4_year_list = year_list
+                st.session_state.page4_school_list = school_list
+                st.session_state.page4_period = period
+
+            else:
+                st.toast(
+                    school_name_and_period_check(kind="在编", year=year, school=school_list[0], period=period)[
+                        1], icon="⚠️")
 
     elif len(year_list) == 1 and len(school_list) > 1:
 
@@ -433,8 +446,6 @@ def show_1_year_and_multi_schools(year: str, school_list: list[str], period: str
         )
         st.divider()
 
-        pass
-
         show_1_year_and_multi_schools_teacher_0(year=year, school_list=school_list, period=period)
 
 
@@ -641,5 +652,266 @@ def show_1_year_and_multi_schools_teacher_0_grad_school_level(year: str, school_
             with right:
                 st.dataframe(data=df_container.get_dataframe(name="grad_school_percentage_and_location").map(
                     lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_multi_years_and_1_school(year_list: list[str], school: str, period: str) -> None:
+    """
+    展示某一年某一学校教师信息
+    :param year_list: 查询的年份列表
+    :param school: 查询的某一学校
+    :param period: 可选的查询学段
+    :return:
+    """
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>学校对比</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        show_multi_years_and_1_school_teacher_0(year_list=year_list, school=school, period=period)
+
+
+def show_multi_years_and_1_school_teacher_0(year_list: list[str], school: str, period: str) -> None:
+    """
+    展示某一年某一学校教师信息
+    :param year_list: 查询的年份列表
+    :param school: 查询的某一学校
+    :param period: 可选的查询学段
+    :return:
+    """
+
+    st.markdown(
+        body="<h3 style='text-align: center;'>在编教师信息</h3>",
+        unsafe_allow_html=True
+    )
+    st.divider()
+
+    st.info(f"{school}在编{period if period is not None else ""}教师数随年份变化情况")
+    show_multi_years_and_1_school_teacher_0_age(year_list=year_list, school=school, period=period)
+
+    st.info(f"{school}在编{period if period is not None else ""}教师学历水平随年份变化情况")
+    show_multi_years_and_1_school_teacher_0_edu_bg(year_list=year_list, school=school, period=period)
+
+    st.info(f"{school}在编{period if period is not None else ""}教师专技职称随年份变化情况")
+    show_multi_years_and_1_school_teacher_0_vocational_level(year_list=year_list, school=school, period=period)
+
+    st.info(f"{school}在编{period if period is not None else ""}学科教师数随年份变化情况")
+    show_multi_years_and_1_school_teacher_0_discipline(year_list=year_list, school=school, period=period)
+
+    st.info(f"{school}在编{period if period is not None else ""}教师毕业院校水平随年份变化情况")
+    show_multi_years_and_1_school_teacher_0_grad_school(year_list=year_list, school=school, period=period)
+
+
+def show_multi_years_and_1_school_teacher_0_age(year_list: list[str], school: str, period: str = None) -> None:
+    """
+    展示多年份教师数对比
+    :param year_list: 年份列表
+    :param school: 查询的单个校名
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_multi_years_teacher_0_age_dataframe(year_list=year_list, school=school, period=period)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="count_by_year"), title="", height=400)
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="age_and_year"),
+        df_line=df_container.get_dataframe(name="age_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="age_and_year"))
+
+        st.dataframe(data=df_container.get_dataframe(name="age_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_multi_years_and_1_school_teacher_0_edu_bg(year_list: list[str], school: str, period: str = None) -> None:
+    """
+    展示多年份教师学历对比
+    :param year_list: 年份列表
+    :param school: 查询的单个校名
+    :param period: 任教学段
+    :return:
+    """
+    df_container = get_multi_years_teacher_0_edu_bg_dataframe(year_list=year_list, school=school, period=period)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").T, title="", height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="edu_bg_and_year"),
+        df_line=df_container.get_dataframe(name="edu_bg_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        line_max_=60,
+        line_min_=-100,
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+        with left:
+            st.dataframe(data=df_container.get_dataframe(name="edu_bg_and_year"))
+        with right:
+            st.dataframe(
+                data=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_multi_years_and_1_school_teacher_0_vocational_level(year_list: list[str], school: str,
+                                                             period: str = None) -> None:
+    """
+    展示多年份教师专业技术级别对比
+    :param year_list: 年份列表
+    :param school: 查询的单个校名
+    :param period: 任教学段
+    :return:
+    """
+    df_container = get_multi_years_teacher_0_vocational_level_dataframe(year_list=year_list, school=school,
+                                                                        period=period)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="vocational_level_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="vocational_level_detail_and_year"),
+        df_line=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        line_formatter="{value} %",
+        x_axis_font_size=9
+    )
+
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_and_year"))
+        st.dataframe(data=df_container.get_dataframe(name="vocational_level_detail_growth_rate_and_year").map(
+            lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_multi_years_and_1_school_teacher_0_discipline(year_list: list[str], school: str, period: str = None) -> None:
+    """
+    展示多年份不同学科教师数对比
+    :param year_list: 年份列表
+    :param school: 查询的单个校名
+    :param period: 任教学段
+    :return:
+    """
+    df_container = get_multi_years_teacher_0_discipline_dataframe(year_list=year_list, school=school, period=period)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="discipline_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="discipline_and_year"),
+        df_line=df_container.get_dataframe(name="discipline_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="discipline_and_year"))
+        st.dataframe(
+            data=df_container.get_dataframe(name="discipline_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
+
+    return None
+
+
+def show_multi_years_and_1_school_teacher_0_grad_school(year_list: list[str], school: str, period: str = None) -> None:
+    """
+    展示多年份教师毕业院校质量对比
+    :param year_list: 年份列表
+    :param school: 查询的单个校名
+    :param period: 任教学段
+    :return:
+    """
+
+    df_container = get_multi_years_teacher_0_grad_school_dataframe(year_list=year_list, school=school, period=period)
+
+    left, right = st.columns(spec=2)
+
+    with left:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="grad_school_kind_and_year").T, title="", height=400, )
+
+    with right:
+        with st.container(border=True):
+            draw_line_chart(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year").T, title="",
+                            height=400,
+                            mark_line_y=0, formatter="{value} %")
+
+    draw_mixed_bar_and_line(
+        df_bar=df_container.get_dataframe(name="grad_school_kind_and_year"),
+        df_line=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year"),
+        bar_axis_label="人数",
+        line_axis_label="增长率",
+        mark_line_y=0,
+        line_formatter="{value} %"
+    )
+
+    with st.expander("详细信息"):
+        left, right = st.columns(spec=2)
+        with left:
+            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_and_year"))
+        with right:
+            st.dataframe(data=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"))
+
+    if df_container.get_dataframe(name="grad_school_kind_and_year").empty or df_container.get_dataframe(
+            name="grad_school_kind_growth_rate_and_year").empty:
+        st.error(f'{school}的{period}在编教师工作前全日制最高学历均为大专及以下', icon="😕")
 
     return None

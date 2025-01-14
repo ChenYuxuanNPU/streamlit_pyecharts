@@ -28,11 +28,13 @@ left, mid, right = st.columns(spec=3)
 
 with left:
     year = list(
-        st.multiselect(
-            label="请选择需要查询的年份",
-            placeholder="必选项",
-            options=get_year_list(kind="teacher_info"),
-            default=[],
+        sorted(
+            st.multiselect(
+                label="请选择需要查询的年份",
+                placeholder="必选项",
+                options=get_year_list(kind="teacher_info"),
+                default=[],
+            )
         )
     )
     st.write(st.session_state.page4_year_list)
@@ -73,7 +75,9 @@ elif st.session_state.page4_info_kind == "1":
                              period=st.session_state.page4_period)
 
 elif st.session_state.page4_info_kind == "2.1":
-    pass
+    show_multi_years_and_1_school(year_list=st.session_state.page4_year_list,
+                                  school=st.session_state.page4_school_list[0],
+                                  period=st.session_state.page4_period)
 
 elif st.session_state.page4_info_kind == "1.2":
     show_1_year_and_multi_schools(year=st.session_state.page4_year_list[0],

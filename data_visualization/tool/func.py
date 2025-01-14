@@ -538,6 +538,20 @@ def is_sublist(subset: Iterable, superset: Iterable) -> bool:
     return set(subset).issubset(set(superset))
 
 
+def fillnan_and_del_0_lines_in_df(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    补全dataframe中所有空单元格并删除空行或空列
+    :param df: 待处理的dataframe
+    :return:
+    """
+    df.fillna(value=0, inplace=True)
+
+    df = df.loc[:, ~(df == 0).all()]  # 删除全为0的列
+    df = df[(df != 0).any(axis=1)]
+
+    return df
+
+
 def max_dict_depth(d: dict, depth=1):
     """
     统计字典最大深度

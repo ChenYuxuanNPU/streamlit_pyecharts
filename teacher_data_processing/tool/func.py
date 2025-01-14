@@ -663,8 +663,6 @@ def school_name_and_period_check(kind: str, school: str, year: str, period=None)
     else:
         period = period if period not in ["所有学段", ""] else None
 
-    count = 0
-
     try:
         count = execute_sql_sentence(
             sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}')[
@@ -675,10 +673,10 @@ def school_name_and_period_check(kind: str, school: str, year: str, period=None)
         return [False, "school_name_or_period_check函数查询异常"]
 
     if count != 0:
-        return [True]
+        return [True, '']
 
     else:
-        return [False, f'未找到{school}的{kind}{f"{period}" if period is not None else ""}教师信息']
+        return [False, f'未找到{year}年数据中{school}的{kind}{f"{period}" if period is not None else ""}教师信息']
 
     # # 不考虑学段，只看有没有这个学校
     # if period is None:
