@@ -939,28 +939,28 @@ def get_multi_years_teacher_0_grad_school_dataframe(year_list: list[str], area: 
     df0 = {year: {} for year in year_list}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
     grad_school_id_list = []
 
-    # for year in year_list:
-    #     df0[year] = {}  # 初始化该年份的子字典
-    #     """
-    #     df_dict:{
-    #     "2024":{
-    #         "10699":100,
-    #         "10558":200
-    #         },
-    #     "2023"：{
-    #         "10699"：50，
-    #         "10558"：100
-    #         }
-    #     }
-    #     """
-    #
-    #     grad_school_id_list.extend(item for item in execute_sql_sentence(
-    #         sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
-    #     ))
+    for year in year_list:
+        df0[year] = {}  # 初始化该年份的子字典
+        """
+        df_dict:{
+        "2024":{
+            "10699":100,
+            "10558":200
+            },
+        "2023"：{
+            "10699"：50，
+            "10558"：100
+            }
+        }
+        """
+
+        # grad_school_id_list.extend(item for item in execute_sql_sentence(
+        #     sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
+        # ))
 
     query_parts = []
     for y in year_list:
-        query_part = f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}and "参加工作前学历" in ("本科", "硕士研究生", "博士研究生")'
+        query_part = f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
         query_parts.append(query_part)
 
     final_query = " union all ".join(query_parts)
