@@ -133,9 +133,14 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
 
     elif len(year_list) > 1 and len(school_list) == 1:
 
+        success_flag = False
         for year in year_list:
 
             if school_name_and_period_check(kind="在编", year=year, school=school_list[0], period=period)[0]:
+
+                if not success_flag:
+                    st.toast("查询成功！", icon="✅")
+                    success_flag = True
 
                 st.session_state.page4_info_kind = "2.1"
                 st.session_state.page4_year_list = year_list
@@ -149,8 +154,13 @@ def set_flags_and_update_school_data(year_list: list, school_list: list, period:
 
     elif len(year_list) == 1 and len(school_list) > 1:
 
+        success_flag = False
         for school in school_list:
             if school_name_and_period_check(kind="在编", year=year_list[0], school=school, period=period)[0]:
+
+                if not success_flag:
+                    st.toast("查询成功！", icon="✅")
+                    success_flag = True
 
                 st.session_state.page4_info_kind = "1.2"
                 st.session_state.page4_year_list = year_list
