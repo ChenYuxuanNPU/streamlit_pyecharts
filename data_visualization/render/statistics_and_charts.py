@@ -240,18 +240,20 @@ def get_1_year_teacher_0_discipline_and_gender_dataframe(year: str, area: str = 
         )
     )
 
-    for discipline in discipline_list:
-        data = execute_sql_sentence(
-            sentence=f'select "性别", count(*) from teacher_data_0_{year} where "主教学科" = "{discipline}"{f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "性别"'
-        )
+    data = execute_sql_sentence(
+        sentence=f'select "主教学科", "性别", count(*) from teacher_data_0_{year} where "主教学科" in ({', '.join([f'"{discipline}"' for discipline in discipline_list])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "主教学科", "性别"'
+    )
 
-        for item in data:
-            df_dict[item[0]][discipline] = item[1]
+    for item in data:
+        df_dict[item[1]][item[0]] = item[2]
 
-    container.add_dataframe(name="data", df=convert_dict_to_dataframe(d=df_dict))
-    df = pd.DataFrame(convert_dict_to_dataframe(d=df_dict).sum()).T
-    df.index = ["合计"]
-    container.add_dataframe(name="sum", df=df)
+    df1 = convert_dict_to_dataframe(d=df_dict).reindex(columns=get_discipline_list())
+    df1 = fillnan_and_del_0_lines_in_df(df=df1)
+    container.add_dataframe(name="data", df=df1)
+
+    df2 = pd.DataFrame(df1.sum()).T
+    df2.index = ["合计"]
+    container.add_dataframe(name="sum", df=df2)
 
     return container
 
@@ -610,7 +612,6 @@ def get_multi_years_teacher_0_age_dataframe(year_list: list[str], area: str = No
     max_age = -1
 
     for year in year_list:
-
         df1[year] = {}  # 初始化该年份的子字典
         """
         df_dict:{
@@ -625,27 +626,35 @@ def get_multi_years_teacher_0_age_dataframe(year_list: list[str], area: str = No
         }
         """
 
-        id_list = del_tuple_in_list(
-            data=execute_sql_sentence(
-                sentence=f'select "身份证号" from teacher_data_0_{year} where 1{f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
-            )
+    id_list = []
+
+    query_parts = []
+    for year in year_list:
+        query_parts.append(
+            f'select "{year}", "身份证号" from teacher_data_0_{year} where 1{f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}')
+
+    final_query = " union all ".join(query_parts)
+
+    id_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
         )
+    )
 
-        for item in id_list:
+    for item in id_list:
 
-            age = str(get_age_from_citizen_id(citizen_id=item, year=year))
+        age = str(get_age_from_citizen_id(citizen_id=item[1], year=item[0]))
 
-            min_age = int(age) if int(age) < min_age else min_age
-            max_age = int(age) if int(age) > max_age else max_age
+        min_age = int(age) if int(age) < min_age else min_age
+        max_age = int(age) if int(age) > max_age else max_age
 
-            if age == "0":
-                print_color_text(item)
-                print_color_text(year)
+        if age == "0":
+            print_color_text(item)
 
-            if age in df1[year].keys():
-                df1[year][age] += 1
-            else:
-                df1[year][age] = 1
+        if age in df1[item[0]].keys():
+            df1[item[0]][age] += 1
+        else:
+            df1[item[0]][age] = 1
 
     #  填充空年龄列
     for year in year_list:
@@ -686,8 +695,7 @@ def get_multi_years_teacher_0_area_dataframe(year_list: list[str]) -> DataFrameC
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为片镇列
 
     for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
+        df1[year] = {item: 0 for item in get_area_list()}  # 初始化该年份的子字典
         """
         df_dict:{
         "2024":{
@@ -700,12 +708,24 @@ def get_multi_years_teacher_0_area_dataframe(year_list: list[str]) -> DataFrameC
             }
         }
         """
-        area_count_list = execute_sql_sentence(
-            sentence=f'select "区域", count(*) from teacher_data_0_{year} where "区域" in ({", ".join([f'"{area}"' for area in get_area_list()])}) group by "区域"'
-        )
 
-        for item in area_count_list:
-            df1[year][item[0]] = item[1]
+    area_count_list = []
+
+    query_parts = []
+    for year in year_list:
+        query_parts.append(
+            f'select "{year}", "区域", count(*) from teacher_data_0_{year} where "区域" in ({", ".join([f'"{area}"' for area in get_area_list()])}) group by "区域"')
+
+    final_query = " union all ".join(query_parts)
+
+    area_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
+
+    for item in area_count_list:
+        df1[item[0]][item[1]] = item[2]
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_area_list())
     df1.fillna(value=0, inplace=True)
@@ -732,8 +752,7 @@ def get_multi_years_teacher_0_period_dataframe(year_list: list[str], area: str =
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学段列
 
     for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
+        df1[year] = {item: 0 for item in get_period_list()}  # 初始化该年份的子字典
         """
         df_dict:{
         "2024":{
@@ -746,12 +765,24 @@ def get_multi_years_teacher_0_period_dataframe(year_list: list[str], area: str =
             }
         }
         """
-        period_count_list = execute_sql_sentence(
-            sentence=f'select "任教学段", count(*) from teacher_data_0_{year} where "任教学段" in ({', '.join([f'"{period}"' for period in get_period_list()])}){f' and "区域" = "{area}" ' if area is not None else ' '}{f' and "校名" = "{school}" ' if school is not None else ' '}group by "任教学段"'
-        )
 
-        for item in period_count_list:
-            df1[year][item[0]] = item[1]
+    period_count_list = []
+
+    query_parts = []
+    for year in year_list:
+        query_parts.append(
+            f'select "{year}", "任教学段", count(*) from teacher_data_0_{year} where "任教学段" in ({', '.join([f'"{period}"' for period in get_period_list()])}){f' and "区域" = "{area}" ' if area is not None else ' '}{f' and "校名" = "{school}" ' if school is not None else ' '}group by "任教学段"')
+
+    final_query = " union all ".join(query_parts)
+
+    period_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
+
+    for item in period_count_list:
+        df1[item[0]][item[1]] = item[2]
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_period_list())
     df1 = fillnan_and_del_0_lines_in_df(df=df1)
@@ -779,8 +810,7 @@ def get_multi_years_teacher_0_edu_bg_dataframe(year_list: list[str], area: str =
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
 
     for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
+        df1[year] = {item: 0 for item in get_edu_bg_list()}  # 初始化该年份的子字典
         """
         df_dict:{
         "2024":{
@@ -793,12 +823,24 @@ def get_multi_years_teacher_0_edu_bg_dataframe(year_list: list[str], area: str =
             }
         }
         """
-        edu_bg_count_list = execute_sql_sentence(
-            sentence=f'select "最高学历", count(*) from teacher_data_0_{year} where "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}){f' and "区域" = "{area}" ' if area is not None else ' '}{f' and "校名" = "{school}" ' if school is not None else ' '}{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "最高学历"'
-        )
 
-        for item in edu_bg_count_list:
-            df1[year][item[0]] = item[1]
+    edu_bg_count_list = []
+
+    query_parts = []
+    for year in year_list:
+        query_parts.append(
+            f'select "{year}", "最高学历", count(*) from teacher_data_0_{year} where "最高学历" in ({', '.join([f'"{bg}"' for bg in get_edu_bg_list()])}){f' and "区域" = "{area}" ' if area is not None else ' '}{f' and "校名" = "{school}" ' if school is not None else ' '}{f' and "任教学段" = "{period}" ' if period is not None else ' '}group by "最高学历"')
+
+    final_query = " union all ".join(query_parts)
+
+    edu_bg_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
+
+    for item in edu_bg_count_list:
+        df1[item[0]][item[1]] = item[2]
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_edu_bg_list())
     df1 = fillnan_and_del_0_lines_in_df(df=df1)
@@ -829,9 +871,8 @@ def get_multi_years_teacher_0_vocational_level_dataframe(year_list: list[str], a
     df3 = {}
 
     for year in year_list:
-
-        df1[year] = {}  # 初始化该年份的子字典
-        df3[year] = {}
+        df1[year] = {item: 0 for item in get_vocational_level_list()}
+        df3[year] = {item: 0 for item in get_vocational_level_detail_list()}
         """
         df_dict:{
         "2024":{
@@ -844,19 +885,39 @@ def get_multi_years_teacher_0_vocational_level_dataframe(year_list: list[str], a
             }
         }
         """
-        vocational_level_count_list = execute_sql_sentence(
-            sentence=f'select "最高职称", count(*) from teacher_data_0_{year} where "最高职称" in ({', '.join([f'"{level}"' for level in get_vocational_level_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "最高职称"'
+
+    vocational_level_count_list = []
+    vocational_level_detail_count_list = []
+
+    query_parts_1 = []
+    query_parts_2 = []
+
+    for year in year_list:
+        query_parts_1.append(
+            f'select "{year}", "最高职称", count(*) from teacher_data_0_{year} where "最高职称" in ({', '.join([f'"{level}"' for level in get_vocational_level_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "最高职称"')
+        query_parts_2.append(
+            f'select "{year}", "专业技术岗位", count(*) from teacher_data_0_{year} where "专业技术岗位" in ({', '.join([f'"{level}"' for level in get_vocational_level_detail_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "专业技术岗位"')
+
+    final_query_parts_1 = " union all ".join(query_parts_1)
+    final_query_parts_2 = " union all ".join(query_parts_2)
+
+    vocational_level_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query_parts_1
         )
+    )
 
-        for item in vocational_level_count_list:
-            df1[year][item[0]] = item[1]
-
-        vocational_level_detail_count_list = execute_sql_sentence(
-            sentence=f'select "专业技术岗位", count(*) from teacher_data_0_{year} where "专业技术岗位" in ({', '.join([f'"{level}"' for level in get_vocational_level_detail_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "专业技术岗位"'
+    vocational_level_detail_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query_parts_2
         )
+    )
 
-        for item in vocational_level_detail_count_list:
-            df3[year][item[0]] = item[1]
+    for item in vocational_level_count_list:
+        df1[item[0]][item[1]] = item[2]
+
+    for item in vocational_level_detail_count_list:
+        df3[item[0]][item[1]] = item[2]
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_vocational_level_list())
     df1 = fillnan_and_del_0_lines_in_df(df=df1)
@@ -891,7 +952,6 @@ def get_multi_years_teacher_0_discipline_dataframe(year_list: list[str], area: s
     df1 = {}  # 使用嵌套字典保存数据，外层为年份行，内层为学历列
 
     for year in year_list:
-
         df1[year] = {}  # 初始化该年份的子字典
         """
         df_dict:{
@@ -905,12 +965,23 @@ def get_multi_years_teacher_0_discipline_dataframe(year_list: list[str], area: s
             }
         }
         """
-        discipline_count_list = execute_sql_sentence(
-            sentence=f'select "主教学科", count(*) from teacher_data_0_{year} where "主教学科" in ({', '.join([f'"{discipline}"' for discipline in get_discipline_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "主教学科"'
-        )
+    discipline_count_list = []
 
-        for item in discipline_count_list:
-            df1[year][item[0]] = item[1]
+    query_parts = []
+    for year in year_list:
+        query_parts.append(
+            f'select "{year}", "主教学科", count(*) from teacher_data_0_{year} where "主教学科" in ({', '.join([f'"{discipline}"' for discipline in get_discipline_list()])}){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''} group by "主教学科"')
+
+    final_query = " union all ".join(query_parts)
+
+    discipline_count_list.extend(
+        item for item in execute_sql_sentence(
+            sentence=final_query
+        )
+    )
+
+    for item in discipline_count_list:
+        df1[item[0]][item[1]] = item[2]
 
     df1 = convert_dict_to_dataframe(d=df1).reindex(columns=get_discipline_list())
     df1 = fillnan_and_del_0_lines_in_df(df=df1)
@@ -954,14 +1025,10 @@ def get_multi_years_teacher_0_grad_school_dataframe(year_list: list[str], area: 
         }
         """
 
-        # grad_school_id_list.extend(item for item in execute_sql_sentence(
-        #     sentence=f'select "{year}","参加工作前毕业院校代码" from teacher_data_0_{year} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
-        # ))
-
     query_parts = []
     for y in year_list:
-        query_part = f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}'
-        query_parts.append(query_part)
+        query_parts.append(
+            f'select "{y}", "参加工作前毕业院校代码" from teacher_data_0_{y} where "参加工作前学历" in ("本科", "硕士研究生", "博士研究生"){f' and "区域" = "{area}"' if area is not None else ''}{f' and "校名" = "{school}"' if school is not None else ''}{f' and "任教学段" = "{period}"' if period is not None else ''}')
 
     final_query = " union all ".join(query_parts)
 
