@@ -4,8 +4,6 @@ import sqlite3
 
 from pathlib import Path
 
-from teacher_data_processing.tool.func import print_color_text
-
 
 def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
     conn = sqlite3.connect(
@@ -18,6 +16,20 @@ def connect_database() -> tuple[sqlite3.Cursor, sqlite3.Connection]:
 
 def disconnect_database(conn: sqlite3.Connection) -> None:
     conn.close()
+
+
+def print_color_text(text: str | int | float | dict | list, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+    """
+    输出带颜色的字符串，可以用于控制台警告
+    :param text: 输出的文本
+    :param color_code: 颜色起始代码
+    :param reset_code: 颜色结束代码
+    :return: 无
+    """
+
+    print(f"{color_code} {str(text)} {reset_code}")
+
+    return None
 
 
 def dict_assignment(route: str, value: str | int | list | dict | bool, json_data: dict) -> dict:
