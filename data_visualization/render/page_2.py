@@ -200,6 +200,21 @@ def show_1_year_given_period(year: str, period: str) -> None:
             with a4:
                 st.dataframe(df_container.get_dataframe("df_all"), height=400, width=300)
 
+        if period != "幼儿园":
+            try:
+                df_container = get_1_year_teacher_0_discipline_and_gender_dataframe(year=year, period=period)
+
+                draw_mixed_bar_and_line(
+                    df_bar=df_container.get_dataframe(name="data"),
+                    df_line=df_container.get_dataframe(name="sum"),
+                    bar_axis_label="人数", line_axis_label="合计人数",
+                    mark_line_type="average"
+                )
+
+            except Exception as e:
+                print_color_text("学科柱状折线图展示异常")
+                st.toast("学科柱状折线图展示异常", icon="😕")
+
         c0, c1, c2 = st.columns(spec=3)
 
         with c0:

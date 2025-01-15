@@ -330,6 +330,21 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
             "主教学科"],
         title="主教学科", is_datazoom_show=True, )
 
+    try:
+        df_container = get_1_year_teacher_0_discipline_and_gender_dataframe(year=year, school=school, period=period)
+
+        draw_mixed_bar_and_line(
+            df_bar=df_container.get_dataframe(name="data"),
+            df_line=df_container.get_dataframe(name="sum"),
+            bar_axis_label="人数", line_axis_label="合计人数",
+            mark_line_type="average",
+            height=0.6
+        )
+
+    except Exception as e:
+        print_color_text("学科柱状折线图展示异常")
+        st.toast("学科柱状折线图展示异常", icon="😕")
+
     with st.container(border=True):
         df_container = get_1_year_teacher_0_grad_school_dataframe(year=year, school=school, period=period)
         a0, a1, a2, a3, a4 = st.columns(spec=5)
