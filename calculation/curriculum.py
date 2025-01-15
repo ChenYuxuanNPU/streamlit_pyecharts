@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from calculation.tool import func as cal_func
+from calculation.tool.func import *
 
 pd.set_option('display.max_rows', None)  # 显示所有行
 pd.set_option('display.max_columns', None)  # 显示所有列
@@ -243,7 +243,7 @@ def cal_expected_teacher(lessons_pri: int, lessons_jun: int,
     """
 
     # 读取各科目课时量
-    curriculum_sheet = cal_func.load_json_data(folder="source", file_name="课时量")
+    curriculum_sheet = load_json_data(folder="source", file_name="课时量")
     subject_list = list(curriculum_sheet.keys())
 
     df = pd.DataFrame(data=None, columns=["年级或学段"] + subject_list)

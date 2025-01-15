@@ -1,7 +1,6 @@
-import sqlite3
 import sys
 
-from teacher_data_processing.tool import func as tch_proc_func
+from teacher_data_processing.tool.func import *
 
 
 def update_teacher_0_only(year: str, c: sqlite3.Cursor) -> list:
@@ -41,9 +40,9 @@ def update(year: str) -> dict:
 
     result = []
 
-    c, conn = tch_proc_func.connect_database()
+    c, conn = connect_database()
 
-    json_data = tch_proc_func.load_json_data(folder="result", file_name="teacher_info")
+    json_data = load_json_data(folder="result", file_name="teacher_info")
 
     # 这里统计所有学校教师总数的列表
     sql_sentence = ('select * from ('
@@ -129,15 +128,15 @@ def update(year: str) -> dict:
                 case _:
                     break
 
-    json_data = tch_proc_func.dict_assignment(route=f"{year}/学校教师总数", value=school_dict, json_data=json_data)
+    json_data = dict_assignment(route=f"{year}/学校教师总数", value=school_dict, json_data=json_data)
 
     result = []
 
     # 所有学校教师总数统计结束
 
-    tch_proc_func.save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
+    save_json_data(json_data=json_data, folder="result", file_name="teacher_info")
 
-    tch_proc_func.disconnect_database(conn=conn)
+    disconnect_database(conn=conn)
 
     return json_data
 

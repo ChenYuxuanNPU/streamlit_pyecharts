@@ -4,9 +4,8 @@
 #
 
 import sqlite3
-from pathlib import Path
 
-from update_database.module import make_input_data
+from update_database.module.make_input_data import *
 
 
 def insert_data(database_name, table_name, kind) -> None:
@@ -21,7 +20,7 @@ def insert_data(database_name, table_name, kind) -> None:
     conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
     c = conn.cursor()
 
-    result = make_input_data.read_input_data(kind=kind)
+    result = read_input_data(kind=kind)
 
     # 用来生成批量插入的语句
     sentence_for_executemany = ""  # 用来放很多问号

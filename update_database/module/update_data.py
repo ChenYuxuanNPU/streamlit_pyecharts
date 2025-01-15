@@ -1,7 +1,8 @@
 # 用来获取文档中的内容并更新数据库
 # 不需要单独跑
 
-from update_database.module import make_database, data_insert
+from update_database.module.data_insert import *
+from update_database.module.make_database import *
 
 
 def update_data(database_name: str, kind_list: list, table_name_dict: dict) -> None:
@@ -20,10 +21,10 @@ def update_data(database_name: str, kind_list: list, table_name_dict: dict) -> N
         table_name = table_name_dict[kind]
 
         # 创建新的数据表并规定字段
-        make_database.clear_table(database_name=database_name, table_name=table_name, kind=kind)
+        clear_table(database_name=database_name, table_name=table_name, kind=kind)
 
         # 将表格中数据插入数据库中
-        data_insert.insert_data(database_name=database_name, table_name=table_name, kind=kind)
+        insert_data(database_name=database_name, table_name=table_name, kind=kind)
         print(f"{kind}数据更新成功 (update_data.py)")
 
         print("")

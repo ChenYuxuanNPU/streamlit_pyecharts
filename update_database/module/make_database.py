@@ -4,12 +4,9 @@
 #
 
 import sqlite3
-from pathlib import Path
 
-from openpyxl.pivot.fields import Boolean
-
-from update_database.module import make_sql_sentence
-from update_database.tool import func as makedb_func
+from update_database.module.make_sql_sentence import *
+from update_database.tool.func import *
 
 
 def clear_table(database_name: str, table_name: str, kind: str) -> None:
@@ -27,7 +24,7 @@ def clear_table(database_name: str, table_name: str, kind: str) -> None:
 
     try:
         c.execute(f"select name from sqlite_master")
-        result = makedb_func.del_tuple_in_list(c.fetchall())
+        result = del_tuple_in_list(c.fetchall())
 
     except Exception as e:
         print('\033[1;91m' + r"执行mysql语句时报错:%s(make_database.py)" % e + '\033[0m')
@@ -48,7 +45,7 @@ def clear_table(database_name: str, table_name: str, kind: str) -> None:
         finally:
             conn.commit()
 
-    sql_sentence = make_sql_sentence.make_sql_sentence(kind=kind)
+    sql_sentence = make_sql_sentence(kind=kind)
 
     try:
         # 创建数据表
