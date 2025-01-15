@@ -25,6 +25,8 @@ st.markdown(
 st.divider()
 
 with st.container(border=True):
+    st.warning("年份和校名均为必选多选项，且不能同时多选；请先选择年份，校名列表会根据年份更新")
+
     left, mid, right = st.columns(spec=3)
 
     with left:
@@ -38,7 +40,6 @@ with st.container(border=True):
                 )
             )
         )
-        st.write(st.session_state.page4_year_list)
 
     with mid:
         school = list(
@@ -48,7 +49,6 @@ with st.container(border=True):
                 placeholder="必选项",
             )
         )
-        st.write(st.session_state.page4_school_list)
 
     with right:
         period = st.selectbox(
@@ -56,8 +56,8 @@ with st.container(border=True):
             placeholder="可选项",
             index=None,
             options=[item for item in get_period_list() if item != "幼儿园"],
+            disabled=True if len(year) == 0 else False
         )
-        st.write(st.session_state.page4_period)
 
     _, middle, _ = st.columns([4, 1, 4])
 

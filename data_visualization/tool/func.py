@@ -890,7 +890,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
                             mark_line_y: int = None, mark_line_type: Literal["min", "max", "average"] = None,
                             is_mark_line_label_show: bool = False,
                             is_symbol_show: bool = True, symbol_size: int = 2, is_smooth: bool = False,
-                            is_datazoom_show: bool = False, datazoom_start: int = 0, datazoom_end: int = 100,
+                            is_datazoom_show: bool = True, datazoom_start: int = 0, datazoom_end: int = 100,
                             height: int | float = 0,
                             bar_formatter: str = "{value}", line_formatter: str = "{value}",
                             x_axis_font_size: int = 12) -> None:
@@ -945,6 +945,9 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
 
     if height == 0:
         height = int(get_monitors()[0].height / 1080) * 720
+
+    elif 0 < height <= 5:
+        height *= int(get_monitors()[0].height / 1080) * 720
 
     bar_chart = Bar()
     bar_chart.add_xaxis(xaxis_data=df_bar.columns)

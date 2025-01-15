@@ -145,7 +145,7 @@ def show_1_year_and_1_area_teacher_0(year: str, area: str, period: str) -> None:
         # 在编学科统计
         draw_bar_chart(
             data=data[year]["在编"]["片区"][area][get_trans_period(kind="string_to_option")[period]]["主教学科"],
-            title="主教学科", is_visual_map_show=False, axis_font_size=10)
+            title="主教学科", is_visual_map_show=False, axis_font_size=10, is_datazoom_show=True)
 
         c0, c1, c2 = st.columns(spec=3)  # 不能删，这里删了会影响上下层顺序
 
