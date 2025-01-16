@@ -5,21 +5,19 @@
 
 import sqlite3
 
-from update_database.func import *
 from update_database.module.make_sql_sentence import *
 
 
-def clear_table(database_name: str, table_name: str, kind: str) -> None:
+def clear_table(table_name: str, kind: str) -> None:
     """
     创建新的数据表或清空已有数据表
-    :param database_name: 数据库名
     :param table_name: 数据表名
     :param kind: 在编/编外
     :return: 无
     """
     # 用来连接数据库插入数据
     result = [0]
-    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
+    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}")
     c = conn.cursor()
 
     try:

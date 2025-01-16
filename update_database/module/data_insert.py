@@ -5,19 +5,19 @@
 
 import sqlite3
 
+from update_database.func import *
 from update_database.module.make_input_data import *
 
 
-def insert_data(database_name, table_name, kind) -> None:
+def insert_data(table_name, kind) -> None:
     """
     用于生成insert语句并向数据库插入数据
-    :param database_name: 数据库名
     :param table_name: 数据表命名
     :param kind: 在编/编外
     :return: 无
     """
 
-    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{database_name}")
+    conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}")
     c = conn.cursor()
 
     result = read_input_data(kind=kind)
