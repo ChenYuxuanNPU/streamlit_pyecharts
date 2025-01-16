@@ -45,23 +45,14 @@ def read_input_data(kind) -> list:
                 result.append(row)
                 # print(row)
 
-    elif "学校情况一览表" in kind:
+    elif "学校信息总览" in kind:
 
-        # 取行
-        for row in range(5, 15):
-            result.append([])
+        # 获取表格数据
+        for row in sheet.iter_rows(values_only=True):
 
-            # 取列
-            for col in range(65, 87):
-
-                if sheet[str(chr(col)) + str(row)].value is not None:
-                    result[-1].append(sheet[str(chr(col)) + str(row)].value)
-
-                else:
-                    result[-1].append(result[-2][col - 65])
-
-                if col == 86:
-                    result[-1] = tuple(result[-1])
+            # 不读取第一行列标
+            if str(row[0]).isnumeric():
+                result.append(row)
 
     else:
         print(fr"kind参数错误:{kind} (make_input_data.py)")
@@ -73,12 +64,9 @@ def read_input_data(kind) -> list:
         return [-1]
 
     # 用来验证所有数据是否等长
-    flag = 0
-    for i in range(1, len(result)):
-        if len(result[i]) != len(result[0]):
-            flag = 1
 
-    if flag == 0:
+    if max(len(item) for item in result) == min(len(item) for item in result):
+
         print(fr"{kind}单条数据长度:{str(len(result[0]))} (make_input_data.py)")
         print(fr"{kind}总数据量:{str(len(result))} (make_input_data.py)")
 
@@ -91,5 +79,5 @@ def read_input_data(kind) -> list:
 
 
 if __name__ == '__main__':
-    print(read_input_data(kind="2023年学校情况一览表"))
+    print(read_input_data(kind="2023年学校信息总览"))
     # print(get_nth_parent_dir(n=3))

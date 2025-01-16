@@ -39,8 +39,8 @@ def make_sql_sentence(kind) -> str:
     elif "编外教师信息" in kind:
         words = get_words_dict()[f"teacher_info_1_{kind[0:4]}_word"]
 
-    elif "学校情况一览表" in kind:
-        words = get_words_dict()[f"school_info_sum_{kind[0:4]}_word"]
+    elif "学校信息总览" in kind:
+        words = get_words_dict()[f"school_info_sum_word"]
 
     else:
         print(r"参数错误 (make_sql_sentence.py)")
