@@ -5,8 +5,8 @@
 
 import sqlite3
 
+from update_database.func import *
 from update_database.module.make_sql_sentence import *
-from update_database.tool.func import *
 
 
 def clear_table(database_name: str, table_name: str, kind: str) -> None:
