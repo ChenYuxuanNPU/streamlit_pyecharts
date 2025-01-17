@@ -1,7 +1,6 @@
 # 生成创建数据库时需要构建字段的mysql语句
 # 不需要单独跑，被其他文件调用
 import json
-from pathlib import Path
 
 from update_database.func import *
 
@@ -24,7 +23,7 @@ def get_words_dict() -> dict:
 def make_sql_sentence(kind) -> str:
     """
     生成形如("校名" text,"学校类型" text,"统一社会信用代码" text)的sql语句片段
-    :param kind: 在编/编外
+    :param 查询内容中文解释
     :return: sql语句片段
     """
 
@@ -33,18 +32,7 @@ def make_sql_sentence(kind) -> str:
     # 分为在编教师（2023年在编教师信息）、编外教师（2023年编外教师信息）、学校数据（2023年学校情况一览表）几类
     # 根据查询信息的类型取出年份，找到对应的words
 
-    if "在编教师信息" in kind:
-        words = get_words_dict()[f"teacher_info_0_{kind[0:4]}_word"]
-
-    elif "编外教师信息" in kind:
-        words = get_words_dict()[f"teacher_info_1_{kind[0:4]}_word"]
-
-    elif "学校信息总览" in kind:
-        words = get_words_dict()[f"school_info_sum_word"]
-
-    else:
-        print(r"参数错误 (make_sql_sentence.py)")
-        return "-1"
+    words = get_words_dict()[kind]
 
     for item in "".join(words):
         if is_chinese_char(char=item):
