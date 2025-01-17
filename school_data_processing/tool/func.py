@@ -27,7 +27,7 @@ def print_color_text(text: str | int | float | dict | list, color_code='\033[1;9
     :return: 无
     """
 
-    print(f"{color_code} {str(text)} {reset_code}")
+    print(f"{color_code}{str(text)}{reset_code}")
 
     return None
 

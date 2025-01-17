@@ -302,7 +302,7 @@ def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_cod
     :return: 无
     """
 
-    print(f"{color_code} {str(text)} {reset_code}")
+    print(f"{color_code}{str(text)}{reset_code}")
 
     return None
 
@@ -385,15 +385,22 @@ def execute_sql_sentence(sentence: str, ) -> list:
 
     c, conn = connect_database()
 
-    result = []
     try:
+        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;94m')
         c.execute(sentence)
-        result = c.fetchall()
+
+        conn.commit()
 
     except Exception as e:
-        print_color_text(text=str(e))
+        conn.rollback()
 
-    disconnect_database(conn=conn)
+        print_color_text(text=str(e))
+        print_color_text(text=sentence)
+
+    finally:
+        result = c.fetchall()
+
+        disconnect_database(conn=conn)
 
     return result
 

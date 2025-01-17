@@ -45,7 +45,21 @@ def disconnect_database(conn) -> None:
     return None
 
 
-def execute_sql_sentence(sentence: str,) -> list:
+def print_color_text(text: str | int | float, color_code='\033[1;91m', reset_code='\033[0m') -> None:
+    """
+    输出带颜色的字符串，可以用于控制台警告
+    :param text: 输出的文本
+    :param color_code: 颜色起始代码
+    :param reset_code: 颜色结束代码
+    :return: 无
+    """
+
+    print(f"{color_code}{str(text)}{reset_code}")
+
+    return None
+
+
+def execute_sql_sentence(sentence: str, ) -> list:
     """
     执行数据库语句并返回列表
     :param sentence: 需要执行的语句
@@ -54,15 +68,22 @@ def execute_sql_sentence(sentence: str,) -> list:
 
     c, conn = connect_database()
 
-    result = []
     try:
+        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;94m')
         c.execute(sentence)
-        result = c.fetchall()
+
+        conn.commit()
 
     except Exception as e:
-        print(e)
+        conn.rollback()
 
-    disconnect_database(conn=conn)
+        print_color_text(text=str(e))
+        print_color_text(text=sentence)
+
+    finally:
+        result = c.fetchall()
+
+        disconnect_database(conn=conn)
 
     return result
 
@@ -107,4 +128,3 @@ def del_tuple_in_list(data: list) -> list:
     output.extend(single_data[0] for single_data in data)
 
     return output
-
