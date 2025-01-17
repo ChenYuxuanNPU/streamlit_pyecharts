@@ -2,22 +2,11 @@
 # 这个文件获取表格中的数据并验证长度
 # 不需要单独跑，被data_insert调用
 #
-import json
 from pathlib import Path
 
 import openpyxl
 
-
-def get_database_basic_info() -> dict:
-    """
-    读取数据库基本信息
-    :return: 数据库信息字典
-    """
-
-    with open(fr"{Path(__file__).resolve().parent.parent.parent}\json_file\database\database_basic_info.json", "r", encoding="UTF-8") as f:
-        json_data = json.load(f)
-
-    return json_data
+from update_database.func import *
 
 
 def read_input_data(kind) -> list:
@@ -28,12 +17,12 @@ def read_input_data(kind) -> list:
     """
 
     result = []
-    json_data = get_database_basic_info()
 
     # 字典里0位是数据源文件名，1位是表名
     wb = openpyxl.load_workbook(fr'{Path(__file__).resolve().parent.parent.parent}\update_database'
-                                fr'\data_source\{json_data["xlsx_file_and_sheet_name"][kind][0]}', data_only=True)
-    sheet = wb[f"{json_data["xlsx_file_and_sheet_name"][kind][1]}"]
+                                fr'\data_source\{get_database_basic_info()["xlsx_file_and_sheet_name"][kind][0]}',
+                                data_only=True)
+    sheet = wb[f"{get_database_basic_info()["xlsx_file_and_sheet_name"][kind][1]}"]
 
     # 确定收集的数据表
     if "教师信息" in kind:
@@ -41,9 +30,8 @@ def read_input_data(kind) -> list:
         # 获取表格数据
         for row in sheet.iter_rows(values_only=True):
             # 不读取第一行列标
-            if not str(row[0]).isnumeric():
+            if not str(row[1]).isnumeric():
                 result.append(row)
-                # print(row)
 
     elif "学校信息总览" in kind:
 

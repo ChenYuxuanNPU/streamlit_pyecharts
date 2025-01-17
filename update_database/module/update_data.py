@@ -2,7 +2,7 @@
 # 不需要单独跑
 
 from update_database.module.data_insert import *
-from update_database.module.make_database import *
+from update_database.module.refresh_table import *
 
 
 def update_data(kind_list: list, ) -> None:
@@ -19,7 +19,7 @@ def update_data(kind_list: list, ) -> None:
         table_name = get_table_name_dict()[kind]
 
         # 创建新的数据表并规定字段
-        clear_table(table_name=table_name, kind=kind)
+        clean_table(table_name=table_name, kind=kind)
 
         # 将表格中数据插入数据库中
         insert_data(table_name=table_name, kind=kind)
