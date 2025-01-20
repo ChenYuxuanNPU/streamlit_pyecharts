@@ -12,7 +12,7 @@ def update_teacher_0_only(year: str, c: sqlite3.Cursor) -> list:
     """
 
     c.execute(
-        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" from teacher_data_0_{year} group by "校名" order by count desc')
+        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" from teacher_data_0 where "采集年份" = "{year}" group by "校名" order by count desc')
 
     return c.fetchall()
 
@@ -26,7 +26,7 @@ def update_teacher_1_only(year: str, c: sqlite3.Cursor) -> list:
     """
 
     c.execute(
-        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" from teacher_data_1_{year} group by "校名" order by count desc')
+        f'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" from teacher_data_1 where "采集年份" = "{year}" group by "校名" order by count desc')
 
     return c.fetchall()
 
@@ -47,10 +47,10 @@ def update(year: str) -> dict:
     # 这里统计所有学校教师总数的列表
     sql_sentence = ('select * from ('
                     'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "0" as "编制类型" '
-                    f'from teacher_data_0_{year} group by "校名" '
+                    f'from teacher_data_0 where "采集年份" = "{year}" group by "校名" '
                     'union all '
                     'select "校名", "统一社会信用代码", "学校类型", "区域", count("校名") count, "1" as "编制类型" '
-                    f'from teacher_data_1_{year} group by "校名") '
+                    f'from teacher_data_1 where "采集年份" = "{year}" group by "校名") '
                     'order by count desc')
 
     try:

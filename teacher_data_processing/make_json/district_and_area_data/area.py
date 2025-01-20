@@ -17,7 +17,7 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/性别",
                                     value=dict(
                                         execute_sql_sentence(
-                                            sentence=f'select "性别", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" group by "性别" order by count(*) asc')
+                                            sentence=f'select "性别", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" group by "性别" order by count(*) asc')
                                     ),
                                     json_data=json_data)
 
@@ -26,14 +26,14 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
         #  先统计没有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师资格/未持教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "教师资格学段" = "无"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "教师资格学段" = "无"')[
                                         0][0],
                                     json_data=json_data)
 
         #  再统计有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/所有学段/教师资格/持有教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "教师资格学段" != "无"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "教师资格学段" != "无"')[
                                         0][0],
                                     json_data=json_data)
 
@@ -42,14 +42,14 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
         #  先统计没有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/幼儿园/教师资格/未持教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "任教学段" = "幼儿园" and "教师资格学段" = "无"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "任教学段" = "幼儿园" and "教师资格学段" = "无"')[
                                         0][0],
                                     json_data=json_data)
 
         #  再统计有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/幼儿园/教师资格/持有教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "任教学段" = "幼儿园" and "教师资格学段" != "无"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "任教学段" = "幼儿园" and "教师资格学段" != "无"')[
                                         0][0],
                                     json_data=json_data)
 
@@ -58,14 +58,14 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
         #  先统计没有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/中小学/教师资格/未持教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "教师资格学段" = "无" and "任教学段" != "幼儿园"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "教师资格学段" = "无" and "任教学段" != "幼儿园"')[
                                         0][0],
                                     json_data=json_data)
 
         #  再统计有教资的
         json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/中小学/教师资格/持有教师资格",
                                     value=execute_sql_sentence(
-                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "教师资格学段" != "无" and "任教学段" != "幼儿园"')[
+                                        sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "教师资格学段" != "无" and "任教学段" != "幼儿园"')[
                                         0][0],
                                     json_data=json_data)
 
@@ -74,7 +74,7 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
                                     value=simplify_school_name(
                                         d=dict(
                                             execute_sql_sentence(
-                                                sentence=f'select "校名", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "学校类型" != "幼儿园" and "学校类型" != "教学支撑单位" group by "校名" order by count(*) desc limit 10'
+                                                sentence=f'select "校名", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "学校类型" != "幼儿园" and "学校类型" != "教学支撑单位" group by "校名" order by count(*) desc limit 10'
                                             )
                                         )
                                     ),
@@ -85,7 +85,7 @@ def update(year: str, kind: str = Literal["在编", "编外"], ) -> dict:
                                     value=simplify_school_name(
                                         d=dict(
                                             execute_sql_sentence(
-                                                sentence=f'select "校名", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}" and "学校类型" != "幼儿园" and "学校类型" != "教学支撑单位" group by "校名" order by count(*) asc limit 10'
+                                                sentence=f'select "校名", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}" and "学校类型" != "幼儿园" and "学校类型" != "教学支撑单位" group by "校名" order by count(*) asc limit 10'
                                             )
                                         )
                                     ),
@@ -116,7 +116,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
     json_data = dict_assignment(route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/年龄",
                                 value=age_statistics(
                                     age_count_list=execute_sql_sentence(
-                                        sentence=f'select "年龄", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "年龄"')
+                                        sentence=f'select "年龄", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "年龄"')
                                 ),
                                 json_data=json_data)
 
@@ -125,7 +125,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/主教学科",
         value=dict(
             execute_sql_sentence(
-                sentence=f'select "主教学科", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "主教学科" != "无" group by "主教学科" order by count(*) desc limit 20')
+                sentence=f'select "主教学科", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "主教学科" != "无" group by "主教学科" order by count(*) desc limit 20')
         ),
         json_data=json_data)
 
@@ -134,7 +134,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/专业技术岗位",
         value=dict(
             execute_sql_sentence(
-                sentence=f'select "专业技术岗位", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "专业技术岗位"')
+                sentence=f'select "专业技术岗位", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "专业技术岗位"')
         ),
         json_data=json_data)
 
@@ -144,7 +144,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
         value=dict(
             sorted(
                 execute_sql_sentence(
-                    sentence=f'select "行政职务", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "行政职务"'),
+                    sentence=f'select "行政职务", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "行政职务"'),
                 key=lambda x: get_current_administrative_position_order()[x[0]]
             )
         ),
@@ -155,7 +155,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/院校级别",
         value=count_school_id(
             data=execute_sql_sentence(
-                sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
+                sentence=f'select "参加工作前毕业院校代码" from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and ("参加工作前学历" in ("本科", "硕士研究生", "博士研究生"))'
             ),
             label_length="short"
         ),
@@ -167,7 +167,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
         value=dict(
             sorted(
                 execute_sql_sentence(
-                    sentence=f'select "支教地域", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "支教地域"'
+                    sentence=f'select "支教地域", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "支教地域"'
                 ),
                 key=lambda x: get_area_of_supporting_education_order()[x[0]]
             )
@@ -180,7 +180,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
     json_data = dict_assignment(
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/四名工作室/四名工作室主持人",
         value=execute_sql_sentence(
-            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year}  where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "四名工作室主持人" != "无"')[
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}  where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "四名工作室主持人" != "无"')[
             0][0],
         json_data=json_data)
 
@@ -188,7 +188,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
     json_data = dict_assignment(
         route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/四名工作室/无",
         value=execute_sql_sentence(
-            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "四名工作室主持人" = "无"')[
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "四名工作室主持人" = "无"')[
             0][0],
         json_data=json_data)
 
@@ -199,7 +199,7 @@ def data_00_unique(json_data: dict, year: str, area: str, kind: Literal["在编"
             dict(
                 sorted(
                     execute_sql_sentence(
-                        sentence=f'select "骨干教师", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "骨干教师"'
+                        sentence=f'select "骨干教师", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "骨干教师"'
                     ),
                     key=lambda x: get_cadre_teacher_order()[x[0]]
                 )
@@ -238,7 +238,7 @@ def period_update(json_data: dict, area: str, year: str, kind: str = "在编") -
         json_data = dict_assignment(
             route=f"{year}/{kind}/片区/{area}/{period if period is not None else "所有学段"}/总人数",
             value=execute_sql_sentence(
-                sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}')[
+                sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}')[
                 0][0],
             json_data=json_data)
 
@@ -248,7 +248,7 @@ def period_update(json_data: dict, area: str, year: str, kind: str = "在编") -
             value=dict(
                 sorted(
                     execute_sql_sentence(
-                        sentence=f'select "最高学历", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "最高学历"'),
+                        sentence=f'select "最高学历", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "最高学历"'),
                     key=lambda x: get_educational_background_order()[x[0]]
                 )
             ),
@@ -260,7 +260,7 @@ def period_update(json_data: dict, area: str, year: str, kind: str = "在编") -
             value=dict(
                 sorted(
                     execute_sql_sentence(
-                        sentence=f'select "任教学段", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "任教学段" != "其他" group by "任教学段"'
+                        sentence=f'select "任教学段", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}and "任教学段" != "其他" group by "任教学段"'
                     ),
                     key=lambda x: get_period_order()[x[0]]
                 )
@@ -273,7 +273,7 @@ def period_update(json_data: dict, area: str, year: str, kind: str = "在编") -
             value=combine_highest_title(
                 sorted(
                     execute_sql_sentence(
-                        sentence=f'select "最高职称", count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "最高职称"'
+                        sentence=f'select "最高职称", count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "区域" = "{area}"{f' and "任教学段" = "{period}" ' if period is not None else " "}group by "最高职称"'
                     ),
                     key=lambda x: get_highest_title_order()[x[0]]
                 )
