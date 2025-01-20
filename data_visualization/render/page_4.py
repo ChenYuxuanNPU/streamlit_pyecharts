@@ -693,7 +693,7 @@ def show_multi_years_and_1_school(year_list: list[str], school: str, period: str
     with st.container(border=True):
         # 小标题
         st.markdown(
-            body="<h2 style='text-align: center;'>学校对比</h2>",
+            body="<h2 style='text-align: center;'>学年对比</h2>",
             unsafe_allow_html=True
         )
         st.divider()

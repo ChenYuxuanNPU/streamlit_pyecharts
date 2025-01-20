@@ -103,8 +103,8 @@ def show_1_year_all_period(year: str) -> None:
 
         # 在编毕业院校统计
         with st.container(border=True):
-            draw_line_chart(data=pd.DataFrame([data["2023"]["在编"]["全区"]["所有学段"]["院校级别"]],
-                                              columns=data["2023"]["在编"]["全区"]["所有学段"]["院校级别"].keys(),
+            draw_line_chart(data=pd.DataFrame([data[year]["在编"]["全区"]["所有学段"]["院校级别"]],
+                                              columns=data[year]["在编"]["全区"]["所有学段"]["院校级别"].keys(),
                                               index=["人数"]), title="毕业院校", height=400, is_datazoom_show=True)
 
         with st.container(border=True):
