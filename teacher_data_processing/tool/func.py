@@ -2,6 +2,7 @@ import copy
 import json
 import re
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
@@ -255,10 +256,14 @@ def execute_sql_sentence(sentence: str, ) -> list:
     :return:
     """
 
+    print("")
+    start_time = datetime.now()
+    # print(f'执行前时间：{start_time.strftime("%H:%M:%S")}')
+
     c, conn = connect_database()
 
     try:
-        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;94m')
+        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;96m')
         c.execute(sentence)
 
         conn.commit()
@@ -273,6 +278,11 @@ def execute_sql_sentence(sentence: str, ) -> list:
         result = c.fetchall()
 
         disconnect_database(conn=conn)
+
+        end_time = datetime.now()
+
+        # print(f'执行后时间：{end_time.strftime("%H:%M:%S")}')
+        print(f'耗时：{(end_time - start_time).total_seconds()}')
 
     return result
 
@@ -672,12 +682,12 @@ def school_name_and_period_check(kind: str, school: str, year: str, period=None)
 
     try:
         count = execute_sql_sentence(
-            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1}_{year} where "校名" = "{school}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}')[
+            sentence=f'select count(*) from teacher_data_{0 if kind == "在编" else 1} where "采集年份" = "{year}" and "校名" = "{school}"{f' and "任教学段" = "{period}" ' if period is not None else ' '}')[
             0][0]
 
     except Exception as e:
         print("fuck!")
-        return [False, "school_name_or_period_check函数查询异常"]
+        return [False, "school_name_and_period_check函数查询异常"]
 
     if count != 0:
         return [True, '']

@@ -3,6 +3,7 @@ import re
 import sqlite3
 import time
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
 from typing import Literal, Iterable
 
@@ -383,10 +384,14 @@ def execute_sql_sentence(sentence: str, ) -> list:
     :return:
     """
 
+    print("")
+    start_time = datetime.now()
+    # print(f'执行前时间：{start_time.strftime("%H:%M:%S")}')
+
     c, conn = connect_database()
 
     try:
-        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;94m')
+        print_color_text(text=f'正在执行：{sentence}', color_code='\033[1;96m')
         c.execute(sentence)
 
         conn.commit()
@@ -401,6 +406,11 @@ def execute_sql_sentence(sentence: str, ) -> list:
         result = c.fetchall()
 
         disconnect_database(conn=conn)
+
+        end_time = datetime.now()
+
+        # print(f'执行后时间：{end_time.strftime("%H:%M:%S")}')
+        print(f'耗时：{(end_time - start_time).total_seconds()}')
 
     return result
 
