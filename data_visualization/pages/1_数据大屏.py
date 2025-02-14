@@ -30,7 +30,10 @@ year = st.multiselect(
     default=[get_year_list(kind="school_info")[0]],
 )
 
-if len(list(year)) == 1:
+if len(list(year)) == 0:
+    st.info("111")
+
+elif len(list(year)) == 1:
     show_pie_chart_info(year=year[0])
 
     show_summarized_info(year=year[0])
@@ -46,3 +49,6 @@ if len(list(year)) == 1:
     else:
         # 放一个展开信息的按钮
         show_detail_button()
+
+else:
+    show_multi_years_info(year_list=year)

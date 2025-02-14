@@ -16,12 +16,13 @@ def insert_data(table_name: str, kind: str) -> None:
     conn = sqlite3.connect(fr"{Path(__file__).resolve().parent.parent.parent}\database\{get_database_name()}")
     c = conn.cursor()
 
-    result = read_input_data(kind=kind)
+    result, field_list = read_input_data(kind=kind)
 
     # 用来生成批量插入的语句
     print(fr"excel中读取的{kind}数据长度为：{str(len(result[0]))} (data_insert.py)")
 
-    sql_sentence = f'insert into {table_name} ({', '.join([f'"{item}"' for item in get_words_dict()[kind]])}) values ({', '.join(['?'] * len(result[0]))})'
+    sql_sentence = f'insert into {table_name} ({', '.join([f'"{item}"' for item in (get_words_dict()[kind] if field_list == [] else field_list)])}) values ({', '.join(['?'] * len(result[0]))})'
+
 
     # 插入数据
     try:

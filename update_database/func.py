@@ -48,6 +48,7 @@ def get_xlsx_file_and_sheet_name() -> dict:
 
 
 # todo:插入新表时在这里要加数据库字段名
+# todo:学校总览数据需要更新表格表头时要在get_words_dict()["学校信息总览"]里面修改
 def get_words_dict() -> dict:
     """
     获取不同数据表的字段

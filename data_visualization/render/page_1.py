@@ -11,14 +11,14 @@ def get_base_data() -> dict:
 
 def show_pie_chart_info(year: str) -> None:
     """
-    使用饼图展示某一年的全区对比数据
+    使用饼图展示某一年的全区占比数据
     :param year: 年份
     :return:
     """
     # 横向比较
     with st.container(border=True):
         st.markdown(
-            body="<h2 style='text-align: center;'>对比数据</h2>",
+            body="<h2 style='text-align: center;'>占比数据</h2>",
             unsafe_allow_html=True
         )
 
@@ -438,3 +438,85 @@ def hide_detail_button() -> None:
         )
 
     return None
+
+
+def show_multi_years_info(year_list: list) -> None:
+    """
+    用于展示多年份的数量对比
+    :param year_list: 需要对比所用的年份列表
+    :return:
+    """
+
+    with st.container(border=True):
+        # 小标题
+        st.markdown(
+            body="<h2 style='text-align: center;'>变化数据</h2>",
+            unsafe_allow_html=True
+        )
+        st.divider()
+
+        left, right = st.columns(spec=2)
+
+        with left:
+            st.info("我区在校学生数随年份变化情况")
+            df_student = show_multi_years_student(year_list=year_list)
+
+        with right:
+            st.info("我区班额数随年份变化情况")
+            df_class = show_multi_years_class(year_list=year_list)
+
+        # 这里计算了每个学段平均的班级规模
+        # st.write(round(df_student.drop("合计") / df_class.drop("合计"), 1))
+
+        with st.expander("详细信息"):
+            left, right = st.columns(spec=2)
+            with left:
+                st.dataframe(df_student.T)
+            with right:
+                st.dataframe(df_class.T)
+
+    return None
+
+
+def show_multi_years_student(year_list: list) -> pd.DataFrame:
+    """
+    用于展示多年份的学生数量对比
+    :param year_list: 需要对比所用的年份列表
+    :return:
+    """
+
+    line_data = execute_sql_sentence(
+        sentence=f'select "采集年份", "学段", "合计学生数" from school_data_sum where "学段" in ("合计", "高级中学", "初级中学", "小学", "幼儿园") and "采集年份" in ({', '.join([f'"{year}"' for year in year_list])})'
+    )
+
+    dict_for_df = {year: {} for year in year_list}
+    for item in line_data:
+        dict_for_df[item[0]][item[1]] = int(item[2])
+
+    with st.container(border=True):
+        draw_line_chart(data=convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1]), title="",
+                        height=400, )
+
+    return convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1])
+
+
+def show_multi_years_class(year_list: list) -> pd.DataFrame:
+    """
+    用于展示多年份的班额数量对比
+    :param year_list: 需要对比所用的年份列表
+    :return:
+    """
+
+    line_data = execute_sql_sentence(
+        sentence=f'select "采集年份", "学段", "合计班额数" from school_data_sum where "学段" in ("合计", "高级中学", "初级中学", "小学", "幼儿园") and "采集年份" in ({', '.join([f'"{year}"' for year in year_list])})'
+    )
+
+    dict_for_df = {year: {} for year in year_list}
+    for item in line_data:
+        dict_for_df[item[0]][item[1]] = int(item[2])
+
+    with st.container(border=True):
+        draw_line_chart(data=convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1]), title="",
+                        height=400, )
+
+    return convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1])
