@@ -17,10 +17,7 @@ def show_pie_chart_info(year: str) -> None:
     """
     # 横向比较
     with st.container(border=True):
-        st.markdown(
-            body="<h2 style='text-align: center;'>占比数据</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="占比数据", font_size=2)
 
         col0, col1 = st.columns([1, 1])
 
@@ -152,10 +149,7 @@ def show_summarized_info(year: str, ) -> None:
     """
 
     with st.container(border=True):
-        st.markdown(
-            body="<h2 style='text-align: center;'>合计数据</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="合计数据", font_size=2)
 
         col0, col1, col2 = st.columns(spec=3)
 
@@ -264,10 +258,7 @@ def show_period_detail_info(year: str) -> None:
 
     with (st.container(border=True)):
 
-        st.markdown(
-            body="<h2 style='text-align: center;'>学段数据</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="学段数据", font_size=2)
 
         period = st.selectbox(
             label="选择需要查询的学段",
@@ -448,11 +439,7 @@ def show_multi_years_info(year_list: list) -> None:
     """
 
     with st.container(border=True):
-        # 小标题
-        st.markdown(
-            body="<h2 style='text-align: center;'>变化数据</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="变化数据", font_size=2)
         st.divider()
 
         st.info("我区在校学生数及师生比随年份变化情况")
@@ -463,10 +450,12 @@ def show_multi_years_info(year_list: list) -> None:
         with st.expander("详细信息"):
             left, right = st.columns(spec=2)
             with left:
-                st.dataframe(get_multi_years_student(year_list=year_list).T)
+                display_centered_title(title="学生数变化情况", font_size=6)
+                display_centered_dataframe(df=get_multi_years_student(year_list=year_list).T)
 
             with right:
-                st.dataframe(get_multi_years_student_to_full_time_teacher_ratio(year_list=year_list).T)
+                display_centered_title(title="生师比变化情况", font_size=6)
+                display_centered_dataframe(df=get_multi_years_student_to_full_time_teacher_ratio(year_list=year_list).T)
 
         st.info("我区班额数及班师比随年份变化情况")
         show_multi_years_class(year_list=year_list)
@@ -479,10 +468,12 @@ def show_multi_years_info(year_list: list) -> None:
         with st.expander("详细信息"):
             left, right = st.columns(spec=2)
             with left:
-                st.dataframe(get_multi_years_class(year_list=year_list).T)
+                display_centered_title(title="班额数变化情况", font_size=6)
+                display_centered_dataframe(df=get_multi_years_class(year_list=year_list).T)
 
             with right:
-                st.dataframe(get_multi_years_full_time_teacher_to_class_ratio(year_list=year_list).T)
+                display_centered_title(title="班师比变化情况", font_size=6)
+                display_centered_dataframe(df=get_multi_years_full_time_teacher_to_class_ratio(year_list=year_list).T)
 
     return None
 

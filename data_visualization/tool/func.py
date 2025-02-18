@@ -1276,6 +1276,43 @@ def count_empty_values(lst: list) -> int:
     return count
 
 
+def display_centered_dataframe(df: pd.DataFrame, margin_top="0px", margin_bottom="5px") -> None:
+    """
+    在 Streamlit 中居中显示一个 Pandas DataFrame。
+    :param df: 要显示的数据框。
+    :param margin_top: 表格上方的外边距，默认为 "20px"。
+    :param margin_bottom: 表格下方的外边距，默认为 "20px"。
+    """
+    # 将数据框转换为 HTML 表格
+    html_table = df.to_html(index=True, border=0, classes='table table-striped')  # 添加 Bootstrap 样式类
+
+    # 创建一个居中的 HTML 容器，包含标题和表格
+    centered_html = f"""
+    <div style="text-align: center; margin-top: {margin_top}; margin-bottom: {margin_bottom};">
+        <div style="display: inline-block;padding:0px">
+            {html_table}
+        </div>
+    </div>
+    """
+
+    # 在 Streamlit 中显示居中的 HTML 表格
+    st.markdown(centered_html, unsafe_allow_html=True)
+
+
+def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> None:
+    """
+    居中显示标题
+    :param title: 标题内容
+    :param font_size: 标题字体大小，1最大，2开始逐渐变小
+    :return:
+    """
+
+    st.markdown(
+        body=f"<h{font_size} style='text-align: center;'>{title}</h{font_size}>",
+        unsafe_allow_html=True
+    )
+
+
 def session_state_initial() -> None:
     """
     初始化软件所有session_state变量，仅在主页使用
