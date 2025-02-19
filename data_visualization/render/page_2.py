@@ -9,11 +9,7 @@ def show_1_year_teacher_0(year: str, ) -> None:
     """
     data = load_json_data(folder="result", file_name="teacher_info")
 
-    # 小标题
-    st.markdown(
-        body="<h2 style='text-align: center;'>在编教师数据</h2>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(title="在编教师数据", font_size=2)
 
     period_list = st.multiselect(
         label="请选择需要查询的学段",
@@ -238,11 +234,7 @@ def show_1_year_teacher_1(year: str) -> None:
     """
     data = load_json_data(folder="result", file_name="teacher_info")
 
-    # 小标题
-    st.markdown(
-        body="<h2 style='text-align: center;'>编外教师数据</h2>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(title="编外教师数据", font_size=2)
 
     st.info(f"编外教职工总人数：{data[year]['编外']['全区']['所有学段']['总人数']}")
 
@@ -298,11 +290,7 @@ def show_multi_years_teacher_0(year_list: list[str]) -> None:
     """
 
     with st.container(border=True):
-        # 小标题
-        st.markdown(
-            body="<h2 style='text-align: center;'>年份对比</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="年份对比", font_size=2)
         st.divider()
 
         st.info("在编教师数随年份变化情况")

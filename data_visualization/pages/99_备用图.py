@@ -68,18 +68,18 @@ height = int(get_monitors()[0].height / 1080) * 350
 
 
 # 标题
-st.markdown(
-    "<h1 style='text-align: center;'>2024年10月人事例会</h1>",
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    "<h3>1.在编人员数据汇总情况</h3>",
-    unsafe_allow_html=True
-)
-
-
-st.markdown(
-    "<h3>2.编外人员数据收集指引</h3>",
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     "<h1 style='text-align: center;'>2024年10月人事例会</h1>",
+#     unsafe_allow_html=True
+# )
+#
+# st.markdown(
+#     "<h3>1.在编人员数据汇总情况</h3>",
+#     unsafe_allow_html=True
+# )
+#
+#
+# st.markdown(
+#     "<h3>2.编外人员数据收集指引</h3>",
+#     unsafe_allow_html=True
+# )

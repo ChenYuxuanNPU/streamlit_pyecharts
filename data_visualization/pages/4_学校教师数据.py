@@ -17,10 +17,8 @@ session_state_reset(page=4)
 set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
 
 # 标题
-st.markdown(
-    "<h1 style='text-align: center;'>学校教师数据</h1>",
-    unsafe_allow_html=True
-)
+
+display_centered_title(title="学校教师数据", font_size=1)
 
 st.divider()
 

@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-import streamlit as st
-
 # --server.port 8503
 
 # 加入项目路径
@@ -13,13 +11,13 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool import func as visual_func
+from data_visualization.tool.func import *
 
 # 初始化全局变量
-visual_func.session_state_initial()
+session_state_initial()
 
 # 清空其他页暂用变量
-visual_func.session_state_reset(page=-1)
+session_state_reset(page=-1)
 
 st.set_page_config(
     page_title="首页",
@@ -27,9 +25,6 @@ st.set_page_config(
     layout="wide",
 )
 
-st.markdown(
-    "<h1 style='text-align: center;'>欢迎使用白云区教师数据可视化系统</h1>",
-    unsafe_allow_html=True
-)
+display_centered_title(title=f'欢迎使用白云区教师数据可视化系统', font_size=1)
 
 st.balloons()

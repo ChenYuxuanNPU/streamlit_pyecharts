@@ -244,10 +244,7 @@ def show_school_stream(school: str, year: str) -> None:
     with st.container(border=False):
 
         # 小标题
-        st.markdown(
-            f"<h3 style='text-align: center;'>{school} - 学校基本概况</h3>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{school} - 学校基本概况', font_size=3)
 
         _, top_left, top_right = st.columns([1.7, 3.5, 3])
 
@@ -276,10 +273,9 @@ def show_1_year_and_1_school_teacher_0(year: str, school: str, period: str) -> N
     """
 
     # 标题
-    st.markdown(
-        f"<h2 style='text-align: center;'>{year}年{school}{period if period is not None else ""}在编教师统计</h2>" if period != "所有学段" else f"<h2 style='text-align: center;'>{school}在编教师统计</h2>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(
+        title=f'{year}年{school}{period if period is not None else ""}在编教师统计' if period != "所有学段" else f'{school}在编教师统计',
+        font_size=2)
 
     st.info(
         f"在编总人数：{get_base_data()[year]["在编"]["学校"][school][period if period is not None else "所有学段"]["总人数"]}")
@@ -413,10 +409,9 @@ def show_1_year_and_1_school_teacher_1(year: str, school: str, period: str) -> N
     """
 
     # 标题
-    st.markdown(
-        f"<h2 style='text-align: center;'>{year}年{school}{period if period is not None else ""}编外教师统计</h2>" if period != "所有学段" else f"<h2 style='text-align: center;'>{school}编外教师统计</h2>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(
+        title=f'{year}年{school}{period if period is not None else ""}编外教师统计' if period != "所有学段" else f'{school}编外教师统计',
+        font_size=2)
 
     st.info(
         f"编外总人数：{get_base_data()[year]["编外"]["学校"][school][period if period is not None else "所有学段"]["总人数"]}")
@@ -465,10 +460,7 @@ def show_1_year_and_multi_schools(year: str, school_list: list[str], period: str
 
     with st.container(border=True):
         # 小标题
-        st.markdown(
-            body="<h2 style='text-align: center;'>学校对比</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="学校对比", font_size=2)
         st.divider()
 
         show_1_year_and_multi_schools_teacher_0(year=year, school_list=school_list, period=period)
@@ -483,10 +475,7 @@ def show_1_year_and_multi_schools_teacher_0(year: str, school_list: list[str], p
     :return:
     """
 
-    st.markdown(
-        body="<h3 style='text-align: center;'>在编教师信息</h3>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(title="在编教师信息", font_size=3)
     st.divider()
 
     st.info(f"{year}年不同学校在编教师数情况")
@@ -519,19 +508,13 @@ def show_1_year_and_multi_schools_teacher_0_age(year: str, school_list: list[str
                                                                           period=period)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师人数对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师人数对比', font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="age_and_location"), title="", height=600,
                         is_datazoom_show=True)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师人数占比对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师人数占比对比', font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="age_percentage_and_location"), title="", height=600,
                         is_datazoom_show=True, formatter="{value} %")
@@ -558,10 +541,7 @@ def show_1_year_and_multi_schools_teacher_0_edu_bg(year: str, school_list: list[
                                                                              period=period)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师最高学历占比对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师最高学历占比对比', font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="edu_bg_percentage_and_location"), title="", height=600,
                         is_datazoom_show=True, formatter="{value} %")
@@ -592,10 +572,8 @@ def show_1_year_and_multi_schools_teacher_0_vocational_level_detail(year: str, s
                                                                                               period=period)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师专业技术等级占比对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师专业技术等级占比对比',
+                               font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="vocational_level_detail_percentage_and_location"),
                         title="",
@@ -628,10 +606,7 @@ def show_1_year_and_multi_schools_teacher_0_discipline(year: str, school_list: l
                                                                                  period=period)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师学科占比对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师学科占比对比', font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="discipline_percentage_and_location"), title="",
                         height=600,
@@ -661,10 +636,7 @@ def show_1_year_and_multi_schools_teacher_0_grad_school_level(year: str, school_
                                                                                         period=period)
 
     with st.container(border=True):
-        st.markdown(
-            f"<h4 style='text-align: center;'>{period if period is not None else "所有学段"}教师毕业院校占比对比</h4>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title=f'{period if period is not None else "所有学段"}教师毕业院校占比对比', font_size=4)
 
         draw_line_chart(data=df_container.get_dataframe(name="grad_school_percentage_and_location"), title="",
                         height=600,
@@ -692,10 +664,7 @@ def show_multi_years_and_1_school(year_list: list[str], school: str, period: str
 
     with st.container(border=True):
         # 小标题
-        st.markdown(
-            body="<h2 style='text-align: center;'>学年对比</h2>",
-            unsafe_allow_html=True
-        )
+        display_centered_title(title="学年对比", font_size=2)
         st.divider()
 
         show_multi_years_and_1_school_teacher_0(year_list=year_list, school=school, period=period)
@@ -710,10 +679,7 @@ def show_multi_years_and_1_school_teacher_0(year_list: list[str], school: str, p
     :return:
     """
 
-    st.markdown(
-        body="<h3 style='text-align: center;'>在编教师信息</h3>",
-        unsafe_allow_html=True
-    )
+    display_centered_title(title="在编教师信息", font_size=3)
     st.divider()
 
     st.info(f"{school}在编{period if period is not None else ""}教师数随年份变化情况")

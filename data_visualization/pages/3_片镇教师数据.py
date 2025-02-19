@@ -69,10 +69,7 @@ def get_period_order() -> dict:
 
 
 # 标题
-st.markdown(
-    "<h1 style='text-align: center;'>片镇教师数据</h1>",
-    unsafe_allow_html=True
-)
+display_centered_title(title="片镇教师数据", font_size=1)
 
 st.divider()
 

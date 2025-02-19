@@ -16,10 +16,7 @@ session_state_reset(page=1)
 # 设置全局属性
 set_page_configuration(title="教育数字大屏", icon=":sparkler:")
 
-st.markdown(
-    body="<h1 style='text-align: center;'>学校信息总览</h1>",
-    unsafe_allow_html=True
-)
+display_centered_title(title="学校信息总览", font_size=1)
 
 st.divider()
 

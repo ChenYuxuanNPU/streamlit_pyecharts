@@ -35,10 +35,7 @@ def get_year_list() -> list:
 
 
 # 标题
-st.markdown(
-    body="<h1 style='text-align: center;'>区级教师数据</h1>",
-    unsafe_allow_html=True
-)
+display_centered_title(title="区级教师数据", font_size=1)
 
 st.divider()
 

@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-import streamlit as st
-
 # 加入项目路径
 sys.path.append(
     str(
@@ -10,21 +8,18 @@ sys.path.append(
     )
 )
 
-from data_visualization.tool import func as visual_func
+from data_visualization.tool.func import *
 from data_visualization.render import page_51 as r
 
 # 清空其他页暂用变量
-visual_func.session_state_reset(page=51)
+session_state_reset(page=51)
 
 # 设置全局属性
-visual_func.set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
+set_page_configuration(title="学校教师数据", icon=":house_with_garden:")
 
 
 # 标题
-st.markdown(
-    "<h1 style='text-align: center;'>应配教师数</h1>",
-    unsafe_allow_html=True
-)
+display_centered_title(title="应配教师数", font_size=1)
 
 st.divider()
 
