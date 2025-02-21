@@ -1276,27 +1276,60 @@ def count_empty_values(lst: list) -> int:
     return count
 
 
-def display_centered_dataframe(df: pd.DataFrame, margin_top="0px", margin_bottom="5px") -> None:
+def display_centered_dataframe(df: pd.DataFrame, margin_top: int = 0, margin_bottom: int = 5) -> None:
     """
     在 Streamlit 中居中显示一个 Pandas DataFrame。
     :param df: 要显示的数据框。
-    :param margin_top: 表格上方的外边距，默认为 "20px"。
-    :param margin_bottom: 表格下方的外边距，默认为 "20px"。
+    :param margin_top: 表格上方的外边距，默认为20p。
+    :param margin_bottom: 表格下方的外边距，默认为20。
     """
     # 将数据框转换为 HTML 表格
-    html_table = df.to_html(index=True, border=0, classes='table table-striped')  # 添加 Bootstrap 样式类
+    html_table = df.to_html(index=True, border=1, classes='table table-striped')  # 添加 Bootstrap 样式类
 
     # 创建一个居中的 HTML 容器，包含标题和表格
     centered_html = f"""
-    <div style="text-align: center; margin-top: {margin_top}; margin-bottom: {margin_bottom};">
-        <div style="display: inline-block;padding:0px">
-            {html_table}
-        </div>
-    </div>
-    """
+<style>
+    table {{
+        border-collapse: collapse; /* 使边框合并 */
+        width: 100%; /* 可选：设置表格宽度 */
+    }}
+    table, th, td {{
+        border: 1px solid #000000; /* 设置边框为黑色，1像素宽，实线 */
+    }}
+    th, td {{
+        padding: 8px; /* 可选：设置单元格内边距 */
+        text-align: center; /* 可选：设置文本对齐方式 */
+    }}
+</style>
+<div style="text-align: center; margin-top: {margin_top}px; margin-bottom: {margin_bottom}px">
+    {html_table}
+</div>
+"""
 
     # 在 Streamlit 中显示居中的 HTML 表格
     st.markdown(centered_html, unsafe_allow_html=True)
+
+
+# def test1(df):
+#     """
+#     在 Streamlit 中居中显示一个 Pandas DataFrame，并添加自定义样式的边框。
+#     :param df: 要显示的数据框。
+#     """
+#
+#     # 将数据框转换为 HTML 表格
+#     html_table = df.to_html(index=False, border=1)  # border=0 去除边框
+#
+#     # 创建一个居中的 HTML 容器
+#     centered_html = f"""
+#     <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+#         <div style="display: inline-block; border: 1px solid #000; padding: 10px;">
+#             {html_table}
+#         </div>
+#     </div>
+#     """
+#
+#     # 在 Streamlit 中显示居中的 HTML 表格
+#     st.markdown(centered_html, unsafe_allow_html=True)
 
 
 def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> None:

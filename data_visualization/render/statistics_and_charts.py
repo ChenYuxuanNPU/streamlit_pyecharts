@@ -565,7 +565,7 @@ def get_1_year_and_multi_locations_teacher_0_grad_school_level_dataframe(year: s
     df2 = {}
     df3 = {}
     for location in (area_list if area_list is not None else school_list):
-        df2[location] = {item: 0. for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
+        df2[location] = {item: 0 for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
         df3[location] = {item: 0. for item in ["985院校", "国优计划院校", "部属师范院校", "211院校", "其他院校"]}
 
     for item in grad_school_id_list:
@@ -867,8 +867,18 @@ def get_multi_years_teacher_0_vocational_level_dataframe(year_list: list[str], a
     df3 = fillnan_and_del_0_lines_in_df(df=df3)
     container.add_dataframe(name="vocational_level_detail_and_year", df=df3)
 
-    df4 = get_growth_rate_from_multi_rows_dataframe(df=df3)
-    container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df4)
+    df4 = df3[[col for col in shorten_vocational_level_detail_dict().keys() if col in df3.columns]].rename(
+        columns=shorten_vocational_level_detail_dict())
+    df4 = fillnan_and_del_0_lines_in_df(df=df4)
+    container.add_dataframe(name="shorten_vocational_level_detail_and_year", df=df4)
+
+    df5 = get_growth_rate_from_multi_rows_dataframe(df=df3)
+    container.add_dataframe("vocational_level_detail_growth_rate_and_year", df=df5)
+
+    df6 = df5[[col for col in shorten_vocational_level_detail_dict().keys() if col in df5.columns]].rename(
+        columns=shorten_vocational_level_detail_dict())
+    # df6 = fillnan_and_del_0_lines_in_df(df=df6)
+    container.add_dataframe(name="shorten_vocational_level_detail_growth_rate_and_year", df=df6)
 
     return container
 
