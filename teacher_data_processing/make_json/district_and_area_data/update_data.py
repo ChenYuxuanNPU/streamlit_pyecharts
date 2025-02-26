@@ -1,4 +1,4 @@
-from teacher_data_processing.make_json.district_and_area_data import district, area, custom_data
+from teacher_data_processing.make_json.district_and_area_data import district, area_data, custom_data
 from teacher_data_processing.tool.func import *
 
 
@@ -13,7 +13,7 @@ def update() -> None:
 
         district.update(kind=kind, year=year)
 
-        area.update(kind=kind, year=year)
+        area_data.update(kind=kind, year=year)
 
     # 更新学校教师总数
     # 只要年份有数据就更新，不考虑是否收集完了在编、编外数据

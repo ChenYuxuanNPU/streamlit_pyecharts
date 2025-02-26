@@ -1,4 +1,4 @@
-from teacher_data_processing.make_json.school_data import school
+from teacher_data_processing.make_json.school_data import school_data
 
 
 def update(kind: str, school_name: str, year: str, period: str = None) -> None:
@@ -10,4 +10,4 @@ def update(kind: str, school_name: str, year: str, period: str = None) -> None:
     :param period: 学段
     :return: 无
     """
-    school.update(kind=kind, school_name=school_name, year=year, period=period)
+    school_data.update(kind=kind, school_name=school_name, year=year, period=period)
