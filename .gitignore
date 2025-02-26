@@ -8,5 +8,7 @@
 /.idea/
 /update_data_source/output/
 
+/.streamlit/secrets.toml
+
 /data_visualization/pages/100_testpage.py
 /daily_work/execute_given_sql_sentence.py
