@@ -10,6 +10,7 @@ from typing import Literal, Iterable
 import pandas as pd
 import pyecharts.options as opts
 import streamlit as st
+from openai import OpenAI
 from pyecharts.charts import Bar
 from pyecharts.charts import Line
 from pyecharts.charts import Pie
@@ -1346,14 +1347,24 @@ def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> 
     )
 
 
+def ask_deepseek(prompt: str) -> str:
+    """
+
+    :param prompt:
+    :return:
+    """
+
+    # Set API key from Streamlit secrets
+    client = OpenAI(api_key=st.secrets['DEEPSEEK_API_KEY'], base_url="https://api.deepseek.com")
+
+    return "111"
+
+
 def session_state_initial() -> None:
     """
     初始化软件所有session_state变量，仅在主页使用
     :return:
     """
-    # page1数据大屏的按钮和具体信息展示
-    if 'page1_show_detail' not in st.session_state:
-        st.session_state.page1_show_detail = False
 
     #  page3用于获取年份列表长度进行判断
     if 'page3_year_length' not in st.session_state:
@@ -1411,7 +1422,7 @@ def reset_others(page: int) -> None:
     :return:
     """
     if page != 1:
-        st.session_state.page1_show_detail = False
+        pass
 
     if page != 2:
         pass
@@ -1450,26 +1461,6 @@ def session_state_reset(page: int) -> None:
 
     # 刷新其他页面
     reset_others(page=page)
-
-    return None
-
-
-def page1_show_detail_info() -> None:
-    """
-    page1中展开信息按钮绑定的函数
-    :return:
-    """
-    st.session_state.page1_show_detail = True
-
-    return None
-
-
-def page1_hide_detail_info() -> None:
-    """
-    page1中收起信息按钮绑定的函数
-    :return:
-    """
-    st.session_state.page1_show_detail = False
 
     return None
 

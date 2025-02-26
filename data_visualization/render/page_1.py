@@ -141,6 +141,7 @@ def show_pie_chart_info(year: str) -> None:
     return None
 
 
+@st.fragment
 def show_summarized_info(year: str, ) -> None:
     """
     用于展示全区的合计数据
@@ -246,9 +247,19 @@ def show_summarized_info(year: str, ) -> None:
 
     st.divider()
 
+    _, col_mid, _ = st.columns([4, 1, 4])
+
+    col_wide = st.columns(spec=1)
+
+    with col_mid:
+        if st.button(label="学段详细信息"):
+            with col_wide[0]:
+                show_period_detail_info(year=year)
+
     return None
 
 
+@st.fragment
 def show_period_detail_info(year: str) -> None:
     """
     展示单一学段所用的框架
@@ -392,41 +403,11 @@ def show_period_detail_info(year: str) -> None:
                 st.error("看代码")
 
             # 收起按钮
-            hide_detail_button()
-
-    return None
-
-
-def show_detail_button() -> None:
-    """
-    用于放置展开详细信息的按钮
-    :return:
-    """
-
-    _, col_mid, _ = st.columns([4, 1, 4])
-
-    with col_mid:
-        st.button(
-            label="学段详细信息",
-            on_click=page1_show_detail_info
-        )
-
-    return None
-
-
-def hide_detail_button() -> None:
-    """
-    用于放置收起详细信息的按钮
-    :return:
-    """
-
-    _, col_mid, _ = st.columns([8, 1, 8])
-    with col_mid:
-        st.button(
-            label="收起",
-            on_click=page1_hide_detail_info,
-            type="primary"
-        )
+            # hide_detail_button()
+            _, col_mid, _ = st.columns([8, 1, 8])
+            with col_mid:
+                if st.button(label="收起", type="primary"):
+                    st.rerun()
 
     return None
 

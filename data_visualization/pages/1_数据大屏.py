@@ -35,17 +35,5 @@ elif len(list(year)) == 1:
 
     show_summarized_info(year=year[0])
 
-    # 某学段展示
-
-    # 展示信息时
-    if st.session_state.page1_show_detail:
-
-        show_period_detail_info(year=year[0])
-
-    # 不展示信息时
-    else:
-        # 放一个展开信息的按钮
-        show_detail_button()
-
 else:
     show_multi_years_info(year_list=year)
