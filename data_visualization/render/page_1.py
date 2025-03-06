@@ -245,6 +245,7 @@ def show_summarized_info(year: str, ) -> None:
 
     with col_mid:
         if st.button(label="学段详细信息"):
+            st.empty()
             with col_wide[0]:
                 show_period_detail_info(year=year)
 

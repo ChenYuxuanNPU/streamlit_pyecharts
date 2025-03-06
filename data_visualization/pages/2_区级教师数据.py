@@ -39,7 +39,7 @@ display_centered_title(title="区级教师数据", font_size=1)
 
 st.divider()
 
-year = sorted(
+year_list = sorted(
     st.multiselect(
         label="请选择需要查询的年份",
         # [year for year in year_list if year != year_0],
@@ -50,20 +50,20 @@ year = sorted(
 )
 
 # 只是展示某一年的数据
-if len(year) == 1:
+if len(year_list) == 1:
 
     with st.container(border=True):
 
         try:
-            show_1_year_teacher_0(year=year[0])
+            show_1_year_teacher_0(year=year_list[0])
 
         except KeyError as e:
 
-            if e.args[0] == year[0]:
-                st.error(f"缺少{year[0]}年的数据", icon="🤣")
+            if e.args[0] == year_list[0]:
+                st.error(f"缺少{year_list[0]}年的数据", icon="🤣")
 
             elif e.args[0] == "在编":
-                st.error(f"缺少{year[0]}年的在编数据", icon="😆")
+                st.error(f"缺少{year_list[0]}年的在编数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -78,15 +78,15 @@ if len(year) == 1:
     with st.container(border=True):
 
         try:
-            show_1_year_teacher_1(year=year[0])
+            show_1_year_teacher_1(year=year_list[0])
 
         except KeyError as e:
 
-            if e.args[0] == year[0]:
-                st.error(f"缺少{year[0]}年的数据", icon="🤣")
+            if e.args[0] == year_list[0]:
+                st.error(f"缺少{year_list[0]}年的数据", icon="🤣")
 
             elif e.args[0] == "编外":
-                st.error(f"缺少{year[0]}年的编外数据", icon="😆")
+                st.error(f"缺少{year_list[0]}年的编外数据", icon="😆")
 
             elif e.args[0] == "学校教师总数":
                 st.error("缺少在编或编外信息", icon="😆")
@@ -96,9 +96,11 @@ if len(year) == 1:
                 st.error(str(e), icon="😭")
 
 # 展示对比数据
-elif len(year) >= 2:
+elif len(year_list) >= 2:
 
-    show_multi_years_teacher_0(year_list=year)
+    show_multi_years_teacher_0(year_list=year_list)
+
+    ai_module(year_list=year_list)
 
 else:
     st.toast("?")

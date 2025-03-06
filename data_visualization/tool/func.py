@@ -1080,7 +1080,7 @@ def draw_mixed_bar_and_line(df_bar: pd.DataFrame, df_line: pd.DataFrame,
     return None
 
 
-def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, height=-1) -> None:
+def draw_dataframe(data: pd.DataFrame = None, hide_index: bool = True, width: int = 1920, height: int = -1) -> None:
     """
     绘制streamlit原生dataframe表格
     :param data: 绘制的内容
@@ -1103,7 +1103,8 @@ def draw_dataframe(data: pd.DataFrame = None, hide_index=True, width=1920, heigh
     return None
 
 
-def draw_word_cloud_chart(words: list, title: str, height=-1, height_factor=1300, shape="circle") -> None:
+def draw_word_cloud_chart(words: list, title: str, height: int = -1, height_factor: int = 1300,
+                          shape: str = "circle") -> None:
     """
     绘制词云图
     :param words: 词列表，以出现频率作为数值
@@ -1176,7 +1177,7 @@ def save_json_data(json_data: dict, folder: str, file_name: str) -> None:
 
 
 # 用来插入st.write_stream的数据
-def stream_data(sentence: str, delay=0.01) -> str:
+def stream_data(sentence: str, delay=0.01) -> str or None:
     """
     用于分批输出数据，配合st.write_stream()实现逐条一个个字生成的效果
     :param sentence: 需要输出的语句
@@ -1311,26 +1312,15 @@ def display_centered_dataframe(df: pd.DataFrame, margin_top: int = 0, margin_bot
     st.markdown(centered_html, unsafe_allow_html=True)
 
 
-# def test1(df):
-#     """
-#     在 Streamlit 中居中显示一个 Pandas DataFrame，并添加自定义样式的边框。
-#     :param df: 要显示的数据框。
-#     """
-#
-#     # 将数据框转换为 HTML 表格
-#     html_table = df.to_html(index=False, border=1)  # border=0 去除边框
-#
-#     # 创建一个居中的 HTML 容器
-#     centered_html = f"""
-#     <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-#         <div style="display: inline-block; border: 1px solid #000; padding: 10px;">
-#             {html_table}
-#         </div>
-#     </div>
-#     """
-#
-#     # 在 Streamlit 中显示居中的 HTML 表格
-#     st.markdown(centered_html, unsafe_allow_html=True)
+def excluded_df_name_in_df_container(param: Literal["district_multi_years"]) -> list or None:
+    """
+
+    :param param:
+    :return:
+    """
+    match param:
+        case "district_multi_years":
+            return ["grad_school_id_and_year", ]
 
 
 def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> None:

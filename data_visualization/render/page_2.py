@@ -631,6 +631,38 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
     return None
 
 
+@st.fragment
+def ai_module(year_list: list) -> None:
+    _, col_mid, _ = st.columns([4, 1, 4])
+
+    col_wide = st.columns(spec=1)
+
+    with col_mid:
+        if st.button(label="DeepSeek自动分析数据"):
+            with col_wide[0]:
+                show_ai_explain(year_list=year_list)
+
+
+@st.fragment
+def show_ai_explain(year_list: list) -> None:
+    list_data = []
+
+    for df_container in [get_multi_years_teacher_0_age_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_area_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_period_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_edu_bg_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_vocational_level_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_discipline_dataframe(year_list=year_list),
+                         get_multi_years_teacher_0_grad_school_dataframe(year_list=year_list)]:
+
+        for df_name in [n for n in df_container.list_dataframes() if
+                        n not in excluded_df_name_in_df_container(param="district_multi_years")]:
+            list_data.append([df_name, df_container.get_dataframe(name=df_name).to_json(force_ascii=False)])
+            print(df_name, df_container.get_dataframe(name=df_name).to_json(force_ascii=False))
+
+    # print(str(list_data))
+
+
 if __name__ == '__main__':
     # container = get_1_year_grad_school_dataframe(year="2024")
     # print(container.get_dataframe("df_985"))
