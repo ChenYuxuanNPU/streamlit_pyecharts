@@ -348,6 +348,11 @@ def show_multi_years_teacher_0_age(year_list: list[str]) -> None:
         line_formatter="{value} %"
     )
 
+    with st.expander("详细信息"):
+        st.dataframe(data=df_container.get_dataframe(name="age_and_year"))
+
+        st.dataframe(data=df_container.get_dataframe(name="age_growth_rate_and_year").map(lambda x: f"{float(x):.1f}%"))
+
     return None
 
 
@@ -382,6 +387,19 @@ def show_multi_years_teacher_0_area(year_list: list[str]) -> None:
         line_formatter="{value} %"
     )
 
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+
+        with left:
+            display_centered_title(title="片镇人数", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="area_and_year"),
+                                       margin_bottom=20)
+
+        with right:
+            display_centered_title(title="片镇增长率", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="area_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"), margin_top=20)
+
     return None
 
 
@@ -415,6 +433,19 @@ def show_multi_years_teacher_0_period(year_list: list[str]) -> None:
         line_formatter="{value} %"
     )
 
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+
+        with left:
+            display_centered_title(title="学段人数", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="period_and_year"),
+                                       margin_bottom=20)
+
+        with right:
+            display_centered_title(title="学段增长率", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="period_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"), margin_top=20)
+
     return None
 
 
@@ -447,6 +478,19 @@ def show_multi_years_teacher_0_edu_bg(year_list: list[str]) -> None:
         mark_line_y=0,
         line_formatter="{value} %"
     )
+
+    with st.expander(label="详细信息"):
+        left, right = st.columns(spec=2)
+
+        with left:
+            display_centered_title(title="学历人数", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="edu_bg_and_year"),
+                                       margin_bottom=20)
+
+        with right:
+            display_centered_title(title="学历增长率", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="edu_bg_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"), margin_top=20)
 
     return None
 
@@ -483,6 +527,16 @@ def show_multi_years_teacher_0_vocational_level(year_list: list[str]) -> None:
         x_axis_font_size=9
     )
 
+    with st.expander("详细信息"):
+        display_centered_title(title="专业技术职称人数", font_size=5)
+        display_centered_dataframe(df=df_container.get_dataframe(name="shorten_vocational_level_detail_and_year"),
+                                   margin_bottom=20)
+
+        display_centered_title(title="专业技术职称增长率", font_size=5)
+        display_centered_dataframe(
+            df=df_container.get_dataframe(name="shorten_vocational_level_detail_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"))
+
     return None
 
 
@@ -516,6 +570,15 @@ def show_multi_years_teacher_0_discipline(year_list: list[str]) -> None:
         mark_line_y=0,
         line_formatter="{value} %"
     )
+
+    with st.expander("详细信息"):
+        display_centered_title(title="学科人数", font_size=5)
+        display_centered_dataframe(df=df_container.get_dataframe(name="discipline_and_year"),
+                                   margin_bottom=20)
+
+        display_centered_title(title="学科增长率", font_size=5)
+        display_centered_dataframe(df=df_container.get_dataframe(name="discipline_growth_rate_and_year").map(
+            lambda x: f"{float(x):.1f}%"), margin_bottom=20)
 
     return None
 
@@ -551,6 +614,19 @@ def show_multi_years_teacher_0_grad_school(year_list: list[str]) -> None:
         # line_min_=-65,
         line_formatter="{value} %"
     )
+
+    with st.expander("详细信息"):
+        left, right = st.columns(spec=2)
+
+        with left:
+            display_centered_title(title="毕业院校层次", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="grad_school_kind_and_year"),
+                                       margin_bottom=20)
+
+        with right:
+            display_centered_title(title="毕业院校层次增长情况", font_size=5)
+            display_centered_dataframe(df=df_container.get_dataframe(name="grad_school_kind_growth_rate_and_year").map(
+                lambda x: f"{float(x):.1f}%"), margin_top=20)
 
     return None
 
