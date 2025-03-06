@@ -1,12 +1,4 @@
-from data_visualization.tool.func import *
-
-
-def get_base_data() -> dict:
-    """
-    获取全区学校数据
-    :return:
-    """
-    return load_json_data(folder="result", file_name="school_info")
+from data_visualization.render.statistics_and_charts import *
 
 
 def show_pie_chart_info(year: str) -> None:
@@ -472,25 +464,6 @@ def show_multi_years_student(year_list: list) -> None:
     return None
 
 
-def get_multi_years_student(year_list: list) -> pd.DataFrame:
-    """
-    用于获取多年份的学生数量对比
-    :param year_list: 需要对比所用的年份列表
-    :return:
-    """
-
-    data = execute_sql_sentence(
-        sentence=f'select "采集年份", "学段", "合计学生数" from school_data_sum where "学段" in ("合计", "高级中学", "初级中学", "小学", "幼儿园") and "采集年份" in ({', '.join([f'"{year}"' for year in year_list])})'
-    )
-
-    dict_for_df = {year: {"幼儿园": 0, "小学": 0, "初级中学": 0, "高级中学": 0, "合计": 0} for year in year_list}
-
-    for item in data:
-        dict_for_df[item[0]][item[1]] = int(item[2])
-
-    return convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1])
-
-
 def show_multi_years_class(year_list: list) -> None:
     """
     用于展示多年份的班额数量对比
@@ -502,55 +475,6 @@ def show_multi_years_class(year_list: list) -> None:
         draw_line_chart(data=get_multi_years_class(year_list=year_list), title="", height=400, )
 
     return None
-
-
-def get_multi_years_class(year_list: list) -> pd.DataFrame:
-    """
-    用于获取多年份的班额数量对比
-    :param year_list: 需要对比所用的年份列表
-    :return:
-    """
-
-    data = execute_sql_sentence(
-        sentence=f'select "采集年份", "学段", "合计班额数" from school_data_sum where "学段" in ("合计", "高级中学", "初级中学", "小学", "幼儿园") and "采集年份" in ({', '.join([f'"{year}"' for year in year_list])})'
-    )
-
-    dict_for_df = {year: {"幼儿园": 0, "小学": 0, "初级中学": 0, "高级中学": 0, "合计": 0} for year in year_list}
-
-    for item in data:
-        dict_for_df[item[0]][item[1]] = int(item[2])
-
-    return convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1])
-
-
-def get_multi_years_full_time_teacher(year_list: list) -> pd.DataFrame:
-    """
-    用于获取多年份的学年初报表专任教师数
-    :param year_list: 需要对比所用的年份列表
-    :return:
-    """
-
-    data = execute_sql_sentence(
-        sentence=f'select "采集年份", "学段", "合计专任教师数" from school_data_sum where "学段" in ("合计", "十二年一贯制学校", "完全中学", "高级中学", "九年一贯制学校", "初级中学", "小学", "幼儿园") and "采集年份" in ({', '.join([f'"{year}"' for year in year_list])})'
-    )
-
-    dict_for_df = {year: {"幼儿园": 0, "小学": 0, "初级中学": 0, "高级中学": 0, "合计": 0} for year in year_list}
-
-    for item in data:
-
-        if item[1] in dict_for_df[item[0]].keys():
-            dict_for_df[item[0]][item[1]] += int(item[2])
-
-        elif item[1] in ["初级中学", "九年一贯制学校"]:
-            dict_for_df[item[0]]["初级中学"] += int(item[2])
-
-        elif item[1] in ["高级中学", "完全中学", "十二年一贯制学校"]:
-            dict_for_df[item[0]]["高级中学"] += int(item[2])
-
-        else:
-            print_color_text(text=f'学年初报表中专任教师数有误：{item}')
-
-    return convert_dict_to_dataframe(d=dict_for_df).T.reindex(columns=year_list[::-1])
 
 
 def show_multi_years_full_time_teacher_to_class_ratio(year_list: list) -> None:
@@ -566,17 +490,6 @@ def show_multi_years_full_time_teacher_to_class_ratio(year_list: list) -> None:
     return None
 
 
-def get_multi_years_full_time_teacher_to_class_ratio(year_list: list) -> pd.DataFrame:
-    """
-    用于获取多年份的学年初报表班师比（平均每个班拥有多少名教师）
-    :param year_list:
-    :return:
-    """
-
-    return round(get_multi_years_full_time_teacher(year_list=year_list) / get_multi_years_class(year_list=year_list),
-                 2).drop("合计")
-
-
 def show_multi_years_student_to_full_time_teacher_ratio(year_list: list) -> None:
     """
     用于展示多年份师生比变化情况
@@ -588,17 +501,6 @@ def show_multi_years_student_to_full_time_teacher_ratio(year_list: list) -> None
                         height=400, )
 
     return None
-
-
-def get_multi_years_student_to_full_time_teacher_ratio(year_list: list) -> pd.DataFrame:
-    """
-    用于获取多年份的学年初报表生师比（平均每个教师教多少学生）
-    :param year_list:
-    :return:
-    """
-
-    return round(get_multi_years_student(year_list=year_list) / get_multi_years_full_time_teacher(year_list=year_list),
-                 2).drop("合计")
 
 
 if __name__ == '__main__':

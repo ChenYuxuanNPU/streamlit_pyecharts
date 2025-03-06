@@ -28,7 +28,7 @@ with st.container(border=True):
     left, mid, right = st.columns(spec=3)
 
     with left:
-        year = list(
+        year_list = list(
             sorted(
                 st.multiselect(
                     label="请选择需要查询的年份",
@@ -40,10 +40,10 @@ with st.container(border=True):
         )
 
     with mid:
-        school = list(
+        school_list = list(
             st.multiselect(
                 label="请输入需要查询的学校",
-                options=get_school_list_by_year_list(year_list=year),
+                options=get_school_list_by_year_list(year_list=year_list),
                 placeholder="必选项",
             )
         )
@@ -54,13 +54,13 @@ with st.container(border=True):
             placeholder="可选项",
             index=None,
             options=[item for item in get_period_list() if item != "幼儿园"],
-            disabled=True if len(year) == 0 else False
+            disabled=True if len(year_list) == 0 else False
         )
 
     _, middle, _ = st.columns([4, 1, 4])
 
     with middle:
-        st.button("查询学校信息", kwargs={"year_list": year, "school_list": school, "period": period},
+        st.button("查询学校信息", kwargs={"year_list": year_list, "school_list": school_list, "period": period},
                   on_click=confirm_input)
 
 # 不查询的时候展示学校云图
