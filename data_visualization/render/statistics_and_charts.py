@@ -765,7 +765,7 @@ def get_multi_years_teacher_0_age_dataframe(year_list: list[str], area: str = No
     df4 = get_growth_rate_from_one_row_dataframe(df=df3)
     df4.index = ["增长率"]
 
-    container.add_dataframe(name="growth_rate_by_year", df=df4)
+    container.add_dataframe(name="count_growth_rate_by_year", df=df4)
 
     return container
 

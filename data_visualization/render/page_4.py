@@ -717,7 +717,7 @@ def show_multi_years_and_1_school_teacher_0_age(year_list: list[str], school: st
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="count_growth_rate_by_year"), title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(

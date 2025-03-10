@@ -334,7 +334,7 @@ def show_multi_years_teacher_0_age(year_list: list[str]) -> None:
 
     with right:
         with st.container(border=True):
-            draw_line_chart(data=df_container.get_dataframe(name="growth_rate_by_year"), title="", height=400,
+            draw_line_chart(data=df_container.get_dataframe(name="count_growth_rate_by_year"), title="", height=400,
                             mark_line_y=0, formatter="{value} %")
 
     draw_mixed_bar_and_line(
@@ -645,22 +645,29 @@ def ai_module(year_list: list) -> None:
 
 @st.fragment
 def show_ai_explain(year_list: list) -> None:
-    list_data = []
+    output = {}
 
-    for df_container in [get_multi_years_teacher_0_age_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_area_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_period_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_edu_bg_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_vocational_level_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_discipline_dataframe(year_list=year_list),
-                         get_multi_years_teacher_0_grad_school_dataframe(year_list=year_list)]:
+    if len(year_list) == 1:
+        pass
 
-        for df_name in [n for n in df_container.list_dataframes() if
-                        n not in excluded_df_name_in_df_container(param="district_multi_years")]:
-            list_data.append([df_name, df_container.get_dataframe(name=df_name).to_json(force_ascii=False)])
-            print(df_name, df_container.get_dataframe(name=df_name).to_json(force_ascii=False))
+    else:
+        for df_container in [get_multi_years_teacher_0_age_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_area_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_period_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_edu_bg_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_vocational_level_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_discipline_dataframe(year_list=year_list),
+                             get_multi_years_teacher_0_grad_school_dataframe(year_list=year_list)]:
 
-    # print(str(list_data))
+            for df_name in [n for n in df_container.list_dataframes() if
+                            n not in excluded_df_name_in_df_container(param="district_multi_years")]:
+                output[get_df_name_description(df_name=df_name, data_kind="district")] = df_container.get_dataframe(
+                    name=df_name).to_json(force_ascii=False)
+
+        pyperclip.copy(str(output))
+        st.toast("数据已复制到系统剪切板！", icon="📋")
+
+        ask_fucking_deepseek_in_edge()
 
 
 if __name__ == '__main__':

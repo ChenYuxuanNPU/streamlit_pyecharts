@@ -8,7 +8,9 @@ from pathlib import Path
 from typing import Literal, Iterable
 
 import pandas as pd
+import pyautogui
 import pyecharts.options as opts
+import pyperclip
 import streamlit as st
 from openai import OpenAI
 from pyecharts.charts import Bar
@@ -16,7 +18,12 @@ from pyecharts.charts import Line
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from screeninfo import get_monitors
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.service import Service
 from streamlit_echarts import st_pyecharts
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
 class DataFrameContainer:
@@ -1320,7 +1327,36 @@ def excluded_df_name_in_df_container(param: Literal["district_multi_years"]) -> 
     """
     match param:
         case "district_multi_years":
-            return ["grad_school_id_and_year", ]
+            return ["grad_school_id_and_year", "age_growth_rate_and_year", "count_growth_rate_by_year",
+                    "area_growth_rate_and_year", "period_growth_rate_and_year", "edu_bg_growth_rate_and_year",
+                    "vocational_level_growth_rate_and_year", "vocational_level_detail_growth_rate_and_year",
+                    "shorten_vocational_level_detail_and_year", "shorten_vocational_level_detail_growth_rate_and_year",
+                    "discipline_growth_rate_and_year", "grad_school_kind_growth_rate_and_year"]
+
+
+def get_df_name_description(df_name: str, data_kind: Literal["district"]) -> str:
+    """
+    用于输入dataframe的名字，返回对其的中文解读
+    :param df_name: 输入的dataframe名字
+    :param data_kind: 数据范围（对应哪一个页面）
+    :return:
+    """
+
+    description = {
+        "district": {
+            "age_and_year": "区教师队伍年龄变化情况",
+            "count_by_year": "区教师队伍人数变化情况",
+            "area_and_year": "直管学校（含高中学段）或片镇教师数变化情况",
+            "period_and_year": "学段教师数变化情况",
+            "edu_bg_and_year": "学历教师数变化情况",
+            "vocational_level_and_year": "职称教师数变化情况",
+            "vocational_level_detail_and_year": "专业技术等级教师数变化情况",
+            "discipline_and_year": "学科教师数变化情况",
+            "grad_school_kind_and_year": "毕业院校层次教师数变化情况"
+        }
+    }
+
+    return description.get(data_kind, {}).get(df_name, "无")
 
 
 def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> None:
@@ -1337,7 +1373,7 @@ def display_centered_title(title: str, font_size: Literal[1, 2, 3, 4, 5, 6]) -> 
     )
 
 
-def ask_deepseek(prompt: str) -> str:
+def ask_deepseek_using_api(prompt: str) -> str:
     """
 
     :param prompt:
@@ -1348,6 +1384,50 @@ def ask_deepseek(prompt: str) -> str:
     client = OpenAI(api_key=st.secrets['DEEPSEEK_API_KEY'], base_url="https://api.deepseek.com")
 
     return "111"
+
+
+def ask_fucking_deepseek_in_edge():
+    # 1. 从剪贴板获取内容
+    text_to_input = pyperclip.paste()  # 获取剪贴板内容
+    if not text_to_input:
+        print("剪贴板为空，请先复制内容！")
+        exit()
+
+    # 2. 设置 Edge 浏览器驱动
+    driver = webdriver.Edge(service=Service(EdgeChromiumDriverManager().install()))  # 自动下载并安装 Edge 驱动
+    driver.maximize_window()  # 最大化窗口
+
+    # 3. 打开 DeepSeek 网页
+    driver.get("https://chat.deepseek.com/")  # 替换为 DeepSeek 的实际网址
+    time.sleep(1)  # 等待页面加载
+
+    # 移动鼠标到指定位置
+    pyautogui.moveTo(960, 780, duration=0.1)  # duration参数是可选的，表示移动到该位置所需的时间（秒）
+    pyautogui.click()
+
+    pyautogui.moveTo(960, 620, duration=0.1)  # duration参数是可选的，表示移动到该位置所需的时间（秒）
+    time.sleep(1)
+    pyautogui.click()
+
+    pyautogui.moveTo(890, 620, duration=0.1)  # duration参数是可选的，表示移动到该位置所需的时间（秒）
+    time.sleep(1)
+    pyautogui.click()
+    time.sleep(3)
+
+    # 4. 找到输入框并粘贴内容
+    try:
+        # 假设输入框的 HTML 元素可以通过以下方式定位
+        input_box = driver.find_element(By.TAG_NAME, "textarea")  # 根据实际网页结构调整
+        input_box.send_keys(
+            f'以下是我区教师队伍建设情况，请根据下述数据编写五千字左右的教师队伍数据分析报告：{text_to_input}')  # 将剪贴板内容粘贴到输入框
+        time.sleep(0.5)
+
+        # 5. 执行提问（模拟按下回车键）
+        input_box.send_keys(Keys.RETURN)
+        time.sleep(3000)  # 等待结果加载
+
+    except Exception as e:
+        print(f"操作失败: {e}")
 
 
 def session_state_initial() -> None:
