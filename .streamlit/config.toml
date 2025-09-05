@@ -3,4 +3,4 @@ showSidebarNavigation = true
 showErrorDetails = false
 
 [server]
-port = 8501
+port = 8502

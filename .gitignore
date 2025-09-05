@@ -3,7 +3,6 @@
 *.xml
 /database/
 /json_file/result/
-/moyu/
 /test_code/
 /.idea/
 /update_data_source/output/
