@@ -5,6 +5,7 @@ import shutil
 from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Font
 from openpyxl.styles import PatternFill
+from openpyxl.styles import numbers
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -20,7 +21,7 @@ title_0 = [
     "参加工作时间", "首次进入白云教育时间", "入白云区事业编时间", "进入现单位任教时间",
     "行政职务", "任现行政职务级别的时间", "任教年级",
     "主教学科（只能选一门）", "兼教学科(可以填多门，逗号隔开)", "现持有最高职称", "职称证专业",
-    "职称证发证时间（xxxx年xx月，文本型）", "现聘专业技术职称最高级别", "现聘专业技术职级",
+    "职称证发证时间（xxxx年xx月，文本型）", "最高职称证书认定或评审通过时间", "现聘专业技术职称",
     "现聘职级（高级教师/一二级教师，不是专业技术级别）首次聘用时间（xxxx年xx月，文本型）",
     "专业技术岗位", "专业技术岗位聘用时间",
     "普通话层次", "教师资格层次", "教师资格学科", "最高骨干教师级别", "四名工作室主持人名称（最高级别）",
@@ -41,14 +42,12 @@ lst = {
                "九三学社", "农工党员", "无党派人士", "其他"],
     "list_l": ["博士研究生", "硕士研究生", "本科", "专科", "中专（非师范）", "中师", "高中", "初中"],
     "list_m": ["博士学位", "硕士学位", "学士学位", "无"],
-    "list_n": [item[0] for item in read_xlsx_to_list(
-        r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\参考资料\2025年6月院校名单.xlsx")[1:]] + ["其他",
-                                                                                                           "无"],
+    "list_n": ["其他"] + [item[0] for item in read_xlsx_to_list(
+        r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\参考资料\2025年6月院校名单.xlsx")[1:]],
     "list_r": ["博士研究生", "硕士研究生", "本科", "专科", "中专（非师范）", "中师", "高中", "初中"],
     "list_s": ["博士学位", "硕士学位", "学士学位", "无"],
-    "list_t": [item[0] for item in read_xlsx_to_list(
-        r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\参考资料\2025年6月院校名单.xlsx")[1:]] + ["其他",
-                                                                                                           "无"],
+    "list_t": ["其他"] + [item[0] for item in read_xlsx_to_list(
+        r"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\参考资料\2025年6月院校名单.xlsx")[1:]],
     "list_ab": ["党组织书记", "党组织书记兼校长", "正校级", "副校级", "中层正职", "中层副职", "少先队大队辅导员",
                 "少先队副大队辅导员", "工会主席", "工会副主席", "团委书记", "团委副书记", "无"],
     "list_ae": ["语文", "数学", "英语", "思想政治", "历史", "地理", "物理", "化学", "生物", "体育", "音乐", "美术",
@@ -58,11 +57,12 @@ lst = {
                 "中级职称（非中小学系列）", "初级职称（非中小学系列）", "未取得职称"],
     "list_ak": ["正高级教师", "高级教师", "一级教师", "二级教师", "三级教师", "高级职称（非中小学系列）",
                 "中级职称（非中小学系列）", "初级职称（非中小学系列）", "试用期未聘", "未取得职称"],
-    "list_am": ["专业技术3级", "专业技术4级", "专业技术5级", "专业技术6级", "专业技术6级（暂聘）", "专业技术7级",
-                "专业技术7级（暂聘）", "专业技术8级", "专业技术8级（暂聘）", "专业技术9级", "专业技术9级（暂聘）",
-                "专业技术10级", "专业技术10级（暂聘）", "专业技术11级", "专业技术11级（暂聘）", "专业技术12级",
-                "专业技术12级（暂聘）", "专业技术13级", "专业技术13级（暂聘）", "试用期（未定级）", "管理7级", "管理8级",
-                "管理9级", "普通工", "中级工", "高级工", ],
+    "list_am": ["专业技术三级", "专业技术四级", "专业技术五级", "专业技术六级", "专业技术六级（暂聘）", "专业技术七级",
+                "专业技术七级（暂聘）", "专业技术八级", "专业技术八级（暂聘）", "专业技术九级", "专业技术九级（暂聘）",
+                "专业技术十级", "专业技术十级（暂聘）", "专业技术十一级", "专业技术十一级（暂聘）", "专业技术十二级",
+                "专业技术十二级（暂聘）", "专业技术十三级", "专业技术十三级（暂聘）", "试用期（未定级）", "管理七级",
+                "管理八级",
+                "管理九级", "普通工", "中级工", "高级工", ],
     "list_ao": ["一级甲等", "一级乙等", "二级甲等", "二级乙等", "三级甲等", "三级乙等", "无"],
     "list_ap": ["幼儿园", "小学", "初级中学", "高级中学", "中职专业课", "中职实习指导教师", "高等学校", "无"],
     "list_ar": ["广东省骨干教师", "广州市骨干教师", "白云区骨干教师", "其他", "无"],
@@ -169,7 +169,7 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
     def auto_adjust_column_width(worksheet, column):
         column_letter = get_column_letter(column)
         length = len(str(worksheet[column_letter][0].value))
-        adjusted_width = (length + 8) * 1.5
+        adjusted_width = (length + 8) * 1.45
         worksheet.column_dimensions[column_letter].width = adjusted_width
 
     def set_all_cell_borders(ws, border_style="thin", border_color="000000"):
@@ -202,22 +202,6 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
             for cell in ws[lst_temp.split("_")[-1].upper()]:
                 cell.fill = fill
 
-        # # 创建一个填充样式
-        # fill = PatternFill(start_color="FFB6C1", end_color="FFB6C1", fill_type="solid")
-        #
-        # for cell in ws['BN']:
-        #     cell.fill = fill
-        # for cell in ws['BO']:
-        #     cell.fill = fill
-        # for cell in ws['BP']:
-        #     cell.fill = fill
-        # for cell in ws['BQ']:
-        #     cell.fill = fill
-        # for cell in ws['BR']:
-        #     cell.fill = fill
-        # for cell in ws['BS']:
-        #     cell.fill = fill
-
     def set_col_width(ws):
         for i in range(len(title_0)):
             auto_adjust_column_width(ws, i + 1)
@@ -236,7 +220,7 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
 
         # 这里用来判断位数是否统一
         def check_data_length(location: str, length: int):
-            return f'=IF(SUMPRODUCT(--(LEN(数据表!{location}:{location})={length}))=COUNTA(A:A)-1,1,0)'
+            return f'=IF(SUMPRODUCT(--(LEN(数据表!{location}:{location})={length}))=COUNTA(数据表!A:A)-1,1,0)'
 
         # 这里检查日期是不是按照xxxx年xx月格式
         def check_str_date(location: str):
@@ -268,21 +252,21 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
                 column_name = chr(ord(column_letter) + i - 1)
                 # 拼接COUNTA函数，注意添加范围（例如A1:A500）
                 if i == 1:
-                    formula += f"COUNTA(数据表!{column_name}:{column_name})"
+                    formula += f"COUNTBLANK(数据表!{column_name}:{column_name})"
                 else:
-                    formula += f",COUNTA(数据表!{column_name}:{column_name})"
+                    formula += f",COUNTBLANK(数据表!{column_name}:{column_name})"
 
             for i in range(1, 27):  # BS是Excel中的第702列
                 # 生成列名（AA-AZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
-                formula += f",COUNTA(数据表!A{column_name}:A{column_name})"
+                formula += f",COUNTBLANK(数据表!A{column_name}:A{column_name})"
 
             for i in range(1, 18):  # BS是Excel中的第702列
                 # 生成列名（BA-BZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
-                formula += f",COUNTA(数据表!B{column_name}:B{column_name})"
+                formula += f",COUNTBLANK(数据表!B{column_name}:B{column_name})"
 
             formula += ")=MIN("
 
@@ -292,21 +276,21 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
                 column_name = chr(ord(column_letter) + i - 1)
                 # 拼接COUNTA函数，注意添加范围（例如A1:A500）
                 if i == 1:
-                    formula += f"COUNTA(数据表!{column_name}:{column_name})"
+                    formula += f"COUNTBLANK(数据表!{column_name}:{column_name})"
                 else:
-                    formula += f",COUNTA(数据表!{column_name}:{column_name})"
+                    formula += f",COUNTBLANK(数据表!{column_name}:{column_name})"
 
             for i in range(1, 27):  # BS是Excel中的第702列
                 # 生成列名（AA-AZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
-                formula += f",COUNTA(数据表!A{column_name}:A{column_name})"
+                formula += f",COUNTBLANK(数据表!A{column_name}:A{column_name})"
 
             for i in range(1, 18):  # BS是Excel中的第702列
                 # 生成列名（AA-AZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
-                formula += f",COUNTA(数据表!B{column_name}:B{column_name})"
+                formula += f",COUNTBLANK(数据表!B{column_name}:B{column_name})"
 
             formula += "),1,0)"
 
@@ -347,26 +331,87 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
         ws_check['I1'] = 'E列身份证号位数'
         ws_check['I2'] = check_data_length(location='E', length=18)
         ws_check['I2'].font = font
-
         cell_list.append(f'I2')
 
-        ws_check['I1'] = 'E列身份证号正误'
-        ws_check['I2'] = check_data_length(location='E', length=18)
-        ws_check['I2'].font = font
+        ws_check['I4'] = 'E列身份证号年份范围（1931-2020）'
+        ws_check[
+            'I5'] = '=IF(SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,7,4)*1,0)>1930))=SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,7,4)*1,0)<2020)),1,0)'
+        ws_check['I5'].font = font
+        cell_list.append(f'I5')
 
-        cell_list.append(f'I2')
+        ws_check['I7'] = 'E列身份证号月份范围（1-12）'
+        ws_check[
+            'I8'] = '=IF(SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,11,2)*1,0)>0))=SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,11,2)*1,0)<13)),1,0)'
+        ws_check['I8'].font = font
+        cell_list.append(f'I8')
+
+        ws_check['I10'] = 'E列身份证号日期范围（1-31）'
+        ws_check[
+            'I11'] = '=IF(SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,13,2)*1,0)>0))=SUMPRODUCT((数据表!E2:E1000<>"")*(IFERROR(MID(数据表!E2:E1000,13,2)*1,0)<32)),1,0)'
+        ws_check['I11'].font = font
+        cell_list.append(f'I11')
 
         # 手机号位数
-        for i, cell in enumerate(["BE", "BI"], start=2):
+        for i, cell in enumerate(["BE", "BI"], start=4):
             ws_check[f'I{3 * i + 1}'] = f'{cell}列手机号位数'
             ws_check[f'I{3 * i + 2}'] = check_data_length(location=f"{cell}", length=11)
             ws_check[f'I{3 * i + 2}'].font = font
 
-            cell_list.append(f'f{3 * i + 2}')
+            cell_list.append(f'i{3 * i + 2}')
+
+        # LM列参加工作前学历学位对照
+        ws_check[f'K1'] = "L/M列参加工作前学历学位-无学位学历"
+        ws_check[
+            f'K2'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!L:L,{"初中","高中","中师","中专（非师范）","专科"},0))*ISNUMBER(MATCH(数据表!M:M,{"无"},0)))=SUM(COUNTIF(数据表!L:L,{"初中","高中","中师","中专（非师范）","专科"})),1,0)'
+        ws_check[f'K2'].font = font
+        cell_list.append(f'K2')
+
+        ws_check[f'K4'] = "L/M列参加工作前学历学位-本科"
+        ws_check[
+            f'K5'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!L:L,{"本科"},0))*ISNUMBER(MATCH(数据表!M:M,{"学士学位","无"},0)))=SUM(COUNTIF(数据表!L:L,{"本科"})),1,0)'
+        ws_check[f'K5'].font = font
+        cell_list.append(f'K5')
+
+        ws_check[f'K7'] = "L/M列参加工作前学历学位-硕士研究生"
+        ws_check[
+            f'K8'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!L:L,{"硕士研究生"},0))*ISNUMBER(MATCH(数据表!M:M,{"硕士学位","无"},0)))=SUM(COUNTIF(数据表!L:L,{"硕士研究生"})),1,0)'
+        ws_check[f'K8'].font = font
+        cell_list.append(f'K8')
+
+        ws_check[f'K10'] = "L/M列参加工作前学历学位-博士研究生"
+        ws_check[
+            f'K11'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!L:L,{"博士研究生"},0))*ISNUMBER(MATCH(数据表!M:M,{"博士学位","无"},0)))=SUM(COUNTIF(数据表!L:L,{"博士研究生"})),1,0)'
+        ws_check[f'K11'].font = font
+        cell_list.append(f'K11')
+
+        # RS列最高学历学位对照
+        ws_check[f'K13'] = "R/S列最高学历学位-无学位学历"
+        ws_check[
+            f'K14'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"},0))*ISNUMBER(MATCH(数据表!S:S,{"无"},0)))=SUM(COUNTIF(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"})),1,0)'
+        ws_check[f'K14'].font = font
+        cell_list.append(f'K14')
+
+        ws_check[f'K16'] = "R/S列最高学历学位-本科"
+        ws_check[
+            f'K17'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"本科"},0))*ISNUMBER(MATCH(数据表!S:S,{"学士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"本科"})),1,0)'
+        ws_check[f'K17'].font = font
+        cell_list.append(f'K17')
+
+        ws_check[f'K19'] = "R/S列最高学历学位-硕士研究生"
+        ws_check[
+            f'K20'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"硕士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"硕士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"硕士研究生"})),1,0)'
+        ws_check[f'K20'].font = font
+        cell_list.append(f'K20')
+
+        ws_check[f'K22'] = "R/S列最高学历学位-博士研究生"
+        ws_check[
+            f'K23'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"博士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"博士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"博士研究生"})),1,0)'
+        ws_check[f'K23'].font = font
+        cell_list.append(f'K23')
 
         # 填写完成的判断
         ws_check['A1'] = '检查无误'
-        # ws_check['A2'] = f'=IF(AND({"=1,".join(cell_list)}=1),1,0)'
+        ws_check['A2'] = f'=IF(AND({"=1,".join(["A5", "A8"] + cell_list)}=1),1,0)'
         ws_check['A2'].font = font
 
         ws_check['A4'] = '是否已填写完成'
@@ -409,6 +454,11 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
 
     set_all_cell_borders(ws)
 
+    # 将整个工作表的默认数字格式设置为文本
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.number_format = numbers.FORMAT_TEXT
+
     ensure_folders_exist_or_clear(kind="在编", school_name1=file_name, area_name1=area_name)
 
     write_list_to_txt(
@@ -430,7 +480,7 @@ if __name__ == '__main__':
     output = {item: {} for item in ["直管", "新市", "永平", "石井", "江高", "人和", "太和", "钟落潭"]}
 
     for item in data:
-        item[-1] = ""
+        item[-1] = "无"
         if item[0] not in output[item[-8]].keys():
             output[item[-8]][item[0]] = []
 
@@ -444,5 +494,3 @@ if __name__ == '__main__':
         for school, data_temp in temp.items():
             print(f"正在处理/{area}/{school}/的数据")
             output_excel_0(title=title_0, data=data_temp, file_name=school, area_name=area)
-            break
-        break
