@@ -209,3 +209,17 @@ def get_sheet_names(file_path: str) -> list:
     names = wb.sheetnames
     wb.close()
     return names
+
+
+def generate_subsets(arr):
+    n = len(arr)
+    res = []
+    # 遍历所有非空子集（从1到2^n - 1）
+    for i in range(1, 1 << n):
+        subset = []
+        for j in range(n):
+            if i & (1 << j):
+                subset.append(arr[j])
+        # 将子集列表转换为逗号分隔的字符串
+        res.append('，'.join(subset))
+    return res
