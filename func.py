@@ -223,3 +223,35 @@ def generate_subsets(arr):
         # 将子集列表转换为逗号分隔的字符串
         res.append('，'.join(subset))
     return res
+
+
+def generate_letter_sequence(start, end):
+    """
+    生成从起始字母到结束字母的所有字母序列
+    :param start: 起始字母(长度为1-3的大写字母)
+    :param end: 结束字母(长度为1-3的大写字母)
+    :return: 按顺序排列的所有字母组合
+    """
+
+    # 将字母转换为数字表示(A=1, B=2, ..., Z=26)
+    def letter_to_number(letter):
+        return sum((ord(char) - 64) * (26 ** i) for i, char in enumerate(reversed(letter)))
+
+    # 将数字转换回字母
+    def number_to_letter(num):
+        result = []
+        while num > 0:
+            num -= 1
+            result.append(chr((num % 26) + 65))
+            num //= 26
+        return ''.join(reversed(result)) if result else 'A'
+
+    start_num = letter_to_number(start)
+    end_num = letter_to_number(end)
+
+    # 生成序列
+    sequence = []
+    for num in range(start_num, end_num + 1):
+        sequence.append(number_to_letter(num))
+
+    return sequence
