@@ -324,7 +324,7 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
 
                 formula += f",COUNTBLANK(数据表!A{column_name}:A{column_name})"
 
-            for i in range(1, 20):  # BS是Excel中的第702列
+            for i in range(1, 22):  # BS是Excel中的第702列
                 # 生成列名（AA-AZ）
                 column_name = chr(ord(column_letter) + i - 1)
 
@@ -423,30 +423,66 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
         ws_check[f'K11'].font = font
         cell_list.append(f'K11')
 
-        # RS列最高学历对应学位对照
-        ws_check[f'K13'] = "R/S列最高学历对应学位-无学位学历"
+        ws_check[f'K13'] = "L/N/O列参加工作前学历学位-本科及以上填写校名"
         ws_check[
-            f'K14'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"},0))*ISNUMBER(MATCH(数据表!S:S,{"无"},0)))=SUM(COUNTIF(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"})),1,0)'
+            f'K14'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!L:L,{"本科","硕士研究生","博士研究生"},0))*ISNUMBER(MATCH(数据表!N:N,{"其他","无"},0))*ISNUMBER(MATCH(数据表!O:O,{"其他","无"},0)))>0,0,1)'
         ws_check[f'K14'].font = font
         cell_list.append(f'K14')
 
-        ws_check[f'K16'] = "R/S列最高学历对应学位-本科"
+        ws_check[f'K16'] = "O列参加工作前毕业院校应选未选"
         ws_check[
-            f'K17'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"本科"},0))*ISNUMBER(MATCH(数据表!S:S,{"学士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"本科"})),1,0)'
+            f'K17'] = '=IF(SUMPRODUCT(--(NOT(ISERROR(MATCH(数据表!O:O,下拉列表信息!N:N,0)))))-SUM(COUNTIF(数据表!O:O,{"无","其他"}))>0,0,1)'
         ws_check[f'K17'].font = font
         cell_list.append(f'K17')
 
-        ws_check[f'K19'] = "R/S列最高学历对应学位-硕士研究生"
+        # RS列最高学历对应学位对照
+        ws_check[f'K19'] = "R/S列最高学历对应学位-无学位学历"
         ws_check[
-            f'K20'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"硕士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"硕士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"硕士研究生"})),1,0)'
+            f'K20'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"},0))*ISNUMBER(MATCH(数据表!S:S,{"无"},0)))=SUM(COUNTIF(数据表!R:R,{"初中","高中","中师","中专（非师范）","专科"})),1,0)'
         ws_check[f'K20'].font = font
         cell_list.append(f'K20')
 
-        ws_check[f'K22'] = "R/S列最高学历对应学位-博士研究生"
+        ws_check[f'K22'] = "R/S列最高学历对应学位-本科"
         ws_check[
-            f'K23'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"博士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"博士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"博士研究生"})),1,0)'
+            f'K23'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"本科"},0))*ISNUMBER(MATCH(数据表!S:S,{"学士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"本科"})),1,0)'
         ws_check[f'K23'].font = font
         cell_list.append(f'K23')
+
+        ws_check[f'K25'] = "R/S列最高学历对应学位-硕士研究生"
+        ws_check[
+            f'K26'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"硕士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"硕士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"硕士研究生"})),1,0)'
+        ws_check[f'K26'].font = font
+        cell_list.append(f'K26')
+
+        ws_check[f'K28'] = "R/S列最高学历对应学位-博士研究生"
+        ws_check[
+            f'K29'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"博士研究生"},0))*ISNUMBER(MATCH(数据表!S:S,{"博士学位","无"},0)))=SUM(COUNTIF(数据表!R:R,{"博士研究生"})),1,0)'
+        ws_check[f'K29'].font = font
+        cell_list.append(f'K29')
+
+        ws_check[f'K31'] = "R/T/U列最高学历对应学位-本科及以上填写校名"
+        ws_check[
+            f'K32'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!R:R,{"本科","硕士研究生","博士研究生"},0))*ISNUMBER(MATCH(数据表!T:T,{"其他","无"},0))*ISNUMBER(MATCH(数据表!U:U,{"其他","无"},0)))>0,0,1)'
+        ws_check[f'K32'].font = font
+        cell_list.append(f'K32')
+
+        ws_check[f'K34'] = "U列最高学历毕业院校应选未选"
+        ws_check[
+            f'K35'] = '=IF(SUMPRODUCT(--(NOT(ISERROR(MATCH(数据表!U:U,下拉列表信息!T:T,0)))))-SUM(COUNTIF(数据表!U:U,{"无","其他"}))>0,0,1)'
+        ws_check[f'K35'].font = font
+        cell_list.append(f'K35')
+
+        ws_check[f'K37'] = "BQ/BR/BS列非学历教育最高学位-学士学位及以上填写校名"
+        ws_check[
+            f'K38'] = '=IF(SUMPRODUCT(ISNUMBER(MATCH(数据表!BQ:BQ,{"学士学位","硕士学位","博士学位"},0))*ISNUMBER(MATCH(数据表!BR:BR,{"其他","无"},0))*ISNUMBER(MATCH(数据表!BS:BS,{"其他","无"},0)))>0,0,1)'
+        ws_check[f'K38'].font = font
+        cell_list.append(f'K38')
+
+        ws_check[f'K40'] = "BS列非学历教育毕业院校应选未选"
+        ws_check[
+            f'K41'] = '=IF(SUMPRODUCT(--(NOT(ISERROR(MATCH(数据表!BS:BS,下拉列表信息!BR:BR,0)))))-SUM(COUNTIF(数据表!BS:BS,{"无","其他"}))>0,0,1)'
+        ws_check[f'K41'].font = font
+        cell_list.append(f'K41')
 
         # 下面这一段的功能是：对于每一个四个元素的子列表，[0]列取值为[1]的时候[2]列不能取[3]，取了就返回0
         # 其中，取值前面可以加上"<>"代表不取这个值时
@@ -530,6 +566,8 @@ if __name__ == '__main__':
         file_path=fr"C:\Users\1012986131\Desktop\python\streamlit_pyecharts\update_data_source\2026学年\data\teacher_0_2025.xlsx")[
         1:]
 
+    school_count = len(set([item[0] for item in data]))
+
     output = {item: {} for item in ["直管", "新市", "永平", "石井", "江高", "人和", "太和", "钟落潭"]}
 
     for item in data:
@@ -543,7 +581,10 @@ if __name__ == '__main__':
         # 将生成的数据保存至json文件中
         json.dump(output, f, indent=4, ensure_ascii=False)
 
+    count = 1
+
     for area, temp in output.items():
         for school, data_temp in temp.items():
-            print(f"正在处理/{area}/{school}/的数据")
+            print(f"正在处理/{area}/{school}/的数据（{count}/{school_count}）")
+            count += 1
             output_excel_0(title=title_0, data=data_temp, file_name=school, area_name=area)
