@@ -163,9 +163,6 @@ def ensure_folders_exist_or_clear(kind: str, area_name1="", school_name1=""):
             os.makedirs(full_path)
 
 
-# todo
-
-
 def output_excel_0(title: list, data: list, file_name: str, area_name: str):
     def add_sheet_limit(sheet):
         protection = SheetProtection(
@@ -261,8 +258,17 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
             return f'=IF(SUMPRODUCT(--(LEN(数据表!{location}:{location})={length}))=COUNTA(数据表!A:A)-1,1,0)'
 
         # 这里检查日期是不是按照xxxx年xx月格式
-        def check_str_date(location: str):
-            return f'=IF(COUNTIF(数据表!{location}:{location},"????年??月")+COUNTIF(数据表!{location}:{location},"????年?月")+COUNTIF(数据表!{location}:{location},"无")=COUNTA(数据表!A:A)-1,1,0)'
+        def check_str_date(location: str, kind: str = "-"):
+            """
+            填充年月格式
+            :param location: 列名（大写字母
+            :param kind: "-"代表可以填无，"+"代表必须填入某个日期
+            :return:
+            """
+            if kind == "-":
+                return f'=IF(COUNTIF(数据表!{location}:{location},"????年??月")+COUNTIF(数据表!{location}:{location},"????年?月")+COUNTIF(数据表!{location}:{location},"无")=COUNTA(数据表!A:A)-1,1,0)'
+            else:
+                return f'=IF(COUNTIF(数据表!{location}:{location},"????年??月")+COUNTIF(数据表!{location}:{location},"????年?月")=COUNTA(数据表!A:A)-1,1,0)'
 
         # 检查带函数的单元格是否被修改为常数
         def check_formula(td_list: list):
@@ -275,6 +281,43 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
             formula += "),1,0)"
 
             return formula
+
+        def build_suproduct_rule(rule):
+            """
+            根据规则生成 Excel SUMPRODUCT 校验公式。
+
+            参数 rule: 长度为4的列表 [col1, values1, col2, values2]
+                - col1, col2: 列名，如 "AK"
+                - values1, values2: 条件值列表，每个元素为字符串。
+                                     若以 "<>" 开头，则表示“不等于”该值；
+                                     否则表示“等于”该值。
+
+            返回: 形如 "=IF(SUMPRODUCT((条件1)*(条件2)*...)>0,0,1)" 的字符串。
+            """
+            col1, vals1, col2, vals2 = rule
+            conditions = []
+
+            # 处理第一列的条件
+            for v in vals1:
+                if v.startswith("<>"):
+                    actual_value = v[2:]  # 去掉 "<>"
+                    cond = f'数据表!{col1}:{col1}<>"{actual_value}"'
+                else:
+                    cond = f'数据表!{col1}:{col1}="{v}"'
+                conditions.append(cond)
+
+            # 处理第二列的条件
+            for v in vals2:
+                if v.startswith("<>"):
+                    actual_value = v[2:]
+                    cond = f'数据表!{col2}:{col2}<>"{actual_value}"'
+                else:
+                    cond = f'数据表!{col2}:{col2}="{v}"'
+                conditions.append(cond)
+
+            # 将所有条件用 "*" 连接（代表 AND 逻辑）
+            combined = "*".join(f"({cond})" for cond in conditions)
+            return f'=IF(SUMPRODUCT({combined})>0,0,1)'
 
         # 这一段是用来判断是否有空单元格的，原理是遍历每一列，检查每一列的非空单元格数，若所有列的最大值和最小值相同，则认为所有信息填写完成
         def check_blank():
@@ -359,10 +402,16 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
 
         # 这里判断年月格式
         for i, cell in enumerate(
-                ["K", "P", "V", "X", "Y", "Z", "AA", "AC", "AI", "AJ", "AL", "AN", "AT", "AY", "AZ", "BB", "BC", "BT"]):
-            ws_check[f'G{3 * i + 1}'] = f'{cell}列日期格式'
-            ws_check[f'G{3 * i + 2}'] = check_str_date(location=f"{cell}")
-            ws_check[f'G{3 * i + 2}'].font = font
+                ["K", "P+", "V+", "X+", "Y+", "Z+", "AA+", "AC", "AI", "AJ", "AL", "AN", "AT", "AY", "AZ", "BB", "BC",
+                 "BT"]):
+            if cell[-1] != "+":
+                ws_check[f'G{3 * i + 1}'] = f'{cell}列日期格式'
+                ws_check[f'G{3 * i + 2}'] = check_str_date(location=f"{cell}", kind="-")
+                ws_check[f'G{3 * i + 2}'].font = font
+            else:
+                ws_check[f'G{3 * i + 1}'] = f'{cell[:-1]}列日期格式（必填）'
+                ws_check[f'G{3 * i + 2}'] = check_str_date(location=f"{cell[:-1]}", kind="+")
+                ws_check[f'G{3 * i + 2}'].font = font
 
             cell_list.append(f'G{3 * i + 2}')
 
@@ -484,13 +533,19 @@ def output_excel_0(title: list, data: list, file_name: str, area_name: str):
         ws_check[f'K41'].font = font
         cell_list.append(f'K41')
 
-        # 下面这一段的功能是：对于每一个四个元素的子列表，[0]列取值为[1]的时候[2]列不能取[3]，取了就返回0
+        # 下面这一段的功能是：对于每一个四个元素的子列表，若满足以下条件：[0]列出现[1]中的内容，且[2]列出现[3]中的内容，则公式取值为0。其中如果要标出不等于，在[1][3]的字符串前加入"<>"即可
         # 其中，取值前面可以加上"<>"代表不取这个值时
-        for i, cell in enumerate([["N", "其他", "O", "无"], ["T", "其他", "U", "无"], ["AB", "<>无", "AC", "无"],
-                                  ["BQ", "<>无", "BT", "无"]]):
+        for i, cell in enumerate(
+                [["M", ["<>无"], "P", ["无"]], ["N", ["其他"], "O", ["无"]], ["S", ["<>无"], "V", ["无"]],
+                 ["T", ["其他"], "U", ["无"]], ["AB", ["<>无"], "AC", ["无"]],
+                 ["AG", ["<>未取得职称"], "AI", ["无"]], ["AG", ["<>未取得职称"], "AJ", ["无"]],
+                 ["AK", ["<>未取得职称", "<>试用期未聘"], "AL", ["无"]],  # 这个意思是AK列取这两个值以外的时候，AL列不能填无
+                 ["AM", ["<>试用期（未定级）"], "AN", ["无"]],
+                 ["AP", ["<>无", "高等学校"], "AQ", ["无"]], ["AS", ["<>无"], "AT", ["无"]],
+                 ["BA", ["<>无"], "BB", ["无"]], ["BA", ["<>无"], "BC", ["无"]], ["BQ", ["<>无"], "BT", ["无"]]]):
             ws_check[f'M{3 * i + 1}'] = f'{cell[0]}列与{cell[2]}列是否对应'
             ws_check[
-                f'M{3 * i + 2}'] = f'=IF(COUNTIFS(数据表!{cell[0]}:{cell[0]},"{cell[1]}",数据表!{cell[2]}:{cell[2]},"{cell[3]}")=0,1,0)'
+                f'M{3 * i + 2}'] = build_suproduct_rule(cell)
             ws_check[f'M{3 * i + 2}'].font = font
 
             cell_list.append(f'M{3 * i + 2}')
